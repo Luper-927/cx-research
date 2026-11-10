@@ -2,857 +2,830 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#10131b">
-<title>CX — Universal Operating Environment</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131c">
+<title>CX Web v0.5</title>
 
 <style>
 :root {
-  --bg:#10131b;
-  --panel:#191e29;
+  --bg:#10131c;
+  --panel:#191e2a;
   --panel2:#202737;
   --text:#edf1fa;
-  --muted:#929caf;
-  --line:#30394b;
+  --muted:#929db2;
+  --line:#30394c;
   --accent:#6d8cff;
-  --danger:#ff626f;
-  --success:#4bd6a0;
+  --green:#48d6a0;
+  --red:#ff6e79;
 }
-
-* { box-sizing:border-box; }
-
+* {box-sizing:border-box}
 body {
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
+  font-family:Arial,sans-serif;
   min-height:100vh;
 }
-
-button,input,textarea,select {
-  font:inherit;
-}
-
+button,input,textarea {font:inherit}
 button {
-  cursor:pointer;
   border:1px solid var(--line);
   background:var(--panel2);
   color:var(--text);
-  padding:10px 14px;
   border-radius:9px;
+  padding:10px 13px;
+  cursor:pointer;
 }
-
-button:hover {
-  border-color:var(--accent);
-}
-
-button.active {
-  background:var(--accent);
-  color:white;
-  border-color:var(--accent);
-}
-
-input,textarea {
-  width:100%;
-  background:var(--bg);
-  color:var(--text);
-  border:1px solid var(--line);
-  border-radius:9px;
-  padding:12px;
-  outline:none;
-}
-
-input:focus,textarea:focus {
-  border-color:var(--accent);
-}
-
-#topbar {
-  height:60px;
-  padding:0 18px;
+button:active {transform:scale(.98)}
+button.primary {background:var(--accent);color:white;border:0}
+button.danger {color:var(--red)}
+header {
+  height:58px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  background:var(--panel);
+  padding:0 17px;
   border-bottom:1px solid var(--line);
+  background:var(--panel);
   position:sticky;
   top:0;
-  z-index:10;
+  z-index:5;
 }
-
-.logo {
-  font-size:21px;
-  font-weight:bold;
-  letter-spacing:2px;
+.logo {font-size:22px;font-weight:800;letter-spacing:-1px}
+.status {font-size:11px;color:var(--green)}
+.layout {
+  display:grid;
+  grid-template-columns:190px 1fr;
+  min-height:calc(100vh - 58px);
 }
-
-.logo span {
-  color:var(--accent);
-}
-
-.status {
-  color:var(--success);
-  font-size:12px;
-}
-
-#layout {
-  display:flex;
-  min-height:calc(100vh - 60px);
-}
-
-#sidebar {
-  width:210px;
-  flex-shrink:0;
-  background:var(--panel);
+nav {
+  padding:15px 10px;
   border-right:1px solid var(--line);
-  padding:18px 12px;
+  background:#141925;
 }
-
 .nav-title {
   color:var(--muted);
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  padding:12px 10px;
+  font-size:10px;
+  letter-spacing:1.5px;
+  padding:12px 10px 8px;
 }
-
-.nav {
+.nav-btn {
   width:100%;
+  display:flex;
+  gap:12px;
+  align-items:center;
   text-align:left;
-  margin-bottom:6px;
+  margin-bottom:5px;
   background:transparent;
   border-color:transparent;
 }
-
-.nav.active {
-  background:var(--panel2);
-  border-color:var(--line);
+.nav-btn.active {
+  background:#28334c;
+  border-color:#394b70;
+  color:#fff;
 }
-
-#main {
-  flex:1;
-  min-width:0;
-  padding:25px;
-  max-width:1200px;
-  margin:0 auto;
-  width:100%;
-}
-
-.page {
-  display:none;
-}
-
-.page.active {
-  display:block;
-}
-
-h1 {
-  font-size:26px;
-  margin:0 0 8px;
-}
-
-.subtitle {
-  color:var(--muted);
-  margin-bottom:25px;
-  line-height:1.5;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-  gap:14px;
-}
-
+main {padding:24px;min-width:0;max-width:1100px;width:100%;margin:auto}
+h1 {font-size:25px;margin:0 0 8px}
+h2 {font-size:17px;margin:0 0 14px}
+p {color:var(--muted);line-height:1.6}
 .card {
   background:var(--panel);
   border:1px solid var(--line);
   border-radius:13px;
   padding:18px;
-  margin-bottom:15px;
+  margin:14px 0;
 }
-
-.card h3 {
-  margin:0 0 10px;
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:12px;
 }
-
-.big {
-  font-size:27px;
-  font-weight:bold;
-}
-
-.muted {
-  color:var(--muted);
-  font-size:13px;
-}
-
-.row {
+.stat {font-size:26px;font-weight:700;margin-top:8px}
+.label {font-size:12px;color:var(--muted)}
+.toolbar {
   display:flex;
-  gap:10px;
   flex-wrap:wrap;
-  align-items:center;
+  gap:8px;
+  margin:15px 0;
 }
-
-.row input {
-  flex:1;
-  min-width:130px;
+input,textarea {
+  width:100%;
+  background:#101622;
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:12px;
+  color:var(--text);
+  outline:none;
 }
-
-.file-item {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:13px;
-  border-bottom:1px solid var(--line);
-}
-
-.file-name {
-  overflow-wrap:anywhere;
-}
-
-.file-actions {
-  display:flex;
-  gap:5px;
-}
-
-.small {
-  padding:7px 10px;
-  font-size:12px;
-}
-
+input:focus,textarea:focus {border-color:var(--accent)}
 textarea {
   min-height:230px;
   resize:vertical;
-  line-height:1.5;
-}
-
-#terminalOutput {
-  background:#090c12;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:14px;
-  min-height:220px;
-  max-height:400px;
-  overflow:auto;
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-  font-family:monospace;
-  font-size:13px;
-  color:#a9e8c8;
-  margin-bottom:12px;
-}
-
-.terminal-input {
+  line-height:1.6;
   font-family:monospace;
 }
-
-.setting {
-  margin:16px 0;
-}
-
-.setting label {
-  display:block;
-  margin-bottom:8px;
-  font-size:14px;
-}
-
-#toast {
-  position:fixed;
-  bottom:22px;
-  left:50%;
-  transform:translateX(-50%);
+.file-list {display:flex;flex-direction:column;gap:8px}
+.file-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:12px;
   background:var(--panel2);
   border:1px solid var(--line);
-  border-radius:10px;
-  padding:12px 18px;
-  display:none;
-  z-index:50;
-  max-width:90%;
+  border-radius:9px;
+}
+.file-name {overflow-wrap:anywhere}
+.file-type {font-size:11px;color:var(--muted)}
+.small {font-size:12px;color:var(--muted)}
+.hidden {display:none!important}
+pre {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  background:#0b1019;
+  padding:14px;
+  border-radius:9px;
+  color:#a9c3ff;
+  min-height:120px;
+}
+footer {
+  padding:20px;
   text-align:center;
+  color:var(--muted);
+  font-size:11px;
 }
-
-#mobileNav {
-  display:none;
-}
-
-@media(max-width:700px) {
-  #layout {
-    display:block;
-    padding-bottom:70px;
-  }
-
-  #sidebar {
-    display:none;
-  }
-
-  #main {
-    padding:19px 14px;
-  }
-
-  #mobileNav {
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
+@media(max-width:650px) {
+  .layout {display:block}
+  nav {
     display:flex;
-    justify-content:space-around;
-    gap:3px;
-    background:var(--panel);
-    border-top:1px solid var(--line);
-    padding:8px 4px;
-    z-index:20;
+    overflow-x:auto;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    padding:8px;
+    gap:5px;
   }
-
-  #mobileNav button {
-    flex:1;
-    padding:10px 3px;
-    font-size:11px;
-    border-color:transparent;
-    background:transparent;
+  .nav-title {display:none}
+  .nav-btn {
+    width:auto;
+    white-space:nowrap;
+    margin:0;
+    padding:10px;
   }
-
-  #mobileNav button.active {
-    background:var(--panel2);
-    color:var(--accent);
-  }
-
-  h1 {
-    font-size:23px;
-  }
+  main {padding:17px}
 }
 </style>
 </head>
 
 <body>
 
-<header id="topbar">
-  <div class="logo">CX<span>.</span></div>
+<header>
+  <div class="logo">CX<span style="color:var(--accent)">.</span></div>
   <div class="status">● LOCAL ENVIRONMENT</div>
 </header>
 
-<div id="layout">
+<div class="layout">
 
-  <aside id="sidebar">
-    <div class="nav-title">Workspace</div>
-    <button class="nav active" data-page="home">⌂ Overview</button>
-    <button class="nav" data-page="files">▤ Files</button>
-    <button class="nav" data-page="notes">▣ Notes</button>
+<nav>
+  <div class="nav-title">WORKSPACE</div>
+  <button class="nav-btn active" data-page="home">⌂ Home</button>
+  <button class="nav-btn" data-page="files">▤ Files</button>
+  <button class="nav-btn" data-page="notes">✎ Notes</button>
 
-    <div class="nav-title">System</div>
-    <button class="nav" data-page="terminal">⌘ Terminal</button>
-    <button class="nav" data-page="monitor">◉ Monitor</button>
-    <button class="nav" data-page="settings">⚙ Settings</button>
-  </aside>
-
-  <main id="main">
-
-    <section class="page active" id="home">
-      <h1>Welcome to CX</h1>
-      <div class="subtitle">
-        A persistent, user-owned computing environment.
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <div class="muted">Workspace files</div>
-          <div class="big" id="fileCount">0</div>
-        </div>
-
-        <div class="card">
-          <div class="muted">Stored notes</div>
-          <div class="big" id="noteCount">0</div>
-        </div>
-
-        <div class="card">
-          <div class="muted">Environment</div>
-          <div class="big" style="font-size:19px">Active</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Workspace</h3>
-        <p class="muted">
-          Your files and notes are stored locally in this browser.
-          They remain available when you reopen this environment
-          in the same browser, unless its site data is cleared.
-        </p>
-        <div class="row">
-          <button onclick="navigate('files')">Open Files</button>
-          <button onclick="navigate('terminal')">Open Terminal</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Architecture status</h3>
-        <p class="muted">
-          CX Web is currently a browser-based prototype.
-          Remote execution, distributed storage, cross-device
-          synchronization and operating-system-level hardware
-          management are not yet implemented.
-        </p>
-      </div>
-    </section>
-
-    <section class="page" id="files">
-      <h1>Files</h1>
-      <div class="subtitle">Manage your local workspace.</div>
-
-      <div class="card">
-        <h3>Create a file</h3>
-        <div class="row">
-          <input id="newFileName" placeholder="File name, e.g. project.txt">
-          <button onclick="createFile()">Create</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Your files</h3>
-        <div id="fileList"></div>
-      </div>
-
-      <div class="card" id="editorCard" style="display:none">
-        <h3 id="editorTitle">File editor</h3>
-        <textarea id="fileEditor" spellcheck="false"></textarea>
-        <div class="row" style="margin-top:12px">
-          <button onclick="saveFile()">Save changes</button>
-          <button onclick="closeEditor()">Close</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="page" id="notes">
-      <h1>Notes</h1>
-      <div class="subtitle">Keep persistent workspace notes.</div>
-
-      <div class="card">
-        <input id="noteTitle" placeholder="Note title">
-        <textarea id="noteContent" placeholder="Write your note..." style="margin-top:12px"></textarea>
-        <button style="margin-top:12px" onclick="saveNote()">Save note</button>
-      </div>
-
-      <div class="card">
-        <h3>Saved notes</h3>
-        <div id="noteList"></div>
-      </div>
-    </section>
-
-    <section class="page" id="terminal">
-      <h1>Terminal</h1>
-      <div class="subtitle">CX local command interface.</div>
-
-      <div id="terminalOutput">CX Terminal v0.4
-Type "help" to see available commands.</div>
-
-      <div class="row">
-        <input
-          id="terminalInput"
-          class="terminal-input"
-          placeholder="Enter command..."
-          autocomplete="off"
-          spellcheck="false"
-        >
-        <button onclick="runCommand()">Run</button>
-      </div>
-
-      <p class="muted">
-        This is a simulated application terminal, not a
-        native operating-system shell.
-      </p>
-    </section>
-
-    <section class="page" id="monitor">
-      <h1>System Monitor</h1>
-      <div class="subtitle">Browser environment information.</div>
-
-      <div class="grid">
-        <div class="card">
-          <div class="muted">Platform</div>
-          <div id="platform" class="big" style="font-size:18px">—</div>
-        </div>
-
-        <div class="card">
-          <div class="muted">Screen resolution</div>
-          <div id="resolution" class="big" style="font-size:18px">—</div>
-        </div>
-
-        <div class="card">
-          <div class="muted">Browser memory estimate</div>
-          <div id="memory" class="big" style="font-size:18px">Unavailable</div>
-        </div>
-
-        <div class="card">
-          <div class="muted">Online connection</div>
-          <div id="connection" class="big" style="font-size:18px">—</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Environment limitations</h3>
-        <p class="muted">
-          A browser cannot accurately report all physical hardware
-          resources. These values describe the browser environment,
-          not a complete hardware inventory.
-        </p>
-      </div>
-    </section>
-
-    <section class="page" id="settings">
-      <h1>Settings</h1>
-      <div class="subtitle">Manage your CX environment.</div>
-
-      <div class="card">
-        <h3>Appearance</h3>
-
-        <div class="setting">
-          <label for="accent">Accent colour</label>
-          <input type="color" id="accent" value="#6d8cff">
-        </div>
-
-        <div class="setting">
-          <label for="theme">Theme</label>
-          <select id="theme">
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-          </select>
-        </div>
-
-        <button onclick="saveSettings()">Save appearance</button>
-      </div>
-
-      <div class="card">
-        <h3>Data management</h3>
-        <div class="row">
-          <button onclick="exportData()">Export workspace</button>
-          <button onclick="document.getElementById('importInput').click()">Import workspace</button>
-        </div>
-
-        <input
-          type="file"
-          id="importInput"
-          accept=".json,application/json"
-          style="display:none"
-          onchange="importData(event)"
-        >
-
-        <p class="muted">
-          Export a backup before clearing browser data.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Reset environment</h3>
-        <p class="muted">
-          This permanently clears the CX data stored in this browser.
-        </p>
-        <button style="background:#49232b;border-color:#77333e"
-          onclick="resetWorkspace()">
-          Erase local workspace
-        </button>
-      </div>
-
-      <div class="card">
-        <h3>Version</h3>
-        <div class="muted">CX Web v0.4</div>
-      </div>
-    </section>
-
-  </main>
-</div>
-
-<nav id="mobileNav">
-  <button class="active" data-page="home">Home</button>
-  <button data-page="files">Files</button>
-  <button data-page="notes">Notes</button>
-  <button data-page="terminal">Terminal</button>
-  <button data-page="settings">Settings</button>
+  <div class="nav-title">SYSTEM</div>
+  <button class="nav-btn" data-page="terminal">⌘ Terminal</button>
+  <button class="nav-btn" data-page="monitor">◉ Monitor</button>
+  <button class="nav-btn" data-page="settings">⚙ Settings</button>
 </nav>
 
-<div id="toast"></div>
+<main>
+
+<section id="home" class="page">
+  <h1>Welcome to CX</h1>
+  <p>A persistent, user-owned computing environment.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">Workspace files</div>
+      <div class="stat" id="fileCount">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Directories</div>
+      <div class="stat" id="folderCount">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Stored notes</div>
+      <div class="stat" id="noteCount">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Journal records</div>
+      <div class="stat" id="journalCount">0</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Environment</h2>
+    <p><span style="color:var(--green)">●</span> Active</p>
+    <p class="small">Storage: Browser local storage</p>
+    <p class="small">Workspace identity: CX</p>
+    <p class="small">Version: 0.5</p>
+  </div>
+
+  <div class="card">
+    <h2>Workspace protection</h2>
+    <p>Your existing files, notes, settings and journal are retained in the browser's CX storage.</p>
+    <button class="primary" onclick="navigate('files')">Open workspace</button>
+  </div>
+</section>
+
+<section id="files" class="page hidden">
+  <h1>Files</h1>
+  <p>Browse and manage your workspace.</p>
+
+  <div class="toolbar">
+    <button class="primary" onclick="newFile()">＋ New file</button>
+    <button onclick="newFolder()">＋ New folder</button>
+    <button onclick="refreshFiles()">↻ Refresh</button>
+  </div>
+
+  <div class="card">
+    <div class="small" id="fileLocation">Location: /</div>
+    <div class="file-list" id="fileList" style="margin-top:13px"></div>
+  </div>
+
+  <div id="editor" class="card hidden">
+    <h2 id="editorTitle">File editor</h2>
+    <input id="editorName" placeholder="File path">
+    <textarea id="editorContent" spellcheck="false"></textarea>
+    <div class="toolbar">
+      <button class="primary" onclick="saveFile()">Save file</button>
+      <button onclick="closeEditor()">Close</button>
+    </div>
+    <div class="small" id="editorMessage"></div>
+  </div>
+</section>
+
+<section id="notes" class="page hidden">
+  <h1>Notes</h1>
+  <p>Personal workspace notes.</p>
+
+  <div class="card">
+    <input id="noteTitle" placeholder="Note title">
+    <br><br>
+    <textarea id="noteContent" placeholder="Write your note..."></textarea>
+    <div class="toolbar">
+      <button class="primary" onclick="addNote()">Save note</button>
+    </div>
+  </div>
+
+  <div id="notesList"></div>
+</section>
+
+<section id="terminal" class="page hidden">
+  <h1>Terminal</h1>
+  <p>Basic workspace command interface.</p>
+
+  <div class="card">
+    <div class="small">Available: help, ls, pwd, cat, touch, mkdir, rm, clear</div>
+    <br>
+    <input id="terminalInput" placeholder="Enter command..." autocomplete="off">
+    <div class="toolbar">
+      <button class="primary" onclick="runCommand()">Run command</button>
+      <button onclick="clearTerminal()">Clear</button>
+    </div>
+    <pre id="terminalOutput">CX Terminal v0.5
+Type help to see available commands.</pre>
+  </div>
+</section>
+
+<section id="monitor" class="page hidden">
+  <h1>System Monitor</h1>
+  <p>Local environment information.</p>
+
+  <div class="card">
+    <div class="label">Application</div>
+    <h2>CX Web v0.5</h2>
+    <p>Environment: Local browser</p>
+    <p>Storage engine: localStorage</p>
+    <p id="storageSize">Storage usage: calculating...</p>
+    <p id="browserInfo"></p>
+  </div>
+
+  <div class="card">
+    <h2>Capabilities</h2>
+    <p>✓ Persistent browser storage</p>
+    <p>✓ File and directory management</p>
+    <p>✓ Notes</p>
+    <p>✓ Workspace export and import</p>
+    <p>✗ Remote execution not connected</p>
+    <p>✗ Cross-device synchronization not connected</p>
+  </div>
+</section>
+
+<section id="settings" class="page hidden">
+  <h1>Settings</h1>
+  <p>Workspace preferences and data protection.</p>
+
+  <div class="card">
+    <h2>Appearance</h2>
+    <label class="small">Accent colour</label>
+    <br><br>
+    <input id="accentInput" type="color" value="#6d8cff" style="height:45px">
+    <br><br>
+    <button class="primary" onclick="saveAccent()">Save appearance</button>
+  </div>
+
+  <div class="card">
+    <h2>Workspace backup</h2>
+    <p>Export your workspace, including files, notes, settings and journal records.</p>
+    <div class="toolbar">
+      <button class="primary" onclick="exportWorkspace()">Export workspace</button>
+      <button onclick="document.getElementById('importFile').click()">Import workspace</button>
+      <input id="importFile" class="hidden" type="file" accept=".json,application/json" onchange="importWorkspace(event)">
+    </div>
+    <div id="backupMessage" class="small"></div>
+  </div>
+
+  <div class="card">
+    <h2>Journal information</h2>
+    <p id="journalInfo"></p>
+    <p class="small">CX v0.5 preserves the existing journal without rewriting or claiming to validate its cryptographic integrity.</p>
+  </div>
+
+  <div class="card">
+    <h2>Storage identity</h2>
+    <p>Storage key: <code>cx</code></p>
+    <p class="small">This version does not automatically reset your workspace.</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>CX Web v0.5 · Persistent local workspace</footer>
 
 <script>
 "use strict";
 
-/* CX STORAGE */
+/* ==========================================
+   CX STORAGE
+========================================== */
 
 const STORAGE_KEY = "cx";
 
-const defaultData = {
-  fs: {},
-  notes: [],
-  settings: {
-    theme: "dark",
-    accent: "#6d8cff"
-  }
-};
-
-let data = loadData();
-let currentFile = null;
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
 
 function loadData() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY);
 
-    if (!saved) return structuredClone(defaultData);
-
-    const parsed = JSON.parse(saved);
-
-    if (!parsed || typeof parsed !== "object") {
-      return structuredClone(defaultData);
+    if (!raw) {
+      return {
+        fs: {"/": {t:"d"}},
+        notes: [],
+        settings: {theme:"dark",accent:"#6d8cff"},
+        j: []
+      };
     }
 
-    return {
-      fs: parsed.fs && typeof parsed.fs === "object"
-        ? parsed.fs : {},
-      notes: Array.isArray(parsed.notes)
-        ? parsed.notes : [],
-      settings: {
-        ...defaultData.settings,
-        ...(parsed.settings || {})
-      },
-      j: Array.isArray(parsed.j) ? parsed.j : []
-    };
+    const data = JSON.parse(raw);
 
+    if (!data || typeof data !== "object") {
+      throw new Error("Invalid workspace data");
+    }
+
+    if (!data.fs || typeof data.fs !== "object") {
+      data.fs = {"/": {t:"d"}};
+    }
+
+    if (!data.fs["/"]) {
+      data.fs["/"] = {t:"d"};
+    }
+
+    if (!Array.isArray(data.notes)) data.notes = [];
+    if (!data.settings || typeof data.settings !== "object") {
+      data.settings = {theme:"dark",accent:"#6d8cff"};
+    }
+
+    if (!Array.isArray(data.j)) data.j = [];
+
+    return data;
   } catch (error) {
-    return structuredClone(defaultData);
+    console.error("CX storage loading error:", error);
+    return {
+      fs: {"/": {t:"d"}},
+      notes: [],
+      settings: {theme:"dark",accent:"#6d8cff"},
+      j: []
+    };
   }
 }
 
-function save() {
+let data = loadData();
+
+function persist() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     updateDashboard();
     return true;
   } catch (error) {
-    toast("Could not save. Browser storage may be full.");
+    alert("Storage error: " + error.message);
     return false;
   }
 }
 
-/* NAVIGATION */
+/* ==========================================
+   FILE SYSTEM COMPATIBILITY
+========================================== */
+
+function isDirectory(entry) {
+  return !!entry && typeof entry === "object" && entry.t === "d";
+}
+
+function isFile(entry) {
+  return typeof entry === "string" ||
+    (!!entry && typeof entry === "object" && entry.t !== "d");
+}
+
+function readContent(entry) {
+  if (typeof entry === "string") return entry;
+  if (!entry || typeof entry !== "object") return "";
+  if (typeof entry.c === "string") return entry.c;
+  if (typeof entry.content === "string") return entry.content;
+  return "";
+}
+
+function writeContent(path, content) {
+  const old = data.fs[path];
+
+  if (typeof old === "string") {
+    data.fs[path] = content;
+  } else if (old && typeof old === "object") {
+    if (Object.prototype.hasOwnProperty.call(old, "c")) {
+      data.fs[path] = {...old, t:"f", c:content};
+    } else if (Object.prototype.hasOwnProperty.call(old, "content")) {
+      data.fs[path] = {...old, t:"f", content:content};
+    } else {
+      data.fs[path] = {...old, t:"f", c:content};
+    }
+  } else {
+    data.fs[path] = {t:"f",c:content};
+  }
+
+  return persist();
+}
+
+function normalizePath(path) {
+  path = String(path || "").trim();
+
+  if (!path) return "/";
+
+  path = path.replace(/\\/g, "/");
+
+  if (!path.startsWith("/")) path = "/" + path;
+
+  const parts = [];
+
+  for (const part of path.split("/")) {
+    if (!part || part === ".") continue;
+
+    if (part === "..") {
+      parts.pop();
+    } else {
+      parts.push(part);
+    }
+  }
+
+  return "/" + parts.join("/");
+}
+
+function parentPath(path) {
+  const normalized = normalizePath(path);
+  if (normalized === "/") return null;
+
+  const index = normalized.lastIndexOf("/");
+  return index === 0 ? "/" : normalized.slice(0,index);
+}
+
+function exists(path) {
+  return Object.prototype.hasOwnProperty.call(data.fs, normalizePath(path));
+}
+
+function makeFile(path, content="") {
+  path = normalizePath(path);
+
+  if (path === "/" || exists(path)) return false;
+
+  const parent = parentPath(path);
+
+  if (!exists(parent) || !isDirectory(data.fs[parent])) {
+    alert("Parent directory does not exist.");
+    return false;
+  }
+
+  data.fs[path] = {t:"f",c:content};
+  return persist();
+}
+
+function makeDirectory(path) {
+  path = normalizePath(path);
+
+  if (path === "/" || exists(path)) return false;
+
+  const parent = parentPath(path);
+
+  if (!exists(parent) || !isDirectory(data.fs[parent])) {
+    alert("Parent directory does not exist.");
+    return false;
+  }
+
+  data.fs[path] = {t:"d"};
+  return persist();
+}
+
+function deletePath(path) {
+  path = normalizePath(path);
+
+  if (path === "/") {
+    alert("The root directory cannot be deleted.");
+    return false;
+  }
+
+  if (!exists(path)) return false;
+
+  const children = Object.keys(data.fs).filter(
+    item => item !== path && item.startsWith(path + "/")
+  );
+
+  if (children.length) {
+    alert("Directory is not empty.");
+    return false;
+  }
+
+  delete data.fs[path];
+  return persist();
+}
+
+/* ==========================================
+   NAVIGATION
+========================================== */
 
 function navigate(page) {
-  document.querySelectorAll(".page").forEach(section => {
-    section.classList.remove("active");
+  document.querySelectorAll(".page").forEach(
+    section => section.classList.add("hidden")
+  );
+
+  document.getElementById(page).classList.remove("hidden");
+
+  document.querySelectorAll(".nav-btn").forEach(button => {
+    button.classList.toggle("active",button.dataset.page === page);
   });
 
-  const target = document.getElementById(page);
-
-  if (!target) return;
-
-  target.classList.add("active");
-
-  document.querySelectorAll("[data-page]").forEach(button => {
-    button.classList.toggle(
-      "active",
-      button.dataset.page === page
-    );
-  });
-
-  if (page === "files") renderFiles();
+  if (page === "files") refreshFiles();
   if (page === "notes") renderNotes();
   if (page === "monitor") updateMonitor();
-  if (page === "home") updateDashboard();
+  if (page === "settings") updateSettings();
 }
 
-document.querySelectorAll("[data-page]").forEach(button => {
-  button.addEventListener("click", () => {
-    navigate(button.dataset.page);
-  });
+document.querySelectorAll(".nav-btn").forEach(button => {
+  button.addEventListener("click", () => navigate(button.dataset.page));
 });
 
-/* NOTIFICATIONS */
-
-function toast(message) {
-  const element = document.getElementById("toast");
-
-  element.textContent = message;
-  element.style.display = "block";
-
-  clearTimeout(window.cxToastTimer);
-
-  window.cxToastTimer = setTimeout(() => {
-    element.style.display = "none";
-  }, 2500);
-}
-
-/* DASHBOARD */
+/* ==========================================
+   DASHBOARD
+========================================== */
 
 function updateDashboard() {
-  document.getElementById("fileCount").textContent =
-    Object.keys(data.fs).length;
+  let files = 0;
+  let folders = 0;
 
-  document.getElementById("noteCount").textContent =
-    data.notes.length;
+  for (const [path,entry] of Object.entries(data.fs)) {
+    if (isDirectory(entry)) {
+      if (path !== "/") folders++;
+    } else if (isFile(entry)) {
+      files++;
+    }
+  }
+
+  document.getElementById("fileCount").textContent = files;
+  document.getElementById("folderCount").textContent = folders;
+  document.getElementById("noteCount").textContent = data.notes.length;
+  document.getElementById("journalCount").textContent = data.j.length;
 }
 
-/* FILE SYSTEM */
+/* ==========================================
+   FILE BROWSER
+========================================== */
 
-function createFile() {
-  const input = document.getElementById("newFileName");
-  const name = input.value.trim();
+let currentDirectory = "/";
+let openedFile = null;
 
-  if (!name) {
-    toast("Enter a file name.");
-    return;
+function refreshFiles() {
+  const list = document.getElementById("fileList");
+  list.innerHTML = "";
+
+  document.getElementById("fileLocation").textContent =
+    "Location: " + currentDirectory;
+
+  const entries = Object.keys(data.fs)
+    .filter(path => path !== "/" && parentPath(path) === currentDirectory)
+    .sort((a,b) => {
+      const ad = isDirectory(data.fs[a]);
+      const bd = isDirectory(data.fs[b]);
+
+      if (ad && !bd) return -1;
+      if (!ad && bd) return 1;
+
+      return a.localeCompare(b);
+    });
+
+  if (currentDirectory !== "/") {
+    const back = document.createElement("button");
+    back.textContent = "↑ Parent directory";
+    back.style.marginBottom = "10px";
+    back.onclick = () => {
+      currentDirectory = parentPath(currentDirectory);
+      refreshFiles();
+    };
+    list.appendChild(back);
   }
 
-  if (name.includes("/") || name.includes("\\")) {
-    toast("File names cannot contain directory paths.");
-    return;
+  if (!entries.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "This directory is empty.";
+    list.appendChild(empty);
   }
 
-  if (Object.prototype.hasOwnProperty.call(data.fs, name)) {
-    toast("A file with that name already exists.");
-    return;
-  }
+  entries.forEach(path => {
+    const entry = data.fs[path];
+    const directory = isDirectory(entry);
 
-  data.fs[name] = {
-    content: "",
-    created: new Date().toISOString(),
-    modified: new Date().toISOString()
-  };
+    const row = document.createElement("div");
+    row.className = "file-row";
 
-  if (!save()) return;
+    const left = document.createElement("div");
+    left.className = "file-name";
 
-  input.value = "";
-  renderFiles();
-  toast("File created.");
-}
+    const name = document.createElement("div");
+    name.textContent = (directory ? "📁 " : "📄 ") +
+      path.slice(path.lastIndexOf("/") + 1);
 
-function renderFiles() {
-  const container = document.getElementById("fileList");
-  container.innerHTML = "";
+    const type = document.createElement("div");
+    type.className = "file-type";
+    type.textContent = directory ? "Directory" : "File";
 
-  const names = Object.keys(data.fs);
-
-  if (!names.length) {
-    container.textContent = "No files yet.";
-    return;
-  }
-
-  names.sort().forEach(name => {
-    const item = document.createElement("div");
-    item.className = "file-item";
-
-    const label = document.createElement("span");
-    label.className = "file-name";
-    label.textContent = "📄 " + name;
+    left.append(name,type);
 
     const actions = document.createElement("div");
-    actions.className = "file-actions";
+    actions.style.display = "flex";
+    actions.style.gap = "5px";
 
     const open = document.createElement("button");
-    open.className = "small";
-    open.textContent = "Open";
-    open.onclick = () => openFile(name);
+    open.textContent = directory ? "Open" : "Edit";
+    open.onclick = () => {
+      if (directory) {
+        currentDirectory = path;
+        refreshFiles();
+      } else {
+        openFile(path);
+      }
+    };
 
     const remove = document.createElement("button");
-    remove.className = "small";
-    remove.textContent = "Delete";
-    remove.onclick = () => deleteFile(name);
+    remove.textContent = "×";
+    remove.className = "danger";
+    remove.onclick = () => {
+      if (confirm("Delete " + path + "?")) {
+        deletePath(path);
+        refreshFiles();
+      }
+    };
 
-    actions.append(open, remove);
-    item.append(label, actions);
-    container.appendChild(item);
+    actions.append(open,remove);
+    row.append(left,actions);
+    list.appendChild(row);
   });
 }
 
-function openFile(name) {
-  if (!Object.prototype.hasOwnProperty.call(data.fs, name)) {
-    toast("File not found.");
-    return;
+function newFile() {
+  const name = prompt("Enter file name:");
+  if (!name) return;
+
+  const path = normalizePath(
+    currentDirectory === "/" ? "/" + name : currentDirectory + "/" + name
+  );
+
+  if (makeFile(path,"")) {
+    openFile(path);
+    refreshFiles();
+  } else {
+    alert("Could not create file. Check the name and location.");
   }
+}
 
-  currentFile = name;
+function newFolder() {
+  const name = prompt("Enter folder name:");
+  if (!name) return;
 
-  document.getElementById("editorTitle").textContent =
-    "Editing: " + name;
+  const path = normalizePath(
+    currentDirectory === "/" ? "/" + name : currentDirectory + "/" + name
+  );
 
-  document.getElementById("fileEditor").value =
-    typeof data.fs[name] === "string"
-      ? data.fs[name]
-      : data.fs[name].content || "";
+  if (makeDirectory(path)) {
+    refreshFiles();
+  } else {
+    alert("Could not create directory.");
+  }
+}
 
-  document.getElementById("editorCard").style.display = "block";
+function openFile(path) {
+  if (!exists(path) || isDirectory(data.fs[path])) return;
 
-  document.getElementById("editorCard").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  openedFile = path;
+
+  document.getElementById("editor").classList.remove("hidden");
+  document.getElementById("editorTitle").textContent = "Editing file";
+  document.getElementById("editorName").value = path;
+  document.getElementById("editorContent").value =
+    readContent(data.fs[path]);
+
+  document.getElementById("editorMessage").textContent =
+    "Loaded from CX workspace.";
 }
 
 function saveFile() {
-  if (!currentFile) return;
+  if (!openedFile) return;
 
-  if (!Object.prototype.hasOwnProperty.call(data.fs, currentFile)) {
-    toast("File no longer exists.");
-    closeEditor();
+  const newPath = normalizePath(
+    document.getElementById("editorName").value
+  );
+
+  const content = document.getElementById("editorContent").value;
+
+  if (!newPath || newPath === "/") {
+    alert("Invalid file path.");
     return;
   }
 
-  const existing = data.fs[currentFile];
+  if (newPath !== openedFile && exists(newPath)) {
+    alert("That path already exists.");
+    return;
+  }
 
-  data.fs[currentFile] = {
-    content: document.getElementById("fileEditor").value,
-    created: typeof existing === "object"
-      ? existing.created : new Date().toISOString(),
-    modified: new Date().toISOString()
-  };
+  if (newPath !== openedFile) {
+    const parent = parentPath(newPath);
 
-  if (save()) {
-    renderFiles();
-    toast("File saved.");
+    if (!exists(parent) || !isDirectory(data.fs[parent])) {
+      alert("The destination directory does not exist.");
+      return;
+    }
+
+    data.fs[newPath] = clone(data.fs[openedFile]);
+    delete data.fs[openedFile];
+    openedFile = newPath;
+  }
+
+  if (writeContent(openedFile,content)) {
+    document.getElementById("editorMessage").textContent =
+      "Saved successfully.";
+    refreshFiles();
   }
 }
 
 function closeEditor() {
-  currentFile = null;
-
-  document.getElementById("editorCard").style.display = "none";
-  document.getElementById("fileEditor").value = "";
+  document.getElementById("editor").classList.add("hidden");
+  openedFile = null;
 }
 
-function deleteFile(name) {
-  if (!confirm("Delete " + name + "?")) return;
+/* ==========================================
+   NOTES
+========================================== */
 
-  delete data.fs[name];
-
-  if (currentFile === name) closeEditor();
-
-  if (save()) {
-    renderFiles();
-    toast("File deleted.");
-  }
-}
-
-/* NOTES */
-
-function saveNote() {
+function addNote() {
   const title = document.getElementById("noteTitle").value.trim();
-  const content = document.getElementById("noteContent").value.trim();
+  const content = document.getElementById("noteContent").value;
 
-  if (!title || !content) {
-    toast("Enter a title and note.");
+  if (!title || !content.trim()) {
+    alert("Enter a title and note content.");
     return;
   }
 
-  data.notes.unshift({
-    id: Date.now().toString(),
+  data.notes.push({
+    id: Date.now(),
     title,
     content,
     created: new Date().toISOString()
   });
 
-  if (save()) {
+  if (persist()) {
     document.getElementById("noteTitle").value = "";
     document.getElementById("noteContent").value = "";
-
     renderNotes();
-    toast("Note saved.");
   }
 }
 
 function renderNotes() {
-  const container = document.getElementById("noteList");
+  const container = document.getElementById("notesList");
   container.innerHTML = "";
 
   if (!data.notes.length) {
@@ -860,264 +833,230 @@ function renderNotes() {
     return;
   }
 
-  data.notes.forEach(note => {
+  data.notes.forEach((note,index) => {
     const card = document.createElement("div");
     card.className = "card";
 
-    const title = document.createElement("h3");
-    title.textContent = note.title;
+    const title = document.createElement("h2");
+    title.textContent = note.title || "Untitled";
 
-    const content = document.createElement("p");
-    content.textContent = note.content;
-    content.style.whiteSpace = "pre-wrap";
+    const body = document.createElement("p");
+    body.style.whiteSpace = "pre-wrap";
+    body.textContent = note.content || "";
 
     const remove = document.createElement("button");
-    remove.className = "small";
-    remove.textContent = "Delete";
+    remove.className = "danger";
+    remove.textContent = "Delete note";
 
     remove.onclick = () => {
-      if (!confirm("Delete this note?")) return;
-
-      data.notes = data.notes.filter(n => n.id !== note.id);
-
-      if (save()) {
+      if (confirm("Delete this note?")) {
+        data.notes.splice(index,1);
+        persist();
         renderNotes();
-        toast("Note deleted.");
       }
     };
 
-    card.append(title, content, remove);
+    card.append(title,body,remove);
     container.appendChild(card);
   });
 }
 
-/* TERMINAL */
+/* ==========================================
+   TERMINAL
+========================================== */
 
-function printTerminal(message) {
-  const output = document.getElementById("terminalOutput");
+function output(message) {
+  const terminal = document.getElementById("terminalOutput");
+  terminal.textContent += "\n" + message;
+  terminal.scrollTop = terminal.scrollHeight;
+}
 
-  output.textContent += "\n" + message;
-  output.scrollTop = output.scrollHeight;
+function clearTerminal() {
+  document.getElementById("terminalOutput").textContent = "";
 }
 
 function runCommand() {
   const input = document.getElementById("terminalInput");
-  const command = input.value.trim();
+  const commandLine = input.value.trim();
 
-  if (!command) return;
+  if (!commandLine) return;
 
+  output("> " + commandLine);
   input.value = "";
 
-  printTerminal("\n> " + command);
+  const parts = commandLine.match(/"[^"]*"|'[^']*'|\S+/g) || [];
+  const command = parts[0].toLowerCase();
+  const argument = parts.slice(1).join(" ").replace(/^["']|["']$/g,"");
 
-  const parts = command.split(" ");
-  const action = parts[0].toLowerCase();
-  const argument = parts.slice(1).join(" ");
-
-  switch (action) {
-
+  switch(command) {
     case "help":
-      printTerminal(
-        "Available commands:\n" +
-        "help       Show commands\n" +
-        "clear      Clear terminal\n" +
-        "ls         List files\n" +
-        "pwd        Show workspace location\n" +
-        "cat NAME   Read a file\n" +
-        "touch NAME Create a file\n" +
-        "rm NAME    Delete a file\n" +
-        "date       Show current date\n" +
-        "status     Show environment status"
-      );
-      break;
-
-    case "clear":
-      document.getElementById("terminalOutput").textContent =
-        "CX Terminal v0.4";
-      break;
-
-    case "ls":
-      printTerminal(
-        Object.keys(data.fs).join("\n") || "Workspace is empty."
-      );
+      output("Available commands:");
+      output("ls - list files");
+      output("pwd - show current directory");
+      output("cat <path> - read a file");
+      output("touch <path> - create a file");
+      output("mkdir <path> - create a directory");
+      output("rm <path> - delete an empty file or directory");
+      output("clear - clear terminal");
       break;
 
     case "pwd":
-      printTerminal("/cx/workspace");
+      output(currentDirectory);
       break;
 
-    case "cat":
+    case "ls":
+      Object.keys(data.fs)
+        .filter(path => path !== "/" && parentPath(path) === currentDirectory)
+        .forEach(path => output(
+          (isDirectory(data.fs[path]) ? "[DIR] " : "[FILE] ") +
+          path.slice(path.lastIndexOf("/") + 1)
+        ));
+      break;
+
+    case "cat": {
       if (!argument) {
-        printTerminal("Usage: cat FILENAME");
+        output("Usage: cat <path>");
         break;
       }
 
-      if (!Object.prototype.hasOwnProperty.call(data.fs, argument)) {
-        printTerminal("File not found.");
-        break;
-      }
-
-      const file = data.fs[argument];
-
-      printTerminal(
-        typeof file === "string" ? file : file.content || ""
+      const path = normalizePath(
+        argument.startsWith("/") ? argument :
+        currentDirectory === "/" ? "/" + argument :
+        currentDirectory + "/" + argument
       );
-      break;
 
-    case "touch":
+      if (!exists(path)) {
+        output("File not found.");
+      } else if (isDirectory(data.fs[path])) {
+        output("Cannot read a directory.");
+      } else {
+        output(readContent(data.fs[path]));
+      }
+      break;
+    }
+
+    case "touch": {
       if (!argument) {
-        printTerminal("Usage: touch FILENAME");
+        output("Usage: touch <path>");
         break;
       }
 
-      if (argument.includes("/") || argument.includes("\\")) {
-        printTerminal("Invalid file name.");
-        break;
-      }
-
-      if (Object.prototype.hasOwnProperty.call(data.fs, argument)) {
-        printTerminal("File already exists.");
-        break;
-      }
-
-      data.fs[argument] = {
-        content: "",
-        created: new Date().toISOString(),
-        modified: new Date().toISOString()
-      };
-
-      if (save()) printTerminal("Created " + argument);
-      break;
-
-    case "rm":
-      if (!argument) {
-        printTerminal("Usage: rm FILENAME");
-        break;
-      }
-
-      if (!Object.prototype.hasOwnProperty.call(data.fs, argument)) {
-        printTerminal("File not found.");
-        break;
-      }
-
-      delete data.fs[argument];
-
-      if (save()) printTerminal("Deleted " + argument);
-      break;
-
-    case "date":
-      printTerminal(new Date().toString());
-      break;
-
-    case "status":
-      printTerminal(
-        "CX Web v0.4\n" +
-        "Environment: Browser\n" +
-        "Storage: Local browser storage\n" +
-        "Files: " + Object.keys(data.fs).length + "\n" +
-        "Notes: " + data.notes.length
+      const path = normalizePath(
+        argument.startsWith("/") ? argument :
+        currentDirectory === "/" ? "/" + argument :
+        currentDirectory + "/" + argument
       );
+
+      output(makeFile(path,"") ? "File created." : "Could not create file.");
+      break;
+    }
+
+    case "mkdir": {
+      if (!argument) {
+        output("Usage: mkdir <path>");
+        break;
+      }
+
+      const path = normalizePath(
+        argument.startsWith("/") ? argument :
+        currentDirectory === "/" ? "/" + argument :
+        currentDirectory + "/" + argument
+      );
+
+      output(makeDirectory(path) ? "Directory created." : "Could not create directory.");
+      break;
+    }
+
+    case "rm": {
+      if (!argument) {
+        output("Usage: rm <path>");
+        break;
+      }
+
+      const path = normalizePath(
+        argument.startsWith("/") ? argument :
+        currentDirectory === "/" ? "/" + argument :
+        currentDirectory + "/" + argument
+      );
+
+      output(deletePath(path) ? "Deleted." : "Could not delete.");
+      break;
+    }
+
+    case "clear":
+      clearTerminal();
       break;
 
     default:
-      printTerminal("Unknown command. Type help.");
+      output("Unknown command. Type help.");
   }
 }
 
-document.getElementById("terminalInput").addEventListener(
-  "keydown",
-  event => {
-    if (event.key === "Enter") runCommand();
-  }
-);
+document.getElementById("terminalInput").addEventListener("keydown",event => {
+  if (event.key === "Enter") runCommand();
+});
 
-/* MONITOR */
+/* ==========================================
+   SETTINGS
+========================================== */
+
+function saveAccent() {
+  const color = document.getElementById("accentInput").value;
+
+  data.settings.accent = color;
+  document.documentElement.style.setProperty("--accent",color);
+
+  persist();
+}
+
+function updateSettings() {
+  document.getElementById("accentInput").value =
+    data.settings.accent || "#6d8cff";
+
+  document.getElementById("journalInfo").textContent =
+    "Journal records currently stored: " + data.j.length;
+}
+
+/* ==========================================
+   MONITOR
+========================================== */
 
 function updateMonitor() {
-  document.getElementById("platform").textContent =
-    navigator.platform || "Unknown";
+  let size = 0;
 
-  document.getElementById("resolution").textContent =
-    screen.width + " × " + screen.height;
+  try {
+    size = new Blob([localStorage.getItem(STORAGE_KEY) || ""]).size;
+  } catch(error) {}
 
-  document.getElementById("connection").textContent =
-    navigator.onLine ? "Online" : "Offline";
+  document.getElementById("storageSize").textContent =
+    "Workspace data size: " + (size / 1024).toFixed(2) + " KB";
 
-  const memory = navigator.deviceMemory;
-
-  document.getElementById("memory").textContent =
-    memory ? memory + " GB estimate" : "Unavailable";
+  document.getElementById("browserInfo").textContent =
+    "Browser: " + navigator.userAgent;
 }
 
-window.addEventListener("online", updateMonitor);
-window.addEventListener("offline", updateMonitor);
+/* ==========================================
+   EXPORT AND IMPORT
+========================================== */
 
-/* SETTINGS */
-
-function applySettings() {
-  const theme = data.settings.theme;
-  const accent = data.settings.accent;
-
-  document.documentElement.style.setProperty("--accent", accent);
-
-  if (theme === "light") {
-    document.documentElement.style.setProperty("--bg", "#f2f4f8");
-    document.documentElement.style.setProperty("--panel", "#ffffff");
-    document.documentElement.style.setProperty("--panel2", "#e8ecf4");
-    document.documentElement.style.setProperty("--text", "#171b25");
-    document.documentElement.style.setProperty("--muted", "#626d80");
-    document.documentElement.style.setProperty("--line", "#d5dae4");
-  } else {
-    document.documentElement.style.setProperty("--bg", "#10131b");
-    document.documentElement.style.setProperty("--panel", "#191e29");
-    document.documentElement.style.setProperty("--panel2", "#202737");
-    document.documentElement.style.setProperty("--text", "#edf1fa");
-    document.documentElement.style.setProperty("--muted", "#929caf");
-    document.documentElement.style.setProperty("--line", "#30394b");
-  }
-
-  document.getElementById("theme").value = theme;
-  document.getElementById("accent").value = accent;
-}
-
-function saveSettings() {
-  data.settings.theme =
-    document.getElementById("theme").value;
-
-  data.settings.accent =
-    document.getElementById("accent").value;
-
-  if (save()) {
-    applySettings();
-    toast("Settings saved.");
-  }
-}
-
-/* EXPORT */
-
-function exportData() {
-  const blob = new Blob(
-    [JSON.stringify(data, null, 2)],
-    {type:"application/json"}
-  );
-
+function exportWorkspace() {
+  const backup = JSON.stringify(data,null,2);
+  const blob = new Blob([backup],{type:"application/json"});
   const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
 
+  const link = document.createElement("a");
   link.href = url;
   link.download = "cx-workspace-backup.json";
   link.click();
 
   URL.revokeObjectURL(url);
 
-  toast("Workspace backup exported.");
+  document.getElementById("backupMessage").textContent =
+    "Workspace export prepared.";
 }
 
-/* IMPORT */
-
-function importData(event) {
+function importWorkspace(event) {
   const file = event.target.files[0];
-
   if (!file) return;
 
   const reader = new FileReader();
@@ -1126,96 +1065,63 @@ function importData(event) {
     try {
       const imported = JSON.parse(reader.result);
 
-      if (
-        !imported ||
-        typeof imported !== "object" ||
-        !imported.fs ||
-        typeof imported.fs !== "object" ||
-        Array.isArray(imported.fs) ||
-        !Array.isArray(imported.notes)
-      ) {
-        throw new Error("Invalid workspace structure.");
+      if (!imported || typeof imported !== "object" ||
+          !imported.fs || typeof imported.fs !== "object" ||
+          !Array.isArray(imported.notes)) {
+        throw new Error("Invalid CX workspace backup.");
       }
 
-      if (!confirm("Replace the current workspace with this backup?")) {
-        event.target.value = "";
-        return;
+      if (!confirm(
+        "Import this workspace? Your current local workspace will be replaced."
+      )) return;
+
+      if (!imported.fs["/"]) imported.fs["/"] = {t:"d"};
+      if (!imported.settings) {
+        imported.settings = {theme:"dark",accent:"#6d8cff"};
       }
+      if (!Array.isArray(imported.j)) imported.j = [];
 
-      data = {
-        fs: imported.fs,
-        notes: imported.notes,
-        settings: {
-          ...defaultData.settings,
-          ...(imported.settings || {})
-        },
-        j: Array.isArray(imported.j) ? imported.j : []
-      };
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(imported));
 
-      if (save()) {
-        applySettings();
-        renderFiles();
-        renderNotes();
-        toast("Workspace imported.");
-      }
+      data = imported;
+      currentDirectory = "/";
+      openedFile = null;
 
-    } catch (error) {
-      toast("Import failed: invalid backup.");
+      document.documentElement.style.setProperty(
+        "--accent",data.settings.accent || "#6d8cff"
+      );
+
+      updateDashboard();
+      refreshFiles();
+      updateSettings();
+
+      document.getElementById("backupMessage").textContent =
+        "Workspace imported successfully.";
+
+      alert("CX workspace imported.");
+      navigate("home");
+
+    } catch(error) {
+      alert("Import failed: " + error.message);
+    } finally {
+      event.target.value = "";
     }
-
-    event.target.value = "";
   };
 
   reader.readAsText(file);
 }
 
-/* RESET */
+/* ==========================================
+   STARTUP
+========================================== */
 
-function resetWorkspace() {
-  const confirmed = confirm(
-    "This will permanently erase all local CX files and notes. Continue?"
-  );
+document.documentElement.style.setProperty(
+  "--accent",data.settings.accent || "#6d8cff"
+);
 
-  if (!confirmed) return;
+updateDashboard();
+refreshFiles();
 
-  localStorage.removeItem(STORAGE_KEY);
-
-  data = structuredClone(defaultData);
-  currentFile = null;
-
-  applySettings();
-  closeEditor();
-  renderFiles();
-  renderNotes();
-  updateDashboard();
-
-  toast("Local workspace erased.");
-}
-
-/* STARTUP */
-
-function startCX() {
-  applySettings();
-  updateDashboard();
-  renderFiles();
-  renderNotes();
-  updateMonitor();
-
-  printTerminal("");
-}
-
-try {
-  startCX();
-} catch (error) {
-  document.body.innerHTML =
-    "<div style='padding:25px;font-family:Arial'>" +
-    "<h2>CX startup error</h2>" +
-    "<pre style='white-space:pre-wrap'>" +
-    String(error.message) +
-    "</pre></div>";
-  console.error(error);
-}
 </script>
-
 </body>
 </html>
