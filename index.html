@@ -2,1126 +2,1329 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#10131c">
-<title>CX Web v0.5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111318">
+<title>CX Web v0.6</title>
 
 <style>
 :root {
-  --bg:#10131c;
-  --panel:#191e2a;
-  --panel2:#202737;
-  --text:#edf1fa;
-  --muted:#929db2;
-  --line:#30394c;
+  --bg:#111318;
+  --panel:#191d25;
+  --panel2:#202530;
+  --text:#f1f3f8;
+  --muted:#929baa;
+  --line:#303744;
   --accent:#6d8cff;
-  --green:#48d6a0;
-  --red:#ff6e79;
+  --danger:#ff6565;
+  --success:#45d49a;
 }
+
 * {box-sizing:border-box}
+
 body {
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font-family:Arial,sans-serif;
+  font-family:Arial, sans-serif;
   min-height:100vh;
 }
-button,input,textarea {font:inherit}
+
+button,input,textarea {
+  font:inherit;
+}
+
 button {
+  cursor:pointer;
   border:1px solid var(--line);
   background:var(--panel2);
   color:var(--text);
   border-radius:9px;
   padding:10px 13px;
-  cursor:pointer;
 }
-button:active {transform:scale(.98)}
-button.primary {background:var(--accent);color:white;border:0}
-button.danger {color:var(--red)}
-header {
+
+button:hover {border-color:var(--accent)}
+
+button.primary {
+  background:var(--accent);
+  color:white;
+  border-color:var(--accent);
+}
+
+input,textarea {
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:11px;
+  width:100%;
+  outline:none;
+}
+
+input:focus,textarea:focus {
+  border-color:var(--accent);
+}
+
+#topbar {
   height:58px;
+  border-bottom:1px solid var(--line);
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 17px;
-  border-bottom:1px solid var(--line);
+  padding:0 15px;
   background:var(--panel);
   position:sticky;
   top:0;
   z-index:5;
 }
-.logo {font-size:22px;font-weight:800;letter-spacing:-1px}
-.status {font-size:11px;color:var(--green)}
-.layout {
-  display:grid;
-  grid-template-columns:190px 1fr;
+
+.logo {
+  font-size:19px;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+.logo span {color:var(--accent)}
+
+#status {
+  font-size:11px;
+  color:var(--success);
+}
+
+#app {
+  display:flex;
   min-height:calc(100vh - 58px);
 }
-nav {
+
+#sidebar {
+  width:190px;
+  flex-shrink:0;
   padding:15px 10px;
   border-right:1px solid var(--line);
-  background:#141925;
+  background:var(--panel);
 }
-.nav-title {
-  color:var(--muted);
-  font-size:10px;
-  letter-spacing:1.5px;
-  padding:12px 10px 8px;
-}
-.nav-btn {
+
+.nav {
+  display:block;
   width:100%;
-  display:flex;
-  gap:12px;
-  align-items:center;
   text-align:left;
-  margin-bottom:5px;
+  margin-bottom:6px;
   background:transparent;
   border-color:transparent;
+  color:var(--muted);
 }
-.nav-btn.active {
-  background:#28334c;
-  border-color:#394b70;
-  color:#fff;
+
+.nav.active {
+  color:white;
+  background:var(--panel2);
+  border-color:var(--line);
 }
-main {padding:24px;min-width:0;max-width:1100px;width:100%;margin:auto}
-h1 {font-size:25px;margin:0 0 8px}
-h2 {font-size:17px;margin:0 0 14px}
-p {color:var(--muted);line-height:1.6}
+
+#main {
+  flex:1;
+  min-width:0;
+  padding:22px;
+  max-width:1100px;
+}
+
+h1 {
+  font-size:25px;
+  margin:0 0 7px;
+}
+
+h2 {
+  font-size:17px;
+  margin:0 0 14px;
+}
+
+p {
+  color:var(--muted);
+  line-height:1.5;
+}
+
 .card {
   background:var(--panel);
   border:1px solid var(--line);
-  border-radius:13px;
-  padding:18px;
+  border-radius:12px;
+  padding:16px;
   margin:14px 0;
 }
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
-  gap:12px;
+
+.row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
 }
-.stat {font-size:26px;font-weight:700;margin-top:8px}
-.label {font-size:12px;color:var(--muted)}
-.toolbar {
+
+.actions {
   display:flex;
   flex-wrap:wrap;
   gap:8px;
-  margin:15px 0;
 }
-input,textarea {
-  width:100%;
-  background:#101622;
-  border:1px solid var(--line);
-  border-radius:9px;
-  padding:12px;
-  color:var(--text);
-  outline:none;
-}
-input:focus,textarea:focus {border-color:var(--accent)}
-textarea {
-  min-height:230px;
-  resize:vertical;
-  line-height:1.6;
-  font-family:monospace;
-}
-.file-list {display:flex;flex-direction:column;gap:8px}
+
 .file-row {
   display:flex;
-  justify-content:space-between;
   align-items:center;
   gap:10px;
-  padding:12px;
+  padding:13px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+  border-radius:7px;
+}
+
+.file-row:hover {
+  background:var(--panel2);
+}
+
+.file-name {
+  flex:1;
+  overflow-wrap:anywhere;
+}
+
+.file-icon {font-size:19px}
+
+.muted {
+  color:var(--muted);
+  font-size:12px;
+}
+
+#editor {
+  min-height:260px;
+  resize:vertical;
+  font-family:monospace;
+  line-height:1.6;
+  font-size:14px;
+  margin-top:12px;
+}
+
+#editorStatus {
+  font-size:12px;
+  color:var(--success);
+  margin-top:9px;
+}
+
+.hidden {display:none!important}
+
+.stat-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:10px;
+}
+
+.stat {
   background:var(--panel2);
   border:1px solid var(--line);
-  border-radius:9px;
+  padding:15px;
+  border-radius:10px;
 }
-.file-name {overflow-wrap:anywhere}
-.file-type {font-size:11px;color:var(--muted)}
-.small {font-size:12px;color:var(--muted)}
-.hidden {display:none!important}
-pre {
+
+.stat strong {
+  display:block;
+  font-size:24px;
+  margin-top:7px;
+}
+
+#terminalOutput {
+  min-height:150px;
   white-space:pre-wrap;
-  overflow-wrap:anywhere;
-  background:#0b1019;
-  padding:14px;
-  border-radius:9px;
-  color:#a9c3ff;
-  min-height:120px;
+  font-family:monospace;
+  color:var(--success);
+  line-height:1.6;
 }
-footer {
-  padding:20px;
-  text-align:center;
-  color:var(--muted);
-  font-size:11px;
+
+#terminalInput {
+  font-family:monospace;
 }
+
+#errors {
+  background:#411e25;
+  color:#ffb4b4;
+  padding:12px;
+  margin:12px;
+  border-radius:8px;
+  display:none;
+  white-space:pre-wrap;
+}
+
+#mobileNav {
+  display:none;
+}
+
 @media(max-width:650px) {
-  .layout {display:block}
-  nav {
+  #app {display:block}
+
+  #sidebar {
     display:flex;
+    width:100%;
     overflow-x:auto;
+    padding:8px;
     border-right:0;
     border-bottom:1px solid var(--line);
-    padding:8px;
-    gap:5px;
+    position:sticky;
+    top:58px;
+    z-index:4;
   }
-  .nav-title {display:none}
-  .nav-btn {
+
+  .nav {
     width:auto;
-    white-space:nowrap;
-    margin:0;
+    flex-shrink:0;
+    margin:0 4px 0 0;
     padding:10px;
+    text-align:center;
   }
-  main {padding:17px}
+
+  #main {padding:17px 13px}
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">CX<span style="color:var(--accent)">.</span></div>
-  <div class="status">● LOCAL ENVIRONMENT</div>
-</header>
-
-<div class="layout">
-
-<nav>
-  <div class="nav-title">WORKSPACE</div>
-  <button class="nav-btn active" data-page="home">⌂ Home</button>
-  <button class="nav-btn" data-page="files">▤ Files</button>
-  <button class="nav-btn" data-page="notes">✎ Notes</button>
-
-  <div class="nav-title">SYSTEM</div>
-  <button class="nav-btn" data-page="terminal">⌘ Terminal</button>
-  <button class="nav-btn" data-page="monitor">◉ Monitor</button>
-  <button class="nav-btn" data-page="settings">⚙ Settings</button>
-</nav>
-
-<main>
-
-<section id="home" class="page">
-  <h1>Welcome to CX</h1>
-  <p>A persistent, user-owned computing environment.</p>
-
-  <div class="grid">
-    <div class="card">
-      <div class="label">Workspace files</div>
-      <div class="stat" id="fileCount">0</div>
-    </div>
-    <div class="card">
-      <div class="label">Directories</div>
-      <div class="stat" id="folderCount">0</div>
-    </div>
-    <div class="card">
-      <div class="label">Stored notes</div>
-      <div class="stat" id="noteCount">0</div>
-    </div>
-    <div class="card">
-      <div class="label">Journal records</div>
-      <div class="stat" id="journalCount">0</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Environment</h2>
-    <p><span style="color:var(--green)">●</span> Active</p>
-    <p class="small">Storage: Browser local storage</p>
-    <p class="small">Workspace identity: CX</p>
-    <p class="small">Version: 0.5</p>
-  </div>
-
-  <div class="card">
-    <h2>Workspace protection</h2>
-    <p>Your existing files, notes, settings and journal are retained in the browser's CX storage.</p>
-    <button class="primary" onclick="navigate('files')">Open workspace</button>
-  </div>
-</section>
-
-<section id="files" class="page hidden">
-  <h1>Files</h1>
-  <p>Browse and manage your workspace.</p>
-
-  <div class="toolbar">
-    <button class="primary" onclick="newFile()">＋ New file</button>
-    <button onclick="newFolder()">＋ New folder</button>
-    <button onclick="refreshFiles()">↻ Refresh</button>
-  </div>
-
-  <div class="card">
-    <div class="small" id="fileLocation">Location: /</div>
-    <div class="file-list" id="fileList" style="margin-top:13px"></div>
-  </div>
-
-  <div id="editor" class="card hidden">
-    <h2 id="editorTitle">File editor</h2>
-    <input id="editorName" placeholder="File path">
-    <textarea id="editorContent" spellcheck="false"></textarea>
-    <div class="toolbar">
-      <button class="primary" onclick="saveFile()">Save file</button>
-      <button onclick="closeEditor()">Close</button>
-    </div>
-    <div class="small" id="editorMessage"></div>
-  </div>
-</section>
-
-<section id="notes" class="page hidden">
-  <h1>Notes</h1>
-  <p>Personal workspace notes.</p>
-
-  <div class="card">
-    <input id="noteTitle" placeholder="Note title">
-    <br><br>
-    <textarea id="noteContent" placeholder="Write your note..."></textarea>
-    <div class="toolbar">
-      <button class="primary" onclick="addNote()">Save note</button>
-    </div>
-  </div>
-
-  <div id="notesList"></div>
-</section>
-
-<section id="terminal" class="page hidden">
-  <h1>Terminal</h1>
-  <p>Basic workspace command interface.</p>
-
-  <div class="card">
-    <div class="small">Available: help, ls, pwd, cat, touch, mkdir, rm, clear</div>
-    <br>
-    <input id="terminalInput" placeholder="Enter command..." autocomplete="off">
-    <div class="toolbar">
-      <button class="primary" onclick="runCommand()">Run command</button>
-      <button onclick="clearTerminal()">Clear</button>
-    </div>
-    <pre id="terminalOutput">CX Terminal v0.5
-Type help to see available commands.</pre>
-  </div>
-</section>
-
-<section id="monitor" class="page hidden">
-  <h1>System Monitor</h1>
-  <p>Local environment information.</p>
-
-  <div class="card">
-    <div class="label">Application</div>
-    <h2>CX Web v0.5</h2>
-    <p>Environment: Local browser</p>
-    <p>Storage engine: localStorage</p>
-    <p id="storageSize">Storage usage: calculating...</p>
-    <p id="browserInfo"></p>
-  </div>
-
-  <div class="card">
-    <h2>Capabilities</h2>
-    <p>✓ Persistent browser storage</p>
-    <p>✓ File and directory management</p>
-    <p>✓ Notes</p>
-    <p>✓ Workspace export and import</p>
-    <p>✗ Remote execution not connected</p>
-    <p>✗ Cross-device synchronization not connected</p>
-  </div>
-</section>
-
-<section id="settings" class="page hidden">
-  <h1>Settings</h1>
-  <p>Workspace preferences and data protection.</p>
-
-  <div class="card">
-    <h2>Appearance</h2>
-    <label class="small">Accent colour</label>
-    <br><br>
-    <input id="accentInput" type="color" value="#6d8cff" style="height:45px">
-    <br><br>
-    <button class="primary" onclick="saveAccent()">Save appearance</button>
-  </div>
-
-  <div class="card">
-    <h2>Workspace backup</h2>
-    <p>Export your workspace, including files, notes, settings and journal records.</p>
-    <div class="toolbar">
-      <button class="primary" onclick="exportWorkspace()">Export workspace</button>
-      <button onclick="document.getElementById('importFile').click()">Import workspace</button>
-      <input id="importFile" class="hidden" type="file" accept=".json,application/json" onchange="importWorkspace(event)">
-    </div>
-    <div id="backupMessage" class="small"></div>
-  </div>
-
-  <div class="card">
-    <h2>Journal information</h2>
-    <p id="journalInfo"></p>
-    <p class="small">CX v0.5 preserves the existing journal without rewriting or claiming to validate its cryptographic integrity.</p>
-  </div>
-
-  <div class="card">
-    <h2>Storage identity</h2>
-    <p>Storage key: <code>cx</code></p>
-    <p class="small">This version does not automatically reset your workspace.</p>
-  </div>
-</section>
-
-</main>
+<div id="topbar">
+  <div class="logo">CX<span>.</span> WEB</div>
+  <div id="status">Workspace ready</div>
 </div>
 
-<footer>CX Web v0.5 · Persistent local workspace</footer>
+<div id="errors"></div>
+
+<div id="app">
+
+  <aside id="sidebar">
+    <button class="nav active" data-page="home">⌂ Home</button>
+    <button class="nav" data-page="files">▤ Files</button>
+    <button class="nav" data-page="notes">▧ Notes</button>
+    <button class="nav" data-page="terminal">⌘ Terminal</button>
+    <button class="nav" data-page="monitor">◉ Monitor</button>
+    <button class="nav" data-page="diagnostics">⚙ Diagnostics</button>
+    <button class="nav" data-page="settings">☷ Settings</button>
+  </aside>
+
+  <main id="main"></main>
+
+</div>
 
 <script>
 "use strict";
 
-/* ==========================================
-   CX STORAGE
-========================================== */
+/* =====================================
+   CX WEB v0.6
+   Persistent local workspace
+===================================== */
 
 const STORAGE_KEY = "cx";
 
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+let data = {};
+let currentPage = "home";
+let selectedFile = null;
+let currentFolder = "/";
+let saveTimer = null;
+
+const main = document.getElementById("main");
+const statusElement = document.getElementById("status");
+const errorsElement = document.getElementById("errors");
+
+function showError(error) {
+  errorsElement.style.display = "block";
+  errorsElement.textContent =
+    "CX encountered an error:\n" +
+    (error && error.message ? error.message : String(error));
 }
+
+window.addEventListener("error", function(event) {
+  showError(event.error || event.message);
+});
+
+window.addEventListener("unhandledrejection", function(event) {
+  showError(event.reason);
+});
+
+/* =====================================
+   STORAGE
+===================================== */
 
 function loadData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+  const raw = localStorage.getItem(STORAGE_KEY);
 
-    if (!raw) {
-      return {
-        fs: {"/": {t:"d"}},
-        notes: [],
-        settings: {theme:"dark",accent:"#6d8cff"},
-        j: []
-      };
-    }
-
-    const data = JSON.parse(raw);
-
-    if (!data || typeof data !== "object") {
-      throw new Error("Invalid workspace data");
-    }
-
-    if (!data.fs || typeof data.fs !== "object") {
-      data.fs = {"/": {t:"d"}};
-    }
-
-    if (!data.fs["/"]) {
-      data.fs["/"] = {t:"d"};
-    }
-
-    if (!Array.isArray(data.notes)) data.notes = [];
-    if (!data.settings || typeof data.settings !== "object") {
-      data.settings = {theme:"dark",accent:"#6d8cff"};
-    }
-
-    if (!Array.isArray(data.j)) data.j = [];
-
-    return data;
-  } catch (error) {
-    console.error("CX storage loading error:", error);
-    return {
-      fs: {"/": {t:"d"}},
+  if (!raw) {
+    data = {
+      fs: {
+        "/": {t:"d"}
+      },
       notes: [],
-      settings: {theme:"dark",accent:"#6d8cff"},
-      j: []
+      j: [],
+      settings: {},
+      set: {}
     };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return;
+  }
+
+  const parsed = JSON.parse(raw);
+
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("Stored workspace has an invalid format.");
+  }
+
+  data = parsed;
+
+  if (!data.fs || typeof data.fs !== "object") {
+    data.fs = {"/":{t:"d"}};
+  }
+
+  if (!data.fs["/"]) {
+    data.fs["/"] = {t:"d"};
   }
 }
-
-let data = loadData();
 
 function persist() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    updateDashboard();
-    return true;
-  } catch (error) {
-    alert("Storage error: " + error.message);
-    return false;
-  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  statusElement.textContent = "Saved locally";
 }
 
-/* ==========================================
-   FILE SYSTEM COMPATIBILITY
-========================================== */
-
-function isDirectory(entry) {
-  return !!entry && typeof entry === "object" && entry.t === "d";
+function getFiles() {
+  return data.fs || {};
 }
 
-function isFile(entry) {
-  return typeof entry === "string" ||
-    (!!entry && typeof entry === "object" && entry.t !== "d");
-}
+/* =====================================
+   FILE CONTENT COMPATIBILITY
+===================================== */
 
 function readContent(entry) {
-  if (typeof entry === "string") return entry;
-  if (!entry || typeof entry !== "object") return "";
-  if (typeof entry.c === "string") return entry.c;
-  if (typeof entry.content === "string") return entry.content;
+  if (!entry || typeof entry !== "object") {
+    return "";
+  }
+
+  if (typeof entry.c === "string") {
+    return entry.c;
+  }
+
+  if (typeof entry.content === "string") {
+    return entry.content;
+  }
+
   return "";
 }
 
-function writeContent(path, content) {
-  const old = data.fs[path];
+function writeContent(entry, value) {
+  if (!entry || typeof entry !== "object") {
+    return;
+  }
 
-  if (typeof old === "string") {
-    data.fs[path] = content;
-  } else if (old && typeof old === "object") {
-    if (Object.prototype.hasOwnProperty.call(old, "c")) {
-      data.fs[path] = {...old, t:"f", c:content};
-    } else if (Object.prototype.hasOwnProperty.call(old, "content")) {
-      data.fs[path] = {...old, t:"f", content:content};
-    } else {
-      data.fs[path] = {...old, t:"f", c:content};
-    }
+  /*
+    Preserve the original file format.
+    Existing files using "c" remain "c".
+    Files using "content" remain "content".
+  */
+
+  if (Object.prototype.hasOwnProperty.call(entry, "c")) {
+    entry.c = value;
+  } else if (
+    Object.prototype.hasOwnProperty.call(entry, "content")
+  ) {
+    entry.content = value;
   } else {
-    data.fs[path] = {t:"f",c:content};
+    entry.c = value;
   }
-
-  return persist();
 }
 
-function normalizePath(path) {
-  path = String(path || "").trim();
+function getParent(path) {
+  if (path === "/") return null;
 
-  if (!path) return "/";
+  const parts = path.split("/");
+  parts.pop();
 
-  path = path.replace(/\\/g, "/");
+  return parts.join("/") || "/";
+}
 
-  if (!path.startsWith("/")) path = "/" + path;
+function getName(path) {
+  return path.split("/").filter(Boolean).pop() || "/";
+}
 
-  const parts = [];
+function getChildren(folder) {
+  const files = getFiles();
 
-  for (const part of path.split("/")) {
-    if (!part || part === ".") continue;
+  return Object.keys(files).filter(function(path) {
+    if (path === "/") return false;
 
-    if (part === "..") {
-      parts.pop();
-    } else {
-      parts.push(part);
+    return getParent(path) === folder;
+  });
+}
+
+/* =====================================
+   NAVIGATION
+===================================== */
+
+document.querySelectorAll(".nav").forEach(function(button) {
+  button.addEventListener("click", function() {
+    currentPage = button.dataset.page;
+
+    document.querySelectorAll(".nav").forEach(function(item) {
+      item.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    render();
+  });
+});
+
+function navigate(page) {
+  currentPage = page;
+
+  document.querySelectorAll(".nav").forEach(function(button) {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === page
+    );
+  });
+
+  render();
+}
+
+/* =====================================
+   HOME
+===================================== */
+
+function renderHome() {
+  const files = getFiles();
+
+  const fileCount = Object.keys(files).filter(function(path) {
+    return path !== "/" && files[path].t !== "d";
+  }).length;
+
+  const folderCount = Object.keys(files).filter(function(path) {
+    return path !== "/" && files[path].t === "d";
+  }).length;
+
+  const journalCount = Array.isArray(data.j) ? data.j.length : 0;
+
+  main.innerHTML = `
+    <h1>CX Workspace</h1>
+    <p>A persistent computing workspace.</p>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <span class="muted">Files</span>
+        <strong>${fileCount}</strong>
+      </div>
+
+      <div class="stat">
+        <span class="muted">Folders</span>
+        <strong>${folderCount}</strong>
+      </div>
+
+      <div class="stat">
+        <span class="muted">Journal records</span>
+        <strong>${journalCount}</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Workspace</h2>
+      <p>Your files and settings are stored in this browser.</p>
+
+      <div class="actions">
+        <button class="primary" onclick="navigate('files')">
+          Open Files
+        </button>
+
+        <button onclick="navigate('diagnostics')">
+          Run Diagnostics
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Current version</h2>
+      <p>CX Web v0.6</p>
+      <p class="muted">
+        Local workspace mode. Remote execution and cross-device
+        synchronization are not yet implemented.
+      </p>
+    </div>
+  `;
+}
+
+/* =====================================
+   FILES
+===================================== */
+
+function renderFiles() {
+  const children = getChildren(currentFolder);
+
+  let html = `
+    <div class="row">
+      <div>
+        <h1>Files</h1>
+        <p>Location: ${escapeHTML(currentFolder)}</p>
+      </div>
+
+      <div class="actions">
+        <button onclick="createFile()">+ File</button>
+        <button onclick="createFolder()">+ Folder</button>
+      </div>
+    </div>
+
+    <div class="card">
+  `;
+
+  if (currentFolder !== "/") {
+    html += `
+      <div class="file-row" onclick="goParent()">
+        <span class="file-icon">↩</span>
+        <span class="file-name">.. Back</span>
+      </div>
+    `;
+  }
+
+  if (children.length === 0) {
+    html += `<p>This folder is empty.</p>`;
+  }
+
+  children.forEach(function(path) {
+    const entry = getFiles()[path];
+    const isFolder = entry.t === "d";
+
+    html += `
+      <div class="file-row"
+           onclick="openPath('${escapeJS(path)}')">
+
+        <span class="file-icon">
+          ${isFolder ? "📁" : "📄"}
+        </span>
+
+        <span class="file-name">
+          ${escapeHTML(getName(path))}
+        </span>
+
+        <span class="muted">
+          ${isFolder ? "Folder" : "File"}
+        </span>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+
+  if (selectedFile && getFiles()[selectedFile]) {
+    const entry = getFiles()[selectedFile];
+    const content = readContent(entry);
+
+    html += `
+      <div class="card">
+        <div class="row">
+          <div>
+            <h2>${escapeHTML(getName(selectedFile))}</h2>
+            <div class="muted">${escapeHTML(selectedFile)}</div>
+          </div>
+
+          <div class="actions">
+            <button onclick="saveCurrentFile()" class="primary">
+              Save
+            </button>
+
+            <button onclick="renameCurrentFile()">
+              Rename
+            </button>
+
+            <button onclick="deleteCurrentFile()">
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <textarea id="editor" spellcheck="false"></textarea>
+
+        <div id="editorStatus">
+          Stored content length: ${content.length} characters
+        </div>
+      </div>
+    `;
+  }
+
+  main.innerHTML = html;
+
+  /*
+    Set textarea content after rendering.
+    This avoids HTML parsing problems with file text.
+  */
+
+  if (selectedFile && getFiles()[selectedFile]) {
+    const editor = document.getElementById("editor");
+
+    if (editor) {
+      editor.value = readContent(getFiles()[selectedFile]);
     }
   }
-
-  return "/" + parts.join("/");
 }
 
-function parentPath(path) {
-  const normalized = normalizePath(path);
-  if (normalized === "/") return null;
+function openPath(path) {
+  const entry = getFiles()[path];
 
-  const index = normalized.lastIndexOf("/");
-  return index === 0 ? "/" : normalized.slice(0,index);
-}
-
-function exists(path) {
-  return Object.prototype.hasOwnProperty.call(data.fs, normalizePath(path));
-}
-
-function makeFile(path, content="") {
-  path = normalizePath(path);
-
-  if (path === "/" || exists(path)) return false;
-
-  const parent = parentPath(path);
-
-  if (!exists(parent) || !isDirectory(data.fs[parent])) {
-    alert("Parent directory does not exist.");
-    return false;
+  if (!entry) {
+    alert("This file or folder no longer exists.");
+    return;
   }
 
-  data.fs[path] = {t:"f",c:content};
-  return persist();
+  if (entry.t === "d") {
+    currentFolder = path;
+    selectedFile = null;
+    renderFiles();
+    return;
+  }
+
+  selectedFile = path;
+  renderFiles();
 }
 
-function makeDirectory(path) {
-  path = normalizePath(path);
+function goParent() {
+  currentFolder = getParent(currentFolder) || "/";
+  selectedFile = null;
+  renderFiles();
+}
 
-  if (path === "/" || exists(path)) return false;
+function saveCurrentFile() {
+  if (!selectedFile) return;
 
-  const parent = parentPath(path);
+  const entry = getFiles()[selectedFile];
+  const editor = document.getElementById("editor");
 
-  if (!exists(parent) || !isDirectory(data.fs[parent])) {
-    alert("Parent directory does not exist.");
-    return false;
+  if (!entry || !editor) {
+    alert("Unable to access the selected file.");
+    return;
+  }
+
+  writeContent(entry, editor.value);
+
+  try {
+    persist();
+
+    const message = document.getElementById("editorStatus");
+
+    if (message) {
+      message.textContent =
+        "Saved successfully. " +
+        editor.value.length +
+        " characters.";
+    }
+  } catch (error) {
+    showError(error);
+  }
+}
+
+function createFile() {
+  const name = prompt("Enter file name:");
+
+  if (!name || !name.trim()) return;
+
+  const path =
+    currentFolder === "/"
+      ? "/" + name
+      : currentFolder + "/" + name;
+
+  if (getFiles()[path]) {
+    alert("A file or folder with that name already exists.");
+    return;
+  }
+
+  data.fs[path] = {
+    t:"f",
+    c:""
+  };
+
+  persist();
+
+  selectedFile = path;
+  renderFiles();
+}
+
+function createFolder() {
+  const name = prompt("Enter folder name:");
+
+  if (!name || !name.trim()) return;
+
+  const path =
+    currentFolder === "/"
+      ? "/" + name
+      : currentFolder + "/" + name;
+
+  if (getFiles()[path]) {
+    alert("A file or folder with that name already exists.");
+    return;
   }
 
   data.fs[path] = {t:"d"};
-  return persist();
+
+  persist();
+  renderFiles();
 }
 
-function deletePath(path) {
-  path = normalizePath(path);
+function deleteCurrentFile() {
+  if (!selectedFile) return;
 
-  if (path === "/") {
-    alert("The root directory cannot be deleted.");
-    return false;
-  }
-
-  if (!exists(path)) return false;
-
-  const children = Object.keys(data.fs).filter(
-    item => item !== path && item.startsWith(path + "/")
+  const confirmed = confirm(
+    "Delete " + selectedFile + "?"
   );
 
-  if (children.length) {
-    alert("Directory is not empty.");
-    return false;
-  }
+  if (!confirmed) return;
 
-  delete data.fs[path];
-  return persist();
+  delete data.fs[selectedFile];
+
+  selectedFile = null;
+
+  persist();
+  renderFiles();
 }
 
-/* ==========================================
-   NAVIGATION
-========================================== */
+function renameCurrentFile() {
+  if (!selectedFile) return;
 
-function navigate(page) {
-  document.querySelectorAll(".page").forEach(
-    section => section.classList.add("hidden")
-  );
+  const oldPath = selectedFile;
+  const oldName = getName(oldPath);
 
-  document.getElementById(page).classList.remove("hidden");
+  const newName = prompt("New file name:", oldName);
 
-  document.querySelectorAll(".nav-btn").forEach(button => {
-    button.classList.toggle("active",button.dataset.page === page);
-  });
+  if (!newName || !newName.trim()) return;
 
-  if (page === "files") refreshFiles();
-  if (page === "notes") renderNotes();
-  if (page === "monitor") updateMonitor();
-  if (page === "settings") updateSettings();
-}
+  const parent = getParent(oldPath);
 
-document.querySelectorAll(".nav-btn").forEach(button => {
-  button.addEventListener("click", () => navigate(button.dataset.page));
-});
+  const newPath =
+    parent === "/"
+      ? "/" + newName
+      : parent + "/" + newName;
 
-/* ==========================================
-   DASHBOARD
-========================================== */
-
-function updateDashboard() {
-  let files = 0;
-  let folders = 0;
-
-  for (const [path,entry] of Object.entries(data.fs)) {
-    if (isDirectory(entry)) {
-      if (path !== "/") folders++;
-    } else if (isFile(entry)) {
-      files++;
-    }
-  }
-
-  document.getElementById("fileCount").textContent = files;
-  document.getElementById("folderCount").textContent = folders;
-  document.getElementById("noteCount").textContent = data.notes.length;
-  document.getElementById("journalCount").textContent = data.j.length;
-}
-
-/* ==========================================
-   FILE BROWSER
-========================================== */
-
-let currentDirectory = "/";
-let openedFile = null;
-
-function refreshFiles() {
-  const list = document.getElementById("fileList");
-  list.innerHTML = "";
-
-  document.getElementById("fileLocation").textContent =
-    "Location: " + currentDirectory;
-
-  const entries = Object.keys(data.fs)
-    .filter(path => path !== "/" && parentPath(path) === currentDirectory)
-    .sort((a,b) => {
-      const ad = isDirectory(data.fs[a]);
-      const bd = isDirectory(data.fs[b]);
-
-      if (ad && !bd) return -1;
-      if (!ad && bd) return 1;
-
-      return a.localeCompare(b);
-    });
-
-  if (currentDirectory !== "/") {
-    const back = document.createElement("button");
-    back.textContent = "↑ Parent directory";
-    back.style.marginBottom = "10px";
-    back.onclick = () => {
-      currentDirectory = parentPath(currentDirectory);
-      refreshFiles();
-    };
-    list.appendChild(back);
-  }
-
-  if (!entries.length) {
-    const empty = document.createElement("p");
-    empty.textContent = "This directory is empty.";
-    list.appendChild(empty);
-  }
-
-  entries.forEach(path => {
-    const entry = data.fs[path];
-    const directory = isDirectory(entry);
-
-    const row = document.createElement("div");
-    row.className = "file-row";
-
-    const left = document.createElement("div");
-    left.className = "file-name";
-
-    const name = document.createElement("div");
-    name.textContent = (directory ? "📁 " : "📄 ") +
-      path.slice(path.lastIndexOf("/") + 1);
-
-    const type = document.createElement("div");
-    type.className = "file-type";
-    type.textContent = directory ? "Directory" : "File";
-
-    left.append(name,type);
-
-    const actions = document.createElement("div");
-    actions.style.display = "flex";
-    actions.style.gap = "5px";
-
-    const open = document.createElement("button");
-    open.textContent = directory ? "Open" : "Edit";
-    open.onclick = () => {
-      if (directory) {
-        currentDirectory = path;
-        refreshFiles();
-      } else {
-        openFile(path);
-      }
-    };
-
-    const remove = document.createElement("button");
-    remove.textContent = "×";
-    remove.className = "danger";
-    remove.onclick = () => {
-      if (confirm("Delete " + path + "?")) {
-        deletePath(path);
-        refreshFiles();
-      }
-    };
-
-    actions.append(open,remove);
-    row.append(left,actions);
-    list.appendChild(row);
-  });
-}
-
-function newFile() {
-  const name = prompt("Enter file name:");
-  if (!name) return;
-
-  const path = normalizePath(
-    currentDirectory === "/" ? "/" + name : currentDirectory + "/" + name
-  );
-
-  if (makeFile(path,"")) {
-    openFile(path);
-    refreshFiles();
-  } else {
-    alert("Could not create file. Check the name and location.");
-  }
-}
-
-function newFolder() {
-  const name = prompt("Enter folder name:");
-  if (!name) return;
-
-  const path = normalizePath(
-    currentDirectory === "/" ? "/" + name : currentDirectory + "/" + name
-  );
-
-  if (makeDirectory(path)) {
-    refreshFiles();
-  } else {
-    alert("Could not create directory.");
-  }
-}
-
-function openFile(path) {
-  if (!exists(path) || isDirectory(data.fs[path])) return;
-
-  openedFile = path;
-
-  document.getElementById("editor").classList.remove("hidden");
-  document.getElementById("editorTitle").textContent = "Editing file";
-  document.getElementById("editorName").value = path;
-  document.getElementById("editorContent").value =
-    readContent(data.fs[path]);
-
-  document.getElementById("editorMessage").textContent =
-    "Loaded from CX workspace.";
-}
-
-function saveFile() {
-  if (!openedFile) return;
-
-  const newPath = normalizePath(
-    document.getElementById("editorName").value
-  );
-
-  const content = document.getElementById("editorContent").value;
-
-  if (!newPath || newPath === "/") {
-    alert("Invalid file path.");
+  if (getFiles()[newPath]) {
+    alert("That name already exists.");
     return;
   }
 
-  if (newPath !== openedFile && exists(newPath)) {
-    alert("That path already exists.");
-    return;
-  }
+  data.fs[newPath] = data.fs[oldPath];
 
-  if (newPath !== openedFile) {
-    const parent = parentPath(newPath);
+  delete data.fs[oldPath];
 
-    if (!exists(parent) || !isDirectory(data.fs[parent])) {
-      alert("The destination directory does not exist.");
-      return;
-    }
+  selectedFile = newPath;
 
-    data.fs[newPath] = clone(data.fs[openedFile]);
-    delete data.fs[openedFile];
-    openedFile = newPath;
-  }
-
-  if (writeContent(openedFile,content)) {
-    document.getElementById("editorMessage").textContent =
-      "Saved successfully.";
-    refreshFiles();
-  }
+  persist();
+  renderFiles();
 }
 
-function closeEditor() {
-  document.getElementById("editor").classList.add("hidden");
-  openedFile = null;
-}
-
-/* ==========================================
+/* =====================================
    NOTES
-========================================== */
-
-function addNote() {
-  const title = document.getElementById("noteTitle").value.trim();
-  const content = document.getElementById("noteContent").value;
-
-  if (!title || !content.trim()) {
-    alert("Enter a title and note content.");
-    return;
-  }
-
-  data.notes.push({
-    id: Date.now(),
-    title,
-    content,
-    created: new Date().toISOString()
-  });
-
-  if (persist()) {
-    document.getElementById("noteTitle").value = "";
-    document.getElementById("noteContent").value = "";
-    renderNotes();
-  }
-}
+===================================== */
 
 function renderNotes() {
-  const container = document.getElementById("notesList");
-  container.innerHTML = "";
-
-  if (!data.notes.length) {
-    container.textContent = "No notes saved.";
-    return;
+  if (!Array.isArray(data.notes)) {
+    data.notes = [];
   }
 
-  data.notes.forEach((note,index) => {
-    const card = document.createElement("div");
-    card.className = "card";
+  let html = `
+    <h1>Notes</h1>
+    <p>Workspace notes.</p>
 
-    const title = document.createElement("h2");
-    title.textContent = note.title || "Untitled";
+    <div class="card">
+      <textarea id="newNote"
+        placeholder="Write a note..."
+        style="min-height:120px"></textarea>
 
-    const body = document.createElement("p");
-    body.style.whiteSpace = "pre-wrap";
-    body.textContent = note.content || "";
+      <br><br>
 
-    const remove = document.createElement("button");
-    remove.className = "danger";
-    remove.textContent = "Delete note";
+      <button class="primary" onclick="addNote()">
+        Save Note
+      </button>
+    </div>
+  `;
 
-    remove.onclick = () => {
-      if (confirm("Delete this note?")) {
-        data.notes.splice(index,1);
-        persist();
-        renderNotes();
-      }
-    };
+  data.notes.forEach(function(note, index) {
+    const text =
+      typeof note === "string"
+        ? note
+        : (note.text || "");
 
-    card.append(title,body,remove);
-    container.appendChild(card);
+    html += `
+      <div class="card">
+        <p>${escapeHTML(text)}</p>
+        <button onclick="deleteNote(${index})">
+          Delete
+        </button>
+      </div>
+    `;
+  });
+
+  main.innerHTML = html;
+}
+
+function addNote() {
+  const input = document.getElementById("newNote");
+
+  if (!input || !input.value.trim()) return;
+
+  data.notes.push({
+    text:input.value,
+    createdAt:new Date().toISOString()
+  });
+
+  persist();
+  renderNotes();
+}
+
+function deleteNote(index) {
+  if (!confirm("Delete this note?")) return;
+
+  data.notes.splice(index, 1);
+
+  persist();
+  renderNotes();
+}
+
+/* =====================================
+   TERMINAL
+===================================== */
+
+function renderTerminal() {
+  main.innerHTML = `
+    <h1>Terminal</h1>
+    <p>Local workspace command interface.</p>
+
+    <div class="card">
+      <div id="terminalOutput">
+CX Web Terminal v0.6
+Type help to see available commands.
+      </div>
+
+      <input id="terminalInput"
+        placeholder="Enter command..."
+        autocomplete="off">
+
+      <br><br>
+
+      <button class="primary" onclick="runCommand()">
+        Run
+      </button>
+    </div>
+  `;
+
+  const input = document.getElementById("terminalInput");
+
+  input.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+      runCommand();
+    }
   });
 }
 
-/* ==========================================
-   TERMINAL
-========================================== */
+function terminalPrint(text) {
+  const output = document.getElementById("terminalOutput");
 
-function output(message) {
-  const terminal = document.getElementById("terminalOutput");
-  terminal.textContent += "\n" + message;
-  terminal.scrollTop = terminal.scrollHeight;
-}
-
-function clearTerminal() {
-  document.getElementById("terminalOutput").textContent = "";
+  output.textContent += "\n" + text;
+  output.scrollTop = output.scrollHeight;
 }
 
 function runCommand() {
   const input = document.getElementById("terminalInput");
-  const commandLine = input.value.trim();
 
-  if (!commandLine) return;
+  if (!input) return;
 
-  output("> " + commandLine);
+  const command = input.value.trim();
   input.value = "";
 
-  const parts = commandLine.match(/"[^"]*"|'[^']*'|\S+/g) || [];
-  const command = parts[0].toLowerCase();
-  const argument = parts.slice(1).join(" ").replace(/^["']|["']$/g,"");
+  if (!command) return;
 
-  switch(command) {
-    case "help":
-      output("Available commands:");
-      output("ls - list files");
-      output("pwd - show current directory");
-      output("cat <path> - read a file");
-      output("touch <path> - create a file");
-      output("mkdir <path> - create a directory");
-      output("rm <path> - delete an empty file or directory");
-      output("clear - clear terminal");
-      break;
+  terminalPrint("> " + command);
 
-    case "pwd":
-      output(currentDirectory);
-      break;
+  const parts = command.split(" ");
+  const action = parts[0].toLowerCase();
 
-    case "ls":
-      Object.keys(data.fs)
-        .filter(path => path !== "/" && parentPath(path) === currentDirectory)
-        .forEach(path => output(
-          (isDirectory(data.fs[path]) ? "[DIR] " : "[FILE] ") +
-          path.slice(path.lastIndexOf("/") + 1)
-        ));
-      break;
+  if (action === "help") {
+    terminalPrint(
+      "Available commands:\n" +
+      "help - show commands\n" +
+      "ls - list files\n" +
+      "pwd - show current location\n" +
+      "clear - clear terminal\n" +
+      "version - show CX version\n" +
+      "files - count workspace files\n" +
+      "journal - count journal entries"
+    );
+  }
 
-    case "cat": {
-      if (!argument) {
-        output("Usage: cat <path>");
-        break;
-      }
+  else if (action === "ls") {
+    terminalPrint(getChildren(currentFolder).join("\n") || "Empty");
+  }
 
-      const path = normalizePath(
-        argument.startsWith("/") ? argument :
-        currentDirectory === "/" ? "/" + argument :
-        currentDirectory + "/" + argument
-      );
+  else if (action === "pwd") {
+    terminalPrint(currentFolder);
+  }
 
-      if (!exists(path)) {
-        output("File not found.");
-      } else if (isDirectory(data.fs[path])) {
-        output("Cannot read a directory.");
-      } else {
-        output(readContent(data.fs[path]));
-      }
-      break;
-    }
+  else if (action === "clear") {
+    document.getElementById("terminalOutput").textContent = "";
+  }
 
-    case "touch": {
-      if (!argument) {
-        output("Usage: touch <path>");
-        break;
-      }
+  else if (action === "version") {
+    terminalPrint("CX Web v0.6");
+  }
 
-      const path = normalizePath(
-        argument.startsWith("/") ? argument :
-        currentDirectory === "/" ? "/" + argument :
-        currentDirectory + "/" + argument
-      );
+  else if (action === "files") {
+    const count = Object.keys(getFiles()).filter(function(path) {
+      return path !== "/" && getFiles()[path].t !== "d";
+    }).length;
 
-      output(makeFile(path,"") ? "File created." : "Could not create file.");
-      break;
-    }
+    terminalPrint("Files: " + count);
+  }
 
-    case "mkdir": {
-      if (!argument) {
-        output("Usage: mkdir <path>");
-        break;
-      }
+  else if (action === "journal") {
+    terminalPrint(
+      "Journal records: " +
+      (Array.isArray(data.j) ? data.j.length : 0)
+    );
+  }
 
-      const path = normalizePath(
-        argument.startsWith("/") ? argument :
-        currentDirectory === "/" ? "/" + argument :
-        currentDirectory + "/" + argument
-      );
-
-      output(makeDirectory(path) ? "Directory created." : "Could not create directory.");
-      break;
-    }
-
-    case "rm": {
-      if (!argument) {
-        output("Usage: rm <path>");
-        break;
-      }
-
-      const path = normalizePath(
-        argument.startsWith("/") ? argument :
-        currentDirectory === "/" ? "/" + argument :
-        currentDirectory + "/" + argument
-      );
-
-      output(deletePath(path) ? "Deleted." : "Could not delete.");
-      break;
-    }
-
-    case "clear":
-      clearTerminal();
-      break;
-
-    default:
-      output("Unknown command. Type help.");
+  else {
+    terminalPrint("Unknown command. Type help.");
   }
 }
 
-document.getElementById("terminalInput").addEventListener("keydown",event => {
-  if (event.key === "Enter") runCommand();
-});
+/* =====================================
+   MONITOR
+===================================== */
 
-/* ==========================================
+function renderMonitor() {
+  const files = Object.keys(getFiles()).filter(function(path) {
+    return path !== "/" && getFiles()[path].t !== "d";
+  });
+
+  let totalCharacters = 0;
+
+  files.forEach(function(path) {
+    totalCharacters += readContent(getFiles()[path]).length;
+  });
+
+  const storageSize =
+    new Blob([localStorage.getItem(STORAGE_KEY) || ""]).size;
+
+  main.innerHTML = `
+    <h1>Monitor</h1>
+    <p>Local workspace information.</p>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <span class="muted">Files</span>
+        <strong>${files.length}</strong>
+      </div>
+
+      <div class="stat">
+        <span class="muted">Characters</span>
+        <strong>${totalCharacters}</strong>
+      </div>
+
+      <div class="stat">
+        <span class="muted">Journal entries</span>
+        <strong>${Array.isArray(data.j) ? data.j.length : 0}</strong>
+      </div>
+
+      <div class="stat">
+        <span class="muted">Storage size</span>
+        <strong>${formatBytes(storageSize)}</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Runtime</h2>
+      <p>Browser: ${escapeHTML(navigator.userAgent)}</p>
+      <p>Storage: localStorage</p>
+      <p>Execution: local browser</p>
+      <p>Network compute: not connected</p>
+    </div>
+  `;
+}
+
+/* =====================================
+   DIAGNOSTICS
+===================================== */
+
+function renderDiagnostics() {
+  const files = getFiles();
+
+  let rows = "";
+
+  Object.keys(files).forEach(function(path) {
+    const entry = files[path];
+
+    if (entry.t === "d") return;
+
+    const content = readContent(entry);
+
+    rows += `
+      <div class="card">
+        <strong>${escapeHTML(path)}</strong>
+
+        <p>
+          Type: ${escapeHTML(entry.t || "unknown")}<br>
+          Content length: ${content.length}<br>
+          Content field:
+          ${
+            Object.prototype.hasOwnProperty.call(entry, "c")
+              ? "c"
+              : Object.prototype.hasOwnProperty.call(entry, "content")
+                ? "content"
+                : "not found"
+          }
+        </p>
+
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHTML(content)}</pre>
+
+        <button onclick="openPath('${escapeJS(path)}')">
+          Open File
+        </button>
+      </div>
+    `;
+  });
+
+  const raw = localStorage.getItem(STORAGE_KEY) || "";
+
+  main.innerHTML = `
+    <h1>Diagnostics</h1>
+    <p>Inspecting the actual stored workspace data.</p>
+
+    <div class="card">
+      <h2>Storage status</h2>
+      <p>Storage key: ${STORAGE_KEY}</p>
+      <p>Stored characters: ${raw.length}</p>
+      <p>Filesystem entries: ${Object.keys(files).length}</p>
+      <p>Journal records: ${
+        Array.isArray(data.j) ? data.j.length : "Invalid"
+      }</p>
+      <p>Legacy settings object: ${
+        data.set ? "Present" : "Missing"
+      }</p>
+      <p>Current settings object: ${
+        data.settings ? "Present" : "Missing"
+      }</p>
+    </div>
+
+    <h2>File inspection</h2>
+    ${rows || "<p>No files found.</p>"}
+
+    <div class="card">
+      <h2>Workspace export</h2>
+      <button class="primary" onclick="exportWorkspace()">
+        Export workspace JSON
+      </button>
+    </div>
+  `;
+}
+
+/* =====================================
    SETTINGS
-========================================== */
+===================================== */
 
-function saveAccent() {
-  const color = document.getElementById("accentInput").value;
+function renderSettings() {
+  const settings = data.settings || {};
 
-  data.settings.accent = color;
-  document.documentElement.style.setProperty("--accent",color);
+  main.innerHTML = `
+    <h1>Settings</h1>
+    <p>Workspace preferences.</p>
+
+    <div class="card">
+      <h2>Appearance</h2>
+
+      <label class="muted">Theme</label>
+
+      <select id="themeSelect"
+        style="width:100%;padding:12px;background:var(--bg);
+        color:var(--text);border:1px solid var(--line);
+        border-radius:8px;margin-top:8px">
+
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="auto">Auto</option>
+      </select>
+
+      <br><br>
+
+      <button class="primary" onclick="saveSettings()">
+        Save Settings
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Workspace data</h2>
+
+      <button onclick="exportWorkspace()">
+        Export Workspace
+      </button>
+
+      <br><br>
+
+      <input type="file" id="importFile" accept=".json,application/json">
+
+      <br><br>
+
+      <button onclick="importWorkspace()">
+        Import Workspace
+      </button>
+    </div>
+  `;
+
+  document.getElementById("themeSelect").value =
+    settings.theme || "dark";
+}
+
+function saveSettings() {
+  const theme = document.getElementById("themeSelect").value;
+
+  if (!data.settings || typeof data.settings !== "object") {
+    data.settings = {};
+  }
+
+  data.settings.theme = theme;
+
+  /*
+    Do not delete or replace legacy "set" settings.
+  */
 
   persist();
+
+  alert("Settings saved.");
 }
 
-function updateSettings() {
-  document.getElementById("accentInput").value =
-    data.settings.accent || "#6d8cff";
-
-  document.getElementById("journalInfo").textContent =
-    "Journal records currently stored: " + data.j.length;
-}
-
-/* ==========================================
-   MONITOR
-========================================== */
-
-function updateMonitor() {
-  let size = 0;
-
-  try {
-    size = new Blob([localStorage.getItem(STORAGE_KEY) || ""]).size;
-  } catch(error) {}
-
-  document.getElementById("storageSize").textContent =
-    "Workspace data size: " + (size / 1024).toFixed(2) + " KB";
-
-  document.getElementById("browserInfo").textContent =
-    "Browser: " + navigator.userAgent;
-}
-
-/* ==========================================
-   EXPORT AND IMPORT
-========================================== */
+/* =====================================
+   EXPORT / IMPORT
+===================================== */
 
 function exportWorkspace() {
-  const backup = JSON.stringify(data,null,2);
-  const blob = new Blob([backup],{type:"application/json"});
-  const url = URL.createObjectURL(blob);
+  const json = JSON.stringify(data, null, 2);
 
+  const blob = new Blob([json], {
+    type:"application/json"
+  });
+
+  const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
+
   link.href = url;
   link.download = "cx-workspace-backup.json";
   link.click();
 
   URL.revokeObjectURL(url);
-
-  document.getElementById("backupMessage").textContent =
-    "Workspace export prepared.";
 }
 
-function importWorkspace(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+function importWorkspace() {
+  const input = document.getElementById("importFile");
+
+  if (!input || !input.files || !input.files[0]) {
+    alert("Select a JSON backup first.");
+    return;
+  }
+
+  if (!confirm(
+    "Importing replaces the current workspace. Continue?"
+  )) {
+    return;
+  }
 
   const reader = new FileReader();
 
-  reader.onload = () => {
+  reader.onload = function() {
     try {
       const imported = JSON.parse(reader.result);
 
       if (!imported || typeof imported !== "object" ||
-          !imported.fs || typeof imported.fs !== "object" ||
-          !Array.isArray(imported.notes)) {
+          !imported.fs) {
         throw new Error("Invalid CX workspace backup.");
       }
 
-      if (!confirm(
-        "Import this workspace? Your current local workspace will be replaced."
-      )) return;
-
-      if (!imported.fs["/"]) imported.fs["/"] = {t:"d"};
-      if (!imported.settings) {
-        imported.settings = {theme:"dark",accent:"#6d8cff"};
-      }
-      if (!Array.isArray(imported.j)) imported.j = [];
-
-      localStorage.setItem(STORAGE_KEY,JSON.stringify(imported));
-
       data = imported;
-      currentDirectory = "/";
-      openedFile = null;
 
-      document.documentElement.style.setProperty(
-        "--accent",data.settings.accent || "#6d8cff"
-      );
+      persist();
 
-      updateDashboard();
-      refreshFiles();
-      updateSettings();
+      selectedFile = null;
+      currentFolder = "/";
 
-      document.getElementById("backupMessage").textContent =
-        "Workspace imported successfully.";
+      alert("Workspace imported.");
+      render();
 
-      alert("CX workspace imported.");
-      navigate("home");
-
-    } catch(error) {
+    } catch (error) {
       alert("Import failed: " + error.message);
-    } finally {
-      event.target.value = "";
     }
   };
 
-  reader.readAsText(file);
+  reader.readAsText(input.files[0]);
 }
 
-/* ==========================================
-   STARTUP
-========================================== */
+/* =====================================
+   HELPERS
+===================================== */
 
-document.documentElement.style.setProperty(
-  "--accent",data.settings.accent || "#6d8cff"
-);
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, function(char) {
+    return {
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    }[char];
+  });
+}
 
-updateDashboard();
-refreshFiles();
+function escapeJS(value) {
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, "\\n");
+}
 
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + " B";
+
+  if (bytes < 1024 * 1024) {
+    return (bytes / 1024).toFixed(2) + " KB";
+  }
+
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+/* =====================================
+   PAGE RENDERER
+===================================== */
+
+function render() {
+  try {
+    if (currentPage === "home") renderHome();
+    else if (currentPage === "files") renderFiles();
+    else if (currentPage === "notes") renderNotes();
+    else if (currentPage === "terminal") renderTerminal();
+    else if (currentPage === "monitor") renderMonitor();
+    else if (currentPage === "diagnostics") renderDiagnostics();
+    else if (currentPage === "settings") renderSettings();
+    else renderHome();
+
+  } catch (error) {
+    showError(error);
+  }
+}
+
+/* =====================================
+   START
+===================================== */
+
+try {
+  loadData();
+  render();
+
+  statusElement.textContent = "Workspace ready";
+
+} catch (error) {
+  showError(error);
+  main.innerHTML = `
+    <h1>CX Workspace Error</h1>
+    <p>The workspace could not be loaded.</p>
+    <p>Do not clear browser storage.</p>
+  `;
+}
 </script>
+
 </body>
 </html>
