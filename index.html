@@ -1,102 +1,1583 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CX Web v0.1</title>
+<meta name="theme-color" content="#f4f5f7">
+<title>CX Web v0.2</title>
+
 <style>
-:root{--bg:#f4f5f7;--fg:#15171a;--pn:#fff;--ln:#d9dce1;--ac:#3b6ef5}
-@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#0f1114;--fg:#e8eaed;--pn:#1a1d22;--ln:#2d3239}}
-:root[data-t=dark]{--bg:#0f1114;--fg:#e8eaed;--pn:#1a1d22;--ln:#2d3239}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font:14px system-ui,sans-serif}
-[hidden],.off{display:none!important}
-button,input,textarea,select{font:inherit;color:inherit;background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:5px 9px}
-button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-#bar{position:fixed;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top) + 4px) 8px 4px;display:flex;gap:6px;align-items:center;background:var(--pn);border-bottom:1px solid var(--ln);z-index:9999}
-#clock{margin-left:auto}
-#desk{position:fixed;inset:48px 0 60px 0}
-.win{position:absolute;display:flex;flex-direction:column;background:var(--pn);border:1px solid var(--ln);border-radius:10px;box-shadow:0 6px 24px #0004;overflow:hidden;min-width:220px;min-height:140px}
-.tb{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--ln);cursor:move;touch-action:none;user-select:none}
-.tb b{flex:1}
-.bd{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:6px}
-.rs{position:absolute;right:0;bottom:0;width:24px;height:24px;cursor:nwse-resize;touch-action:none}
-#dock{position:fixed;bottom:0;left:0;right:0;padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);display:flex;gap:8px;justify-content:center;background:var(--pn);border-top:1px solid var(--ln)}
-#lau{position:fixed;inset:0;background:#000a;z-index:10000;display:none;padding:56px 14px}
-#lau>div{max-width:420px;margin:auto;background:var(--pn);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
-pre{margin:0;white-space:pre-wrap;word-break:break-all}
-textarea{flex:1;resize:none;width:100%;min-height:120px}
-.row{padding:7px;border-radius:6px;cursor:pointer}.row.s{background:var(--ac);color:#fff}
-.dim{opacity:.6}
-</style></head><body>
-<div id="bar"></div><div id="desk"></div><div id="dock"></div><div id="lau"></div>
+:root {
+  --bg:#f4f5f7;
+  --fg:#15171a;
+  --pn:#fff;
+  --ln:#d9dce1;
+  --ac:#3b6ef5;
+}
+
+@media(prefers-color-scheme:dark) {
+  :root:not([data-t=light]) {
+    --bg:#0f1114;
+    --fg:#e8eaed;
+    --pn:#1a1d22;
+    --ln:#2d3239;
+  }
+}
+
+:root[data-t=dark] {
+  --bg:#0f1114;
+  --fg:#e8eaed;
+  --pn:#1a1d22;
+  --ln:#2d3239;
+}
+
+* {
+  box-sizing:border-box;
+}
+
+html,body {
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--fg);
+  font:14px system-ui,sans-serif;
+}
+
+[hidden],.off {
+  display:none!important;
+}
+
+button,input,textarea,select {
+  font:inherit;
+  color:inherit;
+  background:var(--pn);
+  border:1px solid var(--ln);
+  border-radius:7px;
+  padding:8px 10px;
+  max-width:100%;
+}
+
+button {
+  cursor:pointer;
+  touch-action:manipulation;
+  position:relative;
+  z-index:1;
+}
+
+button:active {
+  opacity:.75;
+}
+
+button.on {
+  background:var(--ac);
+  color:white;
+  border-color:var(--ac);
+}
+
+button:disabled {
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+#bar {
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  padding:calc(env(safe-area-inset-top) + 5px) 8px 5px;
+  display:flex;
+  gap:6px;
+  align-items:center;
+  background:var(--pn);
+  border-bottom:1px solid var(--ln);
+  z-index:9999;
+}
+
+#clock {
+  margin-left:auto;
+  white-space:nowrap;
+}
+
+#desk {
+  position:fixed;
+  inset:48px 0 60px;
+  overflow:hidden;
+}
+
+.win {
+  position:absolute;
+  display:flex;
+  flex-direction:column;
+  background:var(--pn);
+  border:1px solid var(--ln);
+  border-radius:10px;
+  box-shadow:0 6px 24px #0004;
+  overflow:hidden;
+  min-width:220px;
+  min-height:140px;
+}
+
+.tb {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 8px;
+  border-bottom:1px solid var(--ln);
+  cursor:move;
+  touch-action:none;
+  user-select:none;
+}
+
+.tb b {
+  flex:1;
+}
+
+.bd {
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:9px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.rs {
+  position:absolute;
+  right:0;
+  bottom:0;
+  width:24px;
+  height:24px;
+  cursor:nwse-resize;
+  touch-action:none;
+}
+
+#dock {
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  background:var(--pn);
+  border-top:1px solid var(--ln);
+  z-index:999;
+}
+
+#lau {
+  position:fixed;
+  inset:0;
+  background:#000a;
+  z-index:10000;
+  display:none;
+  padding:56px 14px;
+  overflow:auto;
+}
+
+#lau>div {
+  max-width:420px;
+  margin:auto;
+  background:var(--pn);
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+pre {
+  margin:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+textarea {
+  flex:1;
+  resize:none;
+  width:100%;
+  min-height:160px;
+  line-height:1.5;
+}
+
+input {
+  width:100%;
+}
+
+.row {
+  padding:9px;
+  border-radius:6px;
+  cursor:pointer;
+  overflow-wrap:anywhere;
+}
+
+.row:active {
+  background:var(--ln);
+}
+
+.row.s {
+  background:var(--ac);
+  color:white;
+}
+
+.dim {
+  opacity:.65;
+}
+
+.status {
+  min-height:22px;
+  padding:5px 0;
+  overflow-wrap:anywhere;
+}
+
+.actions {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.filepath {
+  overflow-wrap:anywhere;
+}
+
+@media(max-width:700px) {
+  .win {
+    border-radius:8px;
+  }
+
+  .tb {
+    min-height:42px;
+  }
+
+  .tb button {
+    padding:7px 10px;
+  }
+
+  #dock button {
+    flex:1;
+    min-width:65px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="bar"></div>
+<div id="desk"></div>
+<div id="dock"></div>
+<div id="lau"></div>
+
 <script>
-const $=s=>document.querySelector(s),
-h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a)k.startsWith('on')?e[k]=a[k]:e.setAttribute(k,a[k]);e.append(...c);return e},
-sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
-let D;try{D=JSON.parse(localStorage.cx)}catch(e){}
-D=D||{fs:{'/':{t:'d'},'/welcome.txt':{t:'f',c:'Welcome to CX Web v0.1.\nFiles saved here persist in this browser.'}},j:[],set:{theme:'auto',ac:'#3b6ef5'}};
-const save=()=>localStorage.cx=JSON.stringify(D),GEN='0'.repeat(64),F=()=>D.fs,
-par=p=>p.slice(0,p.lastIndexOf('/'))||'/',
-norm=(p,c='/')=>{const o=[];for(const s of(p.startsWith('/')?p:c+'/'+p).split('/')){if(!s||s==='.')continue;s==='..'?o.pop():o.push(s)}return'/'+o.join('/')},
-kids=d=>Object.keys(F()).filter(k=>k!=='/'&&par(k)===d).sort((a,b)=>(F()[b].t=='d')-(F()[a].t=='d')||a.localeCompare(b));
-async function log(op,p){const prev=D.j.length?D.j.at(-1).h:GEN,e={n:D.j.length,op,p,prev};e.h=await sha(JSON.stringify([e.n,e.op,e.p,e.prev]));D.j.push(e);save()}
-async function verify(j){let prev=GEN;for(const e of j){if(e.prev!==prev||e.h!==await sha(JSON.stringify([e.n,e.op,e.p,e.prev])))return e.n;prev=e.h}return -1}
-async function wr(p,c){if(F()[par(p)]?.t!=='d')throw'no such folder';if(F()[p]?.t==='d')throw'is a folder';const n=!F()[p];F()[p]={t:'f',c};await log(n?'create':'write',p)}
-async function mk(p){if(F()[p])throw'exists';if(F()[par(p)]?.t!=='d')throw'no such folder';F()[p]={t:'d'};await log('mkdir',p)}
-async function rm(p){if(p==='/'||!F()[p])throw'cannot remove';for(const k of Object.keys(F()))if(k===p||k.startsWith(p+'/'))delete F()[k];await log('remove',p)}
-function theme(){const r=document.documentElement;r.dataset.t=D.set.theme;r.style.setProperty('--ac',D.set.ac)}
-let Z=10,W=[],ws=1;const T0=Date.now();
-const clock=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
-show=()=>W.forEach(o=>o.w.classList.toggle('off',o.ws!==ws));
-function bar(){$('#bar').replaceChildren(h('button',{onclick:launch},'CX'),...[1,2,3,4].map(i=>h('button',{class:ws===i?'on':'',onclick:()=>{ws=i;show();bar()}},i)),h('span',{id:'clock'},clock()))}
-function drag(el,f){el.onpointerdown=e=>{if(e.target.tagName==='BUTTON')return;e.stopPropagation();el.closest('.win').style.zIndex=++Z;let x=e.clientX,y=e.clientY;el.setPointerCapture(e.pointerId);const mv=v=>{f(v.clientX-x,v.clientY-y);x=v.clientX;y=v.clientY},up=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up)};el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up)}}
-function openApp(id,arg){
- const A=APPS[id],m=innerWidth<700,o={id,ws,m:false,x:30+W.length*24,y:20+W.length*24,wd:420,ht:320},
- w=h('div',{class:'win'}),b=h('div',{class:'bd'}),rs=h('div',{class:'rs'}),
- fit=()=>{if(o.m||m)Object.assign(w.style,{left:'4px',top:'4px',width:'calc(100% - 8px)',height:'calc(100% - 8px)'});else Object.assign(w.style,{left:o.x+'px',top:o.y+'px',width:o.wd+'px',height:o.ht+'px'})},
- tb=h('div',{class:'tb'},h('b',{},A.n),h('button',{onclick:()=>w.hidden=true},'-'),h('button',{onclick:()=>{o.m=!o.m;fit()}},'[]'),h('button',{onclick:()=>{o.stop?.();w.remove();W=W.filter(q=>q!==o)}},'x'));
- o.w=w;W.push(o);fit();w.append(tb,b,rs);$('#desk').append(w);w.style.zIndex=++Z;
- w.onpointerdown=()=>w.style.zIndex=++Z;
- drag(tb,(dx,dy)=>{if(o.m||m)return;o.x+=dx;o.y+=dy;fit()});
- drag(rs,(dx,dy)=>{if(o.m||m)return;o.wd=Math.max(220,o.wd+dx);o.ht=Math.max(140,o.ht+dy);fit()});
- o.stop=A.f(b,arg);show()}
-function launch(){const L=$('#lau'),q=h('input',{placeholder:'Search apps',oninput:()=>draw()}),lst=h('div'),
- draw=()=>lst.replaceChildren(...Object.entries(APPS).filter(([k,A])=>A.n.toLowerCase().includes(q.value.toLowerCase())).map(([k,A])=>h('div',{class:'row',onclick:()=>{L.style.display='none';openApp(k)}},A.n)));
- L.replaceChildren(h('div',{},q,lst,h('div',{class:'dim'},'Not built yet: install and update apps, cloud sessions and remote compute, AI assistant, sync across devices, installable desktop edition.'),h('button',{onclick:()=>L.style.display='none'},'Close')));L.style.display='block';draw();q.focus()}
-const APPS={
-files:{n:'Files',f:b=>{let d='/',s=null;const L=h('div'),P=h('div',{class:'dim'}),
- bt=(t,f)=>h('button',{onclick:async()=>{try{await f()}catch(e){alert(e)}draw()}},t),
- draw=()=>{P.textContent=d;L.replaceChildren(...(d!=='/'?[h('div',{class:'row',onclick:()=>{d=par(d);s=null;draw()}},'..')]:[]),...kids(d).map(k=>h('div',{class:'row'+(s===k?' s':''),onclick:()=>{if(F()[k].t==='d'){d=k;s=null}else if(s===k)openApp('notes',k);else s=k;draw()}},(F()[k].t==='d'?'[dir] ':'')+k.split('/').pop())))};
- b.append(h('div',{style:'display:flex;gap:6px;flex-wrap:wrap'},bt('New file',()=>{const n=prompt('File name');if(n)return wr(norm(n,d),'')}),bt('New folder',()=>{const n=prompt('Folder name');if(n)return mk(norm(n,d))}),bt('Delete',()=>{if(s&&confirm('Delete '+s+'?')){const p=s;s=null;return rm(p)}})),P,L,h('div',{class:'dim'},'Tap a file once to select, again to open.'));draw()}},
-notes:{n:'Notes',f:(b,a)=>{const p=h('input',{value:a||'/untitled.txt'}),t=h('textarea'),st=h('div',{class:'dim'});t.value=F()[a]?.c||'';b.append(p,t,h('button',{onclick:async()=>{try{await wr(norm(p.value),t.value);st.textContent='Saved '+clock()}catch(e){st.textContent='Error: '+e}}},'Save'),st)}},
-term:{n:'Terminal',f:b=>{let c='/';const o=h('pre'),i=h('input',{placeholder:'type help',autocapitalize:'none',autocomplete:'off'}),
- p=s=>o.append(s+'\n'),
- run=async l=>{const[a,...r]=l.trim().split(/\s+/),x=r.join(' ');p('$ '+l);try{switch(a){
- case'':break;
- case'help':p('help ls cd pwd cat echo mkdir touch rm journal verify date clear');break;
- case'pwd':p(c);break;
- case'cd':{const q=norm(x||'/',c);if(F()[q]?.t!=='d')throw'not a folder';c=q;break}
- case'ls':{const q=norm(x||'.',c);if(F()[q]?.t!=='d')throw'not a folder';p(kids(q).map(k=>k.split('/').pop()+(F()[k].t==='d'?'/':'')).join('  ')||'(empty)');break}
- case'cat':{const q=norm(x,c);if(F()[q]?.t!=='f')throw'not a file';p(F()[q].c);break}
- case'mkdir':await mk(norm(x,c));break;
- case'touch':{const q=norm(x,c);if(!F()[q])await wr(q,'');break}
- case'rm':await rm(norm(x,c));break;
- case'echo':{const m=x.split(' > ');if(m[1])await wr(norm(m[1].trim(),c),m[0]);else p(x);break}
- case'journal':D.j.slice(-8).forEach(e=>p(e.n+' '+e.op+' '+e.p+' '+e.h.slice(0,10)));break;
- case'verify':{const v=await verify(D.j);p(v<0?'journal OK, '+D.j.length+' entries':'journal BROKEN at entry '+v);break}
- case'date':p(new Date().toString());break;
- case'clear':o.textContent='';break;
- default:p(a+': command not found')}}catch(e){p('error: '+e)}};
- i.onkeydown=e=>{if(e.key==='Enter'){run(i.value);i.value=''}};
- b.append(o,i);p('CX Terminal v0.1. Type help.')}},
-mon:{n:'Monitor',f:b=>{const o=h('pre');b.append(o,h('div',{class:'dim'},'Browser-reported values for the device running CX Web. This is not remote compute.'));let n=0,l=performance.now(),al=true;const tick=()=>{if(!al)return;n++;requestAnimationFrame(tick)};tick();
- const u=async()=>{const e=await navigator.storage?.estimate?.(),t=performance.now(),f=Math.round(n*1000/(t-l));n=0;l=t;o.textContent=['CPU cores (logical): '+navigator.hardwareConcurrency,'Device memory (approx, capped): '+(navigator.deviceMemory?navigator.deviceMemory+' GB':'not reported'),'JS heap: '+(performance.memory?Math.round(performance.memory.usedJSHeapSize/1048576)+' MB':'not reported'),'Browser storage: '+(e?(e.usage/1048576).toFixed(2)+' MB of '+Math.round(e.quota/1048576)+' MB':'not reported'),'Frames per second: '+f,'Open windows: '+W.length,'Files and folders: '+(Object.keys(F()).length-1),'Journal entries: '+D.j.length,'Uptime: '+Math.round((Date.now()-T0)/1000)+' s'].join('\n')};
- u();const iv=setInterval(u,1000);return()=>{al=false;clearInterval(iv)}}},
-set:{n:'Settings',f:b=>{const th=h('select',{onchange:()=>{D.set.theme=th.value;theme();save()}},...['auto','light','dark'].map(v=>h('option',{value:v},v))),ac=h('input',{type:'color',value:D.set.ac,oninput:()=>{D.set.ac=ac.value;theme();save()}});th.value=D.set.theme;
- b.append(h('div',{},'Theme ',th),h('div',{},'Accent ',ac),
- h('button',{onclick:async()=>{await navigator.clipboard.writeText(JSON.stringify({fs:D.fs,j:D.j}));alert('Workspace copied: files and journal.')}},'Export workspace (copy)'),
- h('button',{onclick:async()=>{const s=prompt('Paste an exported workspace');if(!s)return;try{const x=JSON.parse(s),v=await verify(x.j);if(v>=0)return alert('Rejected: journal broken at entry '+v);D.fs=x.fs;D.j=x.j;save();alert('Imported. Reloading.');location.reload()}catch(e){alert('Import failed: '+e)}}},'Import workspace (paste)'),
- h('button',{onclick:()=>{if(confirm('Erase all CX data in this browser?')){localStorage.removeItem('cx');location.reload()}}},'Erase everything'),
- h('div',{class:'dim'},'Import checks the journal chain only. It does not yet check that the files match the journal.'))}}};
-$('#dock').append(...Object.entries(APPS).map(([k,A])=>h('button',{onclick:()=>{const o=W.find(q=>q.id===k&&q.ws===ws);if(o){o.w.hidden=false;o.w.style.zIndex=++Z}else openApp(k)}},A.n)));
-theme();bar();setInterval(()=>{const c=$('#clock');if(c)c.textContent=clock()},20000);openApp('files');
-</script></body></html>
+'use strict';
+
+/* =========================================
+   CX WEB CORE
+========================================= */
+
+const $ = selector => document.querySelector(selector);
+
+const GEN = '0'.repeat(64);
+
+const DEFAULT_DATA = () => ({
+  fs: {
+    '/': {t:'d'},
+    '/welcome.txt': {
+      t:'f',
+      c:'Welcome to CX Web v0.2.\nYour files persist in this browser.'
+    }
+  },
+  j: [],
+  set: {
+    theme:'auto',
+    ac:'#3b6ef5'
+  }
+});
+
+let D;
+
+try {
+  D = JSON.parse(localStorage.getItem('cx'));
+} catch(error) {
+  D = null;
+}
+
+if (
+  !D ||
+  typeof D !== 'object' ||
+  !D.fs ||
+  !D.fs['/'] ||
+  !Array.isArray(D.j) ||
+  !D.set
+) {
+  D = DEFAULT_DATA();
+}
+
+D.fs = D.fs || {'/':{t:'d'}};
+D.j = Array.isArray(D.j) ? D.j : [];
+D.set = {
+  theme:D.set.theme || 'auto',
+  ac:D.set.ac || '#3b6ef5'
+};
+
+const F = () => D.fs;
+
+function persist() {
+  try {
+    localStorage.setItem('cx', JSON.stringify(D));
+    return true;
+  } catch(error) {
+    console.error('CX storage error:', error);
+    throw new Error(
+      'Storage failed: ' + error.message
+    );
+  }
+}
+
+const par = p =>
+  p.slice(0,p.lastIndexOf('/')) || '/';
+
+function norm(p,c='/') {
+  const parts = [];
+
+  const source = p.startsWith('/')
+    ? p
+    : c + '/' + p;
+
+  for(const s of source.split('/')) {
+    if(!s || s === '.') continue;
+
+    if(s === '..') {
+      parts.pop();
+    } else {
+      parts.push(s);
+    }
+  }
+
+  return '/' + parts.join('/');
+}
+
+function kids(dir) {
+  return Object.keys(F())
+    .filter(k => k !== '/' && par(k) === dir)
+    .sort((a,b) =>
+      (F()[b].t === 'd') - (F()[a].t === 'd') ||
+      a.localeCompare(b)
+    );
+}
+
+/* =========================================
+   DOM HELPER
+========================================= */
+
+function h(tag,attrs={},...children) {
+  const el = document.createElement(tag);
+
+  for(const [key,value] of Object.entries(attrs)) {
+
+    if(key.startsWith('on') && typeof value === 'function') {
+      el.addEventListener(
+        key.slice(2).toLowerCase(),
+        value
+      );
+    } else if(key === 'className') {
+      el.className = value;
+    } else if(key === 'value') {
+      el.value = value;
+    } else if(key === 'checked') {
+      el.checked = value;
+    } else if(key === 'textContent') {
+      el.textContent = value;
+    } else {
+      el.setAttribute(key,value);
+    }
+  }
+
+  for(const child of children) {
+    if(child === null || child === undefined) continue;
+
+    el.append(
+      child instanceof Node
+        ? child
+        : document.createTextNode(String(child))
+    );
+  }
+
+  return el;
+}
+
+/* =========================================
+   HASH JOURNAL
+========================================= */
+
+async function sha(value) {
+  if(!crypto?.subtle) {
+    throw new Error('Web Crypto is unavailable.');
+  }
+
+  const bytes = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(value)
+  );
+
+  return [...new Uint8Array(bytes)]
+    .map(b => b.toString(16).padStart(2,'0'))
+    .join('');
+}
+
+async function log(op,path) {
+
+  const previous = D.j.length
+    ? D.j[D.j.length-1].h
+    : GEN;
+
+  const entry = {
+    n:D.j.length,
+    op,
+    p:path,
+    prev:previous
+  };
+
+  entry.h = await sha(
+    JSON.stringify([
+      entry.n,
+      entry.op,
+      entry.p,
+      entry.prev
+    ])
+  );
+
+  D.j.push(entry);
+
+  try {
+    persist();
+  } catch(error) {
+    D.j.pop();
+    throw error;
+  }
+}
+
+async function verify(journal) {
+  let previous = GEN;
+
+  for(const entry of journal) {
+
+    if(entry.prev !== previous) {
+      return entry.n;
+    }
+
+    const expected = await sha(
+      JSON.stringify([
+        entry.n,
+        entry.op,
+        entry.p,
+        entry.prev
+      ])
+    );
+
+    if(entry.h !== expected) {
+      return entry.n;
+    }
+
+    previous = entry.h;
+  }
+
+  return -1;
+}
+
+/*
+  Important:
+  Persist the actual file operation first.
+  Journal hashing happens afterwards.
+*/
+
+async function recordOperation(op,path) {
+  try {
+    await log(op,path);
+    return true;
+  } catch(error) {
+    console.error('Journal warning:',error);
+    return false;
+  }
+}
+
+/* =========================================
+   FILE OPERATIONS
+========================================= */
+
+async function wr(path,content) {
+
+  path = norm(path);
+
+  if(F()[par(path)]?.t !== 'd') {
+    throw new Error('The destination folder does not exist.');
+  }
+
+  if(F()[path]?.t === 'd') {
+    throw new Error('This path is a folder.');
+  }
+
+  const operation = F()[path]
+    ? 'write'
+    : 'create';
+
+  F()[path] = {
+    t:'f',
+    c:String(content)
+  };
+
+  // Save the actual content first.
+  persist();
+
+  // Then attempt the journal operation.
+  return await recordOperation(operation,path);
+}
+
+async function mk(path) {
+
+  path = norm(path);
+
+  if(F()[path]) {
+    throw new Error('A file or folder already exists here.');
+  }
+
+  if(F()[par(path)]?.t !== 'd') {
+    throw new Error('The parent folder does not exist.');
+  }
+
+  F()[path] = {t:'d'};
+
+  persist();
+
+  return await recordOperation('mkdir',path);
+}
+
+async function rm(path) {
+
+  path = norm(path);
+
+  if(path === '/' || !F()[path]) {
+    throw new Error('Cannot remove this path.');
+  }
+
+  for(const key of Object.keys(F())) {
+    if(key === path || key.startsWith(path + '/')) {
+      delete F()[key];
+    }
+  }
+
+  persist();
+
+  return await recordOperation('remove',path);
+}
+
+/* =========================================
+   THEME
+========================================= */
+
+function theme() {
+  const root = document.documentElement;
+
+  root.dataset.t = D.set.theme;
+
+  root.style.setProperty(
+    '--ac',
+    D.set.ac
+  );
+}
+
+/* =========================================
+   DESKTOP AND WINDOWS
+========================================= */
+
+let Z = 10;
+let W = [];
+let ws = 1;
+
+const T0 = Date.now();
+
+const clock = () =>
+  new Date().toLocaleTimeString([],{
+    hour:'2-digit',
+    minute:'2-digit'
+  });
+
+function show() {
+  W.forEach(o => {
+    o.w.classList.toggle(
+      'off',
+      o.ws !== ws
+    );
+  });
+}
+
+function bar() {
+
+  $('#bar').replaceChildren(
+    h('button',{
+      onclick:launch
+    },'CX'),
+
+    ...[1,2,3,4].map(i =>
+      h('button',{
+        class:ws === i ? 'on' : '',
+        onclick:() => {
+          ws = i;
+          show();
+          bar();
+        }
+      },i)
+    ),
+
+    h('span',{
+      id:'clock'
+    },clock())
+  );
+}
+
+function drag(element,callback) {
+
+  element.addEventListener('pointerdown',event => {
+
+    if(event.target.closest('button')) return;
+
+    event.stopPropagation();
+
+    const win = element.closest('.win');
+
+    win.style.zIndex = ++Z;
+
+    let x = event.clientX;
+    let y = event.clientY;
+
+    try {
+      element.setPointerCapture(event.pointerId);
+    } catch(error) {}
+
+    const move = e => {
+      callback(
+        e.clientX-x,
+        e.clientY-y
+      );
+
+      x = e.clientX;
+      y = e.clientY;
+    };
+
+    const up = () => {
+      element.removeEventListener('pointermove',move);
+      element.removeEventListener('pointerup',up);
+      element.removeEventListener('pointercancel',up);
+    };
+
+    element.addEventListener('pointermove',move);
+    element.addEventListener('pointerup',up);
+    element.addEventListener('pointercancel',up);
+  });
+}
+
+function openApp(id,arg) {
+
+  const A = APPS[id];
+
+  if(!A) return;
+
+  const mobile = innerWidth < 700;
+
+  const o = {
+    id,
+    ws,
+    m:false,
+    x:30+W.length*24,
+    y:20+W.length*24,
+    wd:420,
+    ht:360
+  };
+
+  const w = h('div',{class:'win'});
+  const b = h('div',{class:'bd'});
+  const rs = h('div',{class:'rs'});
+
+  const fit = () => {
+
+    if(o.m || mobile) {
+      Object.assign(w.style,{
+        left:'4px',
+        top:'4px',
+        width:'calc(100% - 8px)',
+        height:'calc(100% - 8px)'
+      });
+    } else {
+      Object.assign(w.style,{
+        left:o.x+'px',
+        top:o.y+'px',
+        width:o.wd+'px',
+        height:o.ht+'px'
+      });
+    }
+  };
+
+  const tb = h(
+    'div',
+    {class:'tb'},
+
+    h('b',{},A.n),
+
+    h('button',{
+      title:'Minimize',
+      onclick:() => {
+        w.classList.add('off');
+      }
+    },'−'),
+
+    h('button',{
+      title:'Maximize',
+      onclick:() => {
+        o.m = !o.m;
+        fit();
+      }
+    },'□'),
+
+    h('button',{
+      title:'Close',
+      onclick:() => {
+        o.stop?.();
+        w.remove();
+        W = W.filter(q => q !== o);
+      }
+    },'×')
+  );
+
+  o.w = w;
+
+  W.push(o);
+
+  fit();
+
+  w.append(tb,b,rs);
+
+  $('#desk').append(w);
+
+  w.style.zIndex = ++Z;
+
+  w.addEventListener('pointerdown',() => {
+    w.style.zIndex = ++Z;
+  });
+
+  drag(tb,(dx,dy) => {
+    if(o.m || mobile) return;
+
+    o.x += dx;
+    o.y += dy;
+
+    fit();
+  });
+
+  drag(rs,(dx,dy) => {
+    if(o.m || mobile) return;
+
+    o.wd = Math.max(220,o.wd+dx);
+    o.ht = Math.max(140,o.ht+dy);
+
+    fit();
+  });
+
+  o.stop = A.f(b,arg);
+
+  show();
+}
+
+/* =========================================
+   APP LAUNCHER
+========================================= */
+
+function launch() {
+
+  const L = $('#lau');
+
+  const q = h('input',{
+    placeholder:'Search apps',
+    oninput:draw
+  });
+
+  const lst = h('div');
+
+  function draw() {
+
+    lst.replaceChildren(
+      ...Object.entries(APPS)
+        .filter(([key,A]) =>
+          A.n.toLowerCase().includes(
+            q.value.toLowerCase()
+          )
+        )
+        .map(([key,A]) =>
+          h('div',{
+            class:'row',
+            onclick:() => {
+              L.style.display = 'none';
+              openApp(key);
+            }
+          },A.n)
+        )
+    );
+  }
+
+  L.replaceChildren(
+    h('div',{},
+
+      h('b',{},'CX Application Launcher'),
+
+      q,
+
+      lst,
+
+      h('div',{
+        class:'dim'
+      },
+      'Future development: installable apps, cloud sessions, remote compute, AI assistant and cross-device synchronization.'),
+
+      h('button',{
+        onclick:() => {
+          L.style.display = 'none';
+        }
+      },'Close')
+    )
+  );
+
+  L.style.display = 'block';
+
+  draw();
+
+  q.focus();
+}
+
+/* =========================================
+   APPLICATIONS
+========================================= */
+
+const APPS = {
+
+  /* FILE MANAGER */
+
+  files:{
+    n:'Files',
+
+    f:b => {
+
+      let dir = '/';
+      let selected = null;
+
+      const L = h('div');
+      const P = h('div',{class:'dim filepath'});
+
+      const status = h('div',{
+        class:'status dim'
+      });
+
+      const button = (label,action) =>
+        h('button',{
+          onclick:async() => {
+            try {
+              await action();
+              status.textContent = 'Operation completed.';
+            } catch(error) {
+              status.textContent = 'Error: '+error.message;
+            }
+
+            draw();
+          }
+        },label);
+
+      function draw() {
+
+        P.textContent = 'Location: '+dir;
+
+        const rows = [];
+
+        if(dir !== '/') {
+          rows.push(
+            h('div',{
+              class:'row',
+              onclick:() => {
+                dir = par(dir);
+                selected = null;
+                draw();
+              }
+            },'← Parent folder')
+          );
+        }
+
+        for(const path of kids(dir)) {
+
+          const item = F()[path];
+
+          rows.push(
+            h('div',{
+              class:'row'+(
+                selected === path ? ' s' : ''
+              ),
+
+              onclick:() => {
+
+                if(item.t === 'd') {
+                  dir = path;
+                  selected = null;
+                } else if(selected === path) {
+                  openApp('notes',path);
+                } else {
+                  selected = path;
+                }
+
+                draw();
+              }
+            },
+            (item.t === 'd' ? '📁 ' : '📄 ')+
+            path.split('/').pop())
+          );
+        }
+
+        L.replaceChildren(...rows);
+      }
+
+      const actions = h('div',{
+        class:'actions'
+      },
+
+        button('New file',async() => {
+          const name = prompt('File name');
+
+          if(!name) return;
+
+          const path = norm(name,dir);
+
+          if(F()[path]) {
+            throw new Error('That name already exists.');
+          }
+
+          await wr(path,'');
+
+          selected = path;
+        }),
+
+        button('New folder',async() => {
+          const name = prompt('Folder name');
+
+          if(!name) return;
+
+          await mk(norm(name,dir));
+        }),
+
+        button('Open',async() => {
+          if(!selected || F()[selected]?.t !== 'f') {
+            throw new Error('Select a file first.');
+          }
+
+          openApp('notes',selected);
+        }),
+
+        button('Delete',async() => {
+          if(!selected) {
+            throw new Error('Select a file or folder first.');
+          }
+
+          if(!confirm('Delete '+selected+'?')) return;
+
+          await rm(selected);
+
+          selected = null;
+        })
+      );
+
+      b.append(
+        actions,
+        P,
+        L,
+        status,
+        h('div',{
+          class:'dim'
+        },
+        'Tap a file once to select it. Tap it again to open it.')
+      );
+
+      draw();
+    }
+  },
+
+  /* NOTES EDITOR */
+
+  notes:{
+    n:'Notes',
+
+    f:(b,arg) => {
+
+      const initialPath =
+        typeof arg === 'string'
+          ? arg
+          : '/untitled.txt';
+
+      const p = h('input',{
+        value:initialPath,
+        placeholder:'/filename.txt',
+        spellcheck:'false'
+      });
+
+      const t = h('textarea',{
+        placeholder:'Write something here...',
+        spellcheck:'true'
+      });
+
+      const status = h('div',{
+        class:'status dim',
+        role:'status',
+        'aria-live':'polite'
+      });
+
+      const saveButton = h('button',{
+        type:'button',
+        class:'on',
+        onclick:async() => {
+
+          saveButton.disabled = true;
+          status.textContent = 'Saving...';
+
+          try {
+
+            const path = norm(p.value);
+
+            if(path === '/') {
+              throw new Error('Enter a valid file name.');
+            }
+
+            const journalSaved = await wr(
+              path,
+              t.value
+            );
+
+            p.value = path;
+
+            if(journalSaved) {
+              status.textContent =
+                '✓ Saved successfully at '+clock();
+            } else {
+              status.textContent =
+                '✓ File saved. Warning: journal update failed.';
+            }
+
+          } catch(error) {
+
+            status.textContent =
+              '✕ Save failed: '+error.message;
+
+          } finally {
+
+            saveButton.disabled = false;
+          }
+        }
+      },'Save');
+
+      if(F()[initialPath]?.t === 'f') {
+        t.value = F()[initialPath].c || '';
+      }
+
+      b.append(
+        h('div',{
+          class:'dim'
+        },'File location'),
+
+        p,
+
+        t,
+
+        saveButton,
+
+        status
+      );
+
+      // Explicit mobile-friendly click handling.
+      saveButton.addEventListener('touchend',event => {
+        event.stopPropagation();
+      },{passive:true});
+    }
+  },
+
+  /* TERMINAL */
+
+  term:{
+    n:'Terminal',
+
+    f:b => {
+
+      let current = '/';
+
+      const output = h('pre');
+
+      const input = h('input',{
+        placeholder:'Type help',
+        autocapitalize:'none',
+        autocomplete:'off',
+        spellcheck:'false'
+      });
+
+      const print = text => {
+        output.append(
+          document.createTextNode(String(text)+'\n')
+        );
+
+        output.scrollTop = output.scrollHeight;
+      };
+
+      async function run(line) {
+
+        const [command,...rest] =
+          line.trim().split(/\s+/);
+
+        const argument = rest.join(' ');
+
+        print('$ '+line);
+
+        try {
+
+          switch(command) {
+
+            case '':
+              break;
+
+            case 'help':
+              print(
+                'help ls cd pwd cat echo mkdir touch rm journal verify date clear'
+              );
+              break;
+
+            case 'pwd':
+              print(current);
+              break;
+
+            case 'cd': {
+              const path = norm(argument || '/',current);
+
+              if(F()[path]?.t !== 'd') {
+                throw new Error('Not a folder.');
+              }
+
+              current = path;
+              break;
+            }
+
+            case 'ls': {
+              const path = norm(argument || '.',current);
+
+              if(F()[path]?.t !== 'd') {
+                throw new Error('Not a folder.');
+              }
+
+              print(
+                kids(path)
+                  .map(k =>
+                    k.split('/').pop()+
+                    (F()[k].t === 'd' ? '/' : '')
+                  )
+                  .join('  ') || '(empty)'
+              );
+
+              break;
+            }
+
+            case 'cat': {
+              const path = norm(argument,current);
+
+              if(F()[path]?.t !== 'f') {
+                throw new Error('File not found.');
+              }
+
+              print(F()[path].c);
+              break;
+            }
+
+            case 'mkdir':
+              await mk(norm(argument,current));
+              print('Folder created.');
+              break;
+
+            case 'touch': {
+              const path = norm(argument,current);
+
+              if(!F()[path]) {
+                await wr(path,'');
+              }
+
+              print('File ready.');
+              break;
+            }
+
+            case 'rm':
+              await rm(norm(argument,current));
+              print('Removed.');
+              break;
+
+            case 'echo': {
+              const parts = argument.split(' > ');
+
+              if(parts.length > 1) {
+                await wr(
+                  norm(parts.slice(1).join(' > ').trim(),current),
+                  parts[0]
+                );
+
+                print('Written.');
+              } else {
+                print(argument);
+              }
+
+              break;
+            }
+
+            case 'journal':
+              D.j.slice(-8).forEach(e => {
+                print(
+                  e.n+' '+e.op+' '+e.p+' '+e.h.slice(0,10)
+                );
+              });
+              break;
+
+            case 'verify': {
+              const result = await verify(D.j);
+
+              print(
+                result < 0
+                  ? 'Journal OK: '+D.j.length+' entries.'
+                  : 'Journal broken at entry '+result
+              );
+
+              break;
+            }
+
+            case 'date':
+              print(new Date().toString());
+              break;
+
+            case 'clear':
+              output.textContent = '';
+              break;
+
+            default:
+              print(command+': command not found');
+          }
+
+        } catch(error) {
+          print('Error: '+error.message);
+        }
+      }
+
+      input.addEventListener('keydown',event => {
+
+        if(event.key === 'Enter') {
+
+          const value = input.value;
+
+          input.value = '';
+
+          run(value);
+        }
+      });
+
+      b.append(output,input);
+
+      print('CX Terminal v0.2');
+      print('Type help to see available commands.');
+    }
+  },
+
+  /* MONITOR */
+
+  mon:{
+    n:'Monitor',
+
+    f:b => {
+
+      const output = h('pre');
+
+      const note = h('div',{
+        class:'dim'
+      },
+      'These are browser-reported values from the device running CX Web. This is not remote compute.');
+
+      b.append(output,note);
+
+      let frames = 0;
+      let last = performance.now();
+      let active = true;
+
+      function countFrames() {
+        if(!active) return;
+
+        frames++;
+
+        requestAnimationFrame(countFrames);
+      }
+
+      countFrames();
+
+      async function update() {
+
+        let storage = null;
+
+        try {
+          storage = await navigator.storage?.estimate?.();
+        } catch(error) {}
+
+        const now = performance.now();
+
+        const fps = Math.round(
+          frames*1000/(now-last)
+        );
+
+        frames = 0;
+        last = now;
+
+        output.textContent = [
+
+          'CPU cores (logical): '+
+            (navigator.hardwareConcurrency || 'not reported'),
+
+          'Device memory (approximate): '+
+            (navigator.deviceMemory
+              ? navigator.deviceMemory+' GB'
+              : 'not reported'),
+
+          'JS heap: '+
+            (performance.memory
+              ? Math.round(
+                  performance.memory.usedJSHeapSize/1048576
+                )+' MB'
+              : 'not reported'),
+
+          'Browser storage: '+
+            (storage
+              ? (storage.usage/1048576).toFixed(2)+
+                ' MB of '+
+                Math.round(storage.quota/1048576)+' MB'
+              : 'not reported'),
+
+          'Frames per second: '+fps,
+
+          'Open windows: '+W.length,
+
+          'Files and folders: '+(Object.keys(F()).length-1),
+
+          'Journal entries: '+D.j.length,
+
+          'Uptime: '+Math.round((Date.now()-T0)/1000)+' seconds'
+
+        ].join('\n');
+      }
+
+      update();
+
+      const timer = setInterval(update,1500);
+
+      return () => {
+        active = false;
+        clearInterval(timer);
+      };
+    }
+  },
+
+  /* SETTINGS */
+
+  set:{
+    n:'Settings',
+
+    f:b => {
+
+      const themeSelect = h('select',{
+        onchange:() => {
+          D.set.theme = themeSelect.value;
+          theme();
+          persist();
+        }
+      },
+
+        ...['auto','light','dark'].map(value =>
+          h('option',{
+            value
+          },value)
+        )
+      );
+
+      themeSelect.value = D.set.theme;
+
+      const accent = h('input',{
+        type:'color',
+        value:D.set.ac,
+
+        oninput:() => {
+          D.set.ac = accent.value;
+          theme();
+          persist();
+        }
+      });
+
+      const exportButton = h('button',{
+        onclick:async() => {
+
+          const data = JSON.stringify({
+            fs:D.fs,
+            j:D.j
+          });
+
+          try {
+
+            await navigator.clipboard.writeText(data);
+
+            alert('Workspace copied to clipboard.');
+
+          } catch(error) {
+
+            prompt('Copy your workspace data:',data);
+          }
+        }
+      },'Export workspace');
+
+      const importButton = h('button',{
+        onclick:async() => {
+
+          const raw = prompt(
+            'Paste an exported CX workspace'
+          );
+
+          if(!raw) return;
+
+          try {
+
+            const imported = JSON.parse(raw);
+
+            if(
+              !imported.fs ||
+              !imported.fs['/'] ||
+              !Array.isArray(imported.j)
+            ) {
+              throw new Error('Invalid workspace format.');
+            }
+
+            const result = await verify(imported.j);
+
+            if(result >= 0) {
+              throw new Error(
+                'Journal verification failed at entry '+result
+              );
+            }
+
+            D.fs = imported.fs;
+            D.j = imported.j;
+
+            persist();
+
+            alert('Workspace imported successfully.');
+
+            location.reload();
+
+          } catch(error) {
+
+            alert('Import failed: '+error.message);
+          }
+        }
+      },'Import workspace');
+
+      const eraseButton = h('button',{
+        onclick:() => {
+
+          if(confirm('Erase all CX data in this browser?')) {
+            localStorage.removeItem('cx');
+            location.reload();
+          }
+        }
+      },'Erase everything');
+
+      b.append(
+
+        h('b',{},'Appearance'),
+
+        h('div',{},'Theme',themeSelect),
+
+        h('div',{},'Accent colour',accent),
+
+        h('hr'),
+
+        h('b',{},'Workspace'),
+
+        exportButton,
+
+        importButton,
+
+        eraseButton,
+
+        h('hr'),
+
+        h('div',{
+          class:'dim'
+        },
+        'The journal is a tamper-evident record of operations. It does not independently prove that the files match every journal entry.')
+
+      );
+    }
+  }
+};
+
+/* =========================================
+   DOCK
+========================================= */
+
+$('#dock').append(
+  ...Object.entries(APPS).map(([key,app]) =>
+
+    h('button',{
+      onclick:() => {
+
+        const existing = W.find(
+          item => item.id === key && item.ws === ws
+        );
+
+        if(existing) {
+
+          existing.w.classList.remove('off');
+          existing.w.style.zIndex = ++Z;
+
+        } else {
+
+          openApp(key);
+        }
+      }
+    },app.n)
+  )
+);
+
+/* =========================================
+   STARTUP
+========================================= */
+
+theme();
+
+bar();
+
+setInterval(() => {
+  const element = $('#clock');
+
+  if(element) {
+    element.textContent = clock();
+  }
+},20000);
+
+openApp('files');
+
+console.log('CX Web v0.2 initialized.');
+console.log('Workspace files:',Object.keys(F()).length);
+console.log('Journal entries:',D.j.length);
+
+</script>
+</body>
+</html>
