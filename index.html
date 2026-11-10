@@ -2,21 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111318">
-<title>CX Web v0.6</title>
+<title>CX Web v0.7</title>
 
 <style>
 :root {
   --bg:#111318;
   --panel:#191d25;
-  --panel2:#202530;
+  --panel2:#222936;
   --text:#f1f3f8;
   --muted:#929baa;
   --line:#303744;
   --accent:#6d8cff;
-  --danger:#ff6565;
-  --success:#45d49a;
+  --green:#45d49a;
+  --red:#ff6868;
+  --yellow:#e8bd58;
 }
 
 * {box-sizing:border-box}
@@ -25,60 +26,62 @@ body {
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font-family:Arial, sans-serif;
-  min-height:100vh;
+  font-family:Arial,sans-serif;
 }
 
-button,input,textarea {
-  font:inherit;
-}
+button,input,textarea,select {font:inherit}
 
 button {
-  cursor:pointer;
-  border:1px solid var(--line);
   background:var(--panel2);
+  border:1px solid var(--line);
   color:var(--text);
-  border-radius:9px;
+  border-radius:8px;
   padding:10px 13px;
+  cursor:pointer;
 }
 
 button:hover {border-color:var(--accent)}
 
 button.primary {
   background:var(--accent);
-  color:white;
   border-color:var(--accent);
+  color:white;
 }
 
-input,textarea {
+button.danger {color:var(--red)}
+
+input,textarea,select {
+  width:100%;
+  padding:11px;
+  border-radius:8px;
+  border:1px solid var(--line);
   background:var(--bg);
   color:var(--text);
-  border:1px solid var(--line);
-  border-radius:8px;
-  padding:11px;
-  width:100%;
   outline:none;
 }
 
-input:focus,textarea:focus {
-  border-color:var(--accent);
+textarea {
+  min-height:260px;
+  resize:vertical;
+  font-family:monospace;
+  line-height:1.6;
 }
 
 #topbar {
   height:58px;
-  border-bottom:1px solid var(--line);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 15px;
-  background:var(--panel);
   position:sticky;
   top:0;
-  z-index:5;
+  z-index:10;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 16px;
 }
 
 .logo {
-  font-size:19px;
+  font-size:20px;
   font-weight:bold;
   letter-spacing:1px;
 }
@@ -86,31 +89,28 @@ input:focus,textarea:focus {
 .logo span {color:var(--accent)}
 
 #status {
-  font-size:11px;
-  color:var(--success);
+  font-size:12px;
+  color:var(--green);
 }
 
-#app {
-  display:flex;
-  min-height:calc(100vh - 58px);
-}
+#app {display:flex;min-height:calc(100vh - 58px)}
 
 #sidebar {
   width:190px;
   flex-shrink:0;
-  padding:15px 10px;
-  border-right:1px solid var(--line);
+  padding:14px 9px;
   background:var(--panel);
+  border-right:1px solid var(--line);
 }
 
 .nav {
   display:block;
   width:100%;
   text-align:left;
-  margin-bottom:6px;
+  margin-bottom:5px;
+  color:var(--muted);
   background:transparent;
   border-color:transparent;
-  color:var(--muted);
 }
 
 .nav.active {
@@ -122,37 +122,26 @@ input:focus,textarea:focus {
 #main {
   flex:1;
   min-width:0;
-  padding:22px;
   max-width:1100px;
+  padding:22px;
 }
 
-h1 {
-  font-size:25px;
-  margin:0 0 7px;
-}
-
-h2 {
-  font-size:17px;
-  margin:0 0 14px;
-}
-
-p {
-  color:var(--muted);
-  line-height:1.5;
-}
+h1 {font-size:25px;margin:0 0 8px}
+h2 {font-size:17px;margin:0 0 12px}
+p {color:var(--muted);line-height:1.5}
 
 .card {
   background:var(--panel);
   border:1px solid var(--line);
-  border-radius:12px;
+  border-radius:11px;
   padding:16px;
   margin:14px 0;
 }
 
 .row {
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
   gap:10px;
   flex-wrap:wrap;
 }
@@ -163,6 +152,8 @@ p {
   gap:8px;
 }
 
+.muted {font-size:12px;color:var(--muted)}
+
 .file-row {
   display:flex;
   align-items:center;
@@ -170,41 +161,11 @@ p {
   padding:13px;
   border-bottom:1px solid var(--line);
   cursor:pointer;
-  border-radius:7px;
-}
-
-.file-row:hover {
-  background:var(--panel2);
-}
-
-.file-name {
-  flex:1;
   overflow-wrap:anywhere;
 }
 
-.file-icon {font-size:19px}
-
-.muted {
-  color:var(--muted);
-  font-size:12px;
-}
-
-#editor {
-  min-height:260px;
-  resize:vertical;
-  font-family:monospace;
-  line-height:1.6;
-  font-size:14px;
-  margin-top:12px;
-}
-
-#editorStatus {
-  font-size:12px;
-  color:var(--success);
-  margin-top:9px;
-}
-
-.hidden {display:none!important}
+.file-row:hover {background:var(--panel2)}
+.file-name {flex:1;min-width:0;overflow-wrap:anywhere}
 
 .stat-grid {
   display:grid;
@@ -215,209 +176,209 @@ p {
 .stat {
   background:var(--panel2);
   border:1px solid var(--line);
+  border-radius:9px;
   padding:15px;
-  border-radius:10px;
 }
 
 .stat strong {
   display:block;
   font-size:24px;
-  margin-top:7px;
+  margin-top:8px;
 }
 
-#terminalOutput {
-  min-height:150px;
+.good {color:var(--green)}
+.bad {color:var(--red)}
+.warning {color:var(--yellow)}
+
+pre {
   white-space:pre-wrap;
-  font-family:monospace;
-  color:var(--success);
-  line-height:1.6;
-}
-
-#terminalInput {
-  font-family:monospace;
+  overflow-wrap:anywhere;
+  color:var(--muted);
+  line-height:1.5;
 }
 
 #errors {
-  background:#411e25;
-  color:#ffb4b4;
+  display:none;
+  background:#421e25;
+  color:#ffc2c2;
   padding:12px;
   margin:12px;
   border-radius:8px;
-  display:none;
   white-space:pre-wrap;
 }
 
-#mobileNav {
-  display:none;
+#terminalOutput {
+  min-height:160px;
+  white-space:pre-wrap;
+  font-family:monospace;
+  color:var(--green);
+  line-height:1.6;
 }
+
+.hidden {display:none!important}
 
 @media(max-width:650px) {
   #app {display:block}
 
   #sidebar {
-    display:flex;
     width:100%;
+    display:flex;
     overflow-x:auto;
-    padding:8px;
-    border-right:0;
-    border-bottom:1px solid var(--line);
     position:sticky;
     top:58px;
-    z-index:4;
+    z-index:5;
+    padding:7px;
+    border-right:0;
+    border-bottom:1px solid var(--line);
   }
 
   .nav {
     width:auto;
     flex-shrink:0;
     margin:0 4px 0 0;
-    padding:10px;
     text-align:center;
+    padding:10px;
   }
 
-  #main {padding:17px 13px}
+  #main {padding:17px 12px}
 }
 </style>
 </head>
 
 <body>
 
-<div id="topbar">
+<header id="topbar">
   <div class="logo">CX<span>.</span> WEB</div>
-  <div id="status">Workspace ready</div>
-</div>
+  <div id="status">Starting...</div>
+</header>
 
 <div id="errors"></div>
 
 <div id="app">
 
-  <aside id="sidebar">
-    <button class="nav active" data-page="home">⌂ Home</button>
-    <button class="nav" data-page="files">▤ Files</button>
-    <button class="nav" data-page="notes">▧ Notes</button>
-    <button class="nav" data-page="terminal">⌘ Terminal</button>
-    <button class="nav" data-page="monitor">◉ Monitor</button>
-    <button class="nav" data-page="diagnostics">⚙ Diagnostics</button>
-    <button class="nav" data-page="settings">☷ Settings</button>
-  </aside>
+<aside id="sidebar">
+  <button class="nav active" data-page="home">⌂ Home</button>
+  <button class="nav" data-page="files">▤ Files</button>
+  <button class="nav" data-page="notes">▧ Notes</button>
+  <button class="nav" data-page="terminal">⌘ Terminal</button>
+  <button class="nav" data-page="monitor">◉ Monitor</button>
+  <button class="nav" data-page="integrity">◆ Integrity</button>
+  <button class="nav" data-page="journal">▤ Journal</button>
+  <button class="nav" data-page="settings">☷ Settings</button>
+</aside>
 
-  <main id="main"></main>
+<main id="main"></main>
 
 </div>
 
 <script>
 "use strict";
 
-/* =====================================
-   CX WEB v0.6
-   Persistent local workspace
-===================================== */
+/* ==================================
+   CX WEB v0.7
+   Filesystem Integrity Foundation
+================================== */
 
 const STORAGE_KEY = "cx";
 
 let data = {};
-let currentPage = "home";
+let page = "home";
 let selectedFile = null;
 let currentFolder = "/";
-let saveTimer = null;
+let unsavedChanges = false;
 
 const main = document.getElementById("main");
-const statusElement = document.getElementById("status");
-const errorsElement = document.getElementById("errors");
+const statusBox = document.getElementById("status");
+const errorsBox = document.getElementById("errors");
 
-function showError(error) {
-  errorsElement.style.display = "block";
-  errorsElement.textContent =
-    "CX encountered an error:\n" +
+function reportError(error) {
+  errorsBox.style.display = "block";
+  errorsBox.textContent =
+    "CX ERROR: " +
     (error && error.message ? error.message : String(error));
 }
 
-window.addEventListener("error", function(event) {
-  showError(event.error || event.message);
-});
+window.addEventListener("error", e => reportError(e.error || e.message));
+window.addEventListener("unhandledrejection", e => reportError(e.reason));
 
-window.addEventListener("unhandledrejection", function(event) {
-  showError(event.reason);
-});
-
-/* =====================================
+/* ==================================
    STORAGE
-===================================== */
+================================== */
 
-function loadData() {
+function loadWorkspace() {
   const raw = localStorage.getItem(STORAGE_KEY);
 
   if (!raw) {
-    data = {
-      fs: {
-        "/": {t:"d"}
-      },
-      notes: [],
-      j: [],
-      settings: {},
-      set: {}
-    };
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    return;
+    throw new Error(
+      "No existing CX workspace found. Storage was not initialized."
+    );
   }
 
   const parsed = JSON.parse(raw);
 
-  if (!parsed || typeof parsed !== "object") {
-    throw new Error("Stored workspace has an invalid format.");
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("Invalid workspace structure.");
+  }
+
+  if (!parsed.fs || typeof parsed.fs !== "object") {
+    throw new Error("Filesystem object is missing.");
   }
 
   data = parsed;
-
-  if (!data.fs || typeof data.fs !== "object") {
-    data.fs = {"/":{t:"d"}};
-  }
-
-  if (!data.fs["/"]) {
-    data.fs["/"] = {t:"d"};
-  }
 }
 
-function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  statusElement.textContent = "Saved locally";
+function saveWorkspace() {
+  const raw = JSON.stringify(data);
+
+  localStorage.setItem(STORAGE_KEY, raw);
+
+  const verification = localStorage.getItem(STORAGE_KEY);
+
+  if (verification !== raw) {
+    throw new Error("Storage read-back verification failed.");
+  }
+
+  statusBox.textContent = "Saved and verified";
 }
 
-function getFiles() {
-  return data.fs || {};
+function getFS() {
+  return data.fs;
 }
 
-/* =====================================
-   FILE CONTENT COMPATIBILITY
-===================================== */
+/* ==================================
+   FILESYSTEM
+================================== */
 
-function readContent(entry) {
-  if (!entry || typeof entry !== "object") {
-    return "";
-  }
+function parentOf(path) {
+  if (path === "/") return null;
 
-  if (typeof entry.c === "string") {
-    return entry.c;
-  }
+  const parts = path.split("/");
+  parts.pop();
 
-  if (typeof entry.content === "string") {
-    return entry.content;
-  }
+  return parts.join("/") || "/";
+}
+
+function nameOf(path) {
+  return path.split("/").filter(Boolean).pop() || "/";
+}
+
+function childrenOf(folder) {
+  return Object.keys(getFS()).filter(path => {
+    return path !== "/" && parentOf(path) === folder;
+  });
+}
+
+function readFile(entry) {
+  if (!entry || typeof entry !== "object") return "";
+
+  if (typeof entry.c === "string") return entry.c;
+
+  if (typeof entry.content === "string") return entry.content;
 
   return "";
 }
 
-function writeContent(entry, value) {
-  if (!entry || typeof entry !== "object") {
-    return;
-  }
-
-  /*
-    Preserve the original file format.
-    Existing files using "c" remain "c".
-    Files using "content" remain "content".
-  */
-
+function writeFile(entry, value) {
   if (Object.prototype.hasOwnProperty.call(entry, "c")) {
     entry.c = value;
   } else if (
@@ -429,90 +390,219 @@ function writeContent(entry, value) {
   }
 }
 
-function getParent(path) {
-  if (path === "/") return null;
+function validPath(path) {
+  if (typeof path !== "string") return false;
+  if (!path.startsWith("/")) return false;
+  if (path === "/") return true;
+  if (path.includes("//")) return false;
+  if (path.endsWith("/")) return false;
 
   const parts = path.split("/");
-  parts.pop();
 
-  return parts.join("/") || "/";
+  return !parts.includes(".") && !parts.includes("..");
 }
 
-function getName(path) {
-  return path.split("/").filter(Boolean).pop() || "/";
+function filesystemAudit() {
+  const fs = getFS();
+  const issues = [];
+  const paths = Object.keys(fs);
+
+  if (!fs["/"]) {
+    issues.push("Root directory is missing.");
+  } else if (fs["/"].t !== "d") {
+    issues.push("Root entry is not marked as a directory.");
+  }
+
+  for (const path of paths) {
+    const entry = fs[path];
+
+    if (!validPath(path)) {
+      issues.push("Invalid path: " + path);
+      continue;
+    }
+
+    if (!entry || typeof entry !== "object") {
+      issues.push("Invalid filesystem entry: " + path);
+      continue;
+    }
+
+    if (path === "/") continue;
+
+    const parent = parentOf(path);
+
+    if (!fs[parent]) {
+      issues.push("Missing parent directory: " + parent);
+    } else if (fs[parent].t !== "d") {
+      issues.push("Parent is not a directory: " + parent);
+    }
+
+    if (entry.t !== "d" && entry.t !== "f") {
+      issues.push("Unknown entry type: " + path);
+    }
+
+    if (entry.t === "f") {
+      const hasContent =
+        typeof entry.c === "string" ||
+        typeof entry.content === "string";
+
+      if (!hasContent) {
+        issues.push("File has no recognized content field: " + path);
+      }
+    }
+  }
+
+  return {
+    total:paths.length,
+    issues
+  };
 }
 
-function getChildren(folder) {
-  const files = getFiles();
+/* ==================================
+   PERSISTENCE TEST
+================================== */
 
-  return Object.keys(files).filter(function(path) {
-    if (path === "/") return false;
+function testPersistence() {
+  const key = "cx_v07_integrity_probe";
+  const testValue =
+    "CX-PERSISTENCE-TEST-" + Date.now();
 
-    return getParent(path) === folder;
+  try {
+    localStorage.setItem(key, testValue);
+
+    const result = localStorage.getItem(key);
+
+    localStorage.removeItem(key);
+
+    return {
+      passed:result === testValue,
+      message:result === testValue
+        ? "Browser storage write/read test passed."
+        : "Browser storage read-back failed."
+    };
+
+  } catch (error) {
+    localStorage.removeItem(key);
+
+    return {
+      passed:false,
+      message:error.message
+    };
+  }
+}
+
+/* ==================================
+   JOURNAL STRUCTURAL INSPECTION
+================================== */
+
+function inspectJournal() {
+  const journal = data.j;
+
+  if (!Array.isArray(journal)) {
+    return {
+      count:0,
+      valid:false,
+      issues:["Journal is missing or is not an array."]
+    };
+  }
+
+  const issues = [];
+
+  journal.forEach((record, index) => {
+    if (!record || typeof record !== "object") {
+      issues.push("Invalid record at array position " + index);
+      return;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(record, "n")) {
+      issues.push("Record " + index + " has no sequence number.");
+    }
+
+    if (
+      !Object.prototype.hasOwnProperty.call(record, "op")
+    ) {
+      issues.push("Record " + index + " has no operation field.");
+    }
+
+    if (
+      !Object.prototype.hasOwnProperty.call(record, "h")
+    ) {
+      issues.push("Record " + index + " has no hash field.");
+    }
   });
+
+  return {
+    count:journal.length,
+    valid:issues.length === 0,
+    issues
+  };
 }
 
-/* =====================================
+/* This checks structure only.
+   It does not verify cryptographic hashes. */
+
+/* ==================================
    NAVIGATION
-===================================== */
+================================== */
 
-document.querySelectorAll(".nav").forEach(function(button) {
-  button.addEventListener("click", function() {
-    currentPage = button.dataset.page;
+document.querySelectorAll(".nav").forEach(button => {
+  button.addEventListener("click", () => {
+    page = button.dataset.page;
 
-    document.querySelectorAll(".nav").forEach(function(item) {
-      item.classList.remove("active");
+    document.querySelectorAll(".nav").forEach(item => {
+      item.classList.toggle(
+        "active",
+        item.dataset.page === page
+      );
     });
-
-    button.classList.add("active");
 
     render();
   });
 });
 
-function navigate(page) {
-  currentPage = page;
+function navigate(destination) {
+  page = destination;
 
-  document.querySelectorAll(".nav").forEach(function(button) {
-    button.classList.toggle(
+  document.querySelectorAll(".nav").forEach(item => {
+    item.classList.toggle(
       "active",
-      button.dataset.page === page
+      item.dataset.page === destination
     );
   });
 
   render();
 }
 
-/* =====================================
+/* ==================================
    HOME
-===================================== */
+================================== */
 
 function renderHome() {
-  const files = getFiles();
+  const fs = getFS();
 
-  const fileCount = Object.keys(files).filter(function(path) {
-    return path !== "/" && files[path].t !== "d";
-  }).length;
+  const files = Object.keys(fs).filter(path => {
+    return path !== "/" && fs[path].t === "f";
+  });
 
-  const folderCount = Object.keys(files).filter(function(path) {
-    return path !== "/" && files[path].t === "d";
-  }).length;
+  const folders = Object.keys(fs).filter(path => {
+    return path !== "/" && fs[path].t === "d";
+  });
 
-  const journalCount = Array.isArray(data.j) ? data.j.length : 0;
+  const journalCount =
+    Array.isArray(data.j) ? data.j.length : 0;
 
   main.innerHTML = `
     <h1>CX Workspace</h1>
-    <p>A persistent computing workspace.</p>
+    <p>Persistent computing environment.</p>
 
     <div class="stat-grid">
       <div class="stat">
         <span class="muted">Files</span>
-        <strong>${fileCount}</strong>
+        <strong>${files.length}</strong>
       </div>
 
       <div class="stat">
         <span class="muted">Folders</span>
-        <strong>${folderCount}</strong>
+        <strong>${folders.length}</strong>
       </div>
 
       <div class="stat">
@@ -522,43 +612,43 @@ function renderHome() {
     </div>
 
     <div class="card">
-      <h2>Workspace</h2>
-      <p>Your files and settings are stored in this browser.</p>
-
+      <h2>Workspace controls</h2>
       <div class="actions">
         <button class="primary" onclick="navigate('files')">
           Open Files
         </button>
-
-        <button onclick="navigate('diagnostics')">
-          Run Diagnostics
+        <button onclick="navigate('integrity')">
+          Check Integrity
+        </button>
+        <button onclick="exportWorkspace()">
+          Backup Workspace
         </button>
       </div>
     </div>
 
     <div class="card">
-      <h2>Current version</h2>
-      <p>CX Web v0.6</p>
+      <h2>Version</h2>
+      <p>CX Web v0.7</p>
       <p class="muted">
-        Local workspace mode. Remote execution and cross-device
-        synchronization are not yet implemented.
+        Local browser execution. Remote compute and
+        cross-device synchronization are not implemented.
       </p>
     </div>
   `;
 }
 
-/* =====================================
-   FILES
-===================================== */
+/* ==================================
+   FILE MANAGER
+================================== */
 
 function renderFiles() {
-  const children = getChildren(currentFolder);
+  const children = childrenOf(currentFolder);
 
   let html = `
     <div class="row">
       <div>
         <h1>Files</h1>
-        <p>Location: ${escapeHTML(currentFolder)}</p>
+        <p>Location: ${esc(currentFolder)}</p>
       </div>
 
       <div class="actions">
@@ -573,8 +663,7 @@ function renderFiles() {
   if (currentFolder !== "/") {
     html += `
       <div class="file-row" onclick="goParent()">
-        <span class="file-icon">↩</span>
-        <span class="file-name">.. Back</span>
+        ↩ <span class="file-name">Back</span>
       </div>
     `;
   }
@@ -583,62 +672,48 @@ function renderFiles() {
     html += `<p>This folder is empty.</p>`;
   }
 
-  children.forEach(function(path) {
-    const entry = getFiles()[path];
-    const isFolder = entry.t === "d";
+  children.forEach(path => {
+    const entry = getFS()[path];
+    const folder = entry.t === "d";
 
     html += `
       <div class="file-row"
-           onclick="openPath('${escapeJS(path)}')">
+        onclick="openPath('${escJS(path)}')">
 
-        <span class="file-icon">
-          ${isFolder ? "📁" : "📄"}
-        </span>
-
-        <span class="file-name">
-          ${escapeHTML(getName(path))}
-        </span>
-
-        <span class="muted">
-          ${isFolder ? "Folder" : "File"}
-        </span>
+        <span>${folder ? "📁" : "📄"}</span>
+        <span class="file-name">${esc(nameOf(path))}</span>
+        <span class="muted">${folder ? "Folder" : "File"}</span>
       </div>
     `;
   });
 
   html += `</div>`;
 
-  if (selectedFile && getFiles()[selectedFile]) {
-    const entry = getFiles()[selectedFile];
-    const content = readContent(entry);
+  if (selectedFile && getFS()[selectedFile]) {
+    const content = readFile(getFS()[selectedFile]);
 
     html += `
       <div class="card">
         <div class="row">
           <div>
-            <h2>${escapeHTML(getName(selectedFile))}</h2>
-            <div class="muted">${escapeHTML(selectedFile)}</div>
+            <h2>${esc(nameOf(selectedFile))}</h2>
+            <div class="muted">${esc(selectedFile)}</div>
           </div>
 
           <div class="actions">
-            <button onclick="saveCurrentFile()" class="primary">
+            <button class="primary" onclick="saveCurrentFile()">
               Save
             </button>
-
-            <button onclick="renameCurrentFile()">
-              Rename
-            </button>
-
-            <button onclick="deleteCurrentFile()">
+            <button onclick="renameCurrent()">Rename</button>
+            <button class="danger" onclick="deleteCurrent()">
               Delete
             </button>
           </div>
         </div>
 
         <textarea id="editor" spellcheck="false"></textarea>
-
-        <div id="editorStatus">
-          Stored content length: ${content.length} characters
+        <div id="editorStatus" class="muted">
+          ${content.length} characters loaded
         </div>
       </div>
     `;
@@ -646,41 +721,32 @@ function renderFiles() {
 
   main.innerHTML = html;
 
-  /*
-    Set textarea content after rendering.
-    This avoids HTML parsing problems with file text.
-  */
-
-  if (selectedFile && getFiles()[selectedFile]) {
-    const editor = document.getElementById("editor");
-
-    if (editor) {
-      editor.value = readContent(getFiles()[selectedFile]);
-    }
+  if (selectedFile && getFS()[selectedFile]) {
+    document.getElementById("editor").value =
+      readFile(getFS()[selectedFile]);
   }
 }
 
 function openPath(path) {
-  const entry = getFiles()[path];
+  const entry = getFS()[path];
 
   if (!entry) {
-    alert("This file or folder no longer exists.");
+    alert("Entry not found.");
     return;
   }
 
   if (entry.t === "d") {
     currentFolder = path;
     selectedFile = null;
-    renderFiles();
-    return;
+  } else {
+    selectedFile = path;
   }
 
-  selectedFile = path;
   renderFiles();
 }
 
 function goParent() {
-  currentFolder = getParent(currentFolder) || "/";
+  currentFolder = parentOf(currentFolder) || "/";
   selectedFile = null;
   renderFiles();
 }
@@ -688,166 +754,152 @@ function goParent() {
 function saveCurrentFile() {
   if (!selectedFile) return;
 
-  const entry = getFiles()[selectedFile];
+  const entry = getFS()[selectedFile];
   const editor = document.getElementById("editor");
 
-  if (!entry || !editor) {
-    alert("Unable to access the selected file.");
-    return;
-  }
+  if (!entry || !editor) return;
 
-  writeContent(entry, editor.value);
+  writeFile(entry, editor.value);
 
   try {
-    persist();
+    saveWorkspace();
 
-    const message = document.getElementById("editorStatus");
+    document.getElementById("editorStatus").textContent =
+      "Saved and verified: " + editor.value.length + " characters.";
 
-    if (message) {
-      message.textContent =
-        "Saved successfully. " +
-        editor.value.length +
-        " characters.";
-    }
   } catch (error) {
-    showError(error);
+    reportError(error);
   }
 }
 
 function createFile() {
-  const name = prompt("Enter file name:");
+  const name = prompt("File name:");
 
   if (!name || !name.trim()) return;
 
-  const path =
-    currentFolder === "/"
-      ? "/" + name
-      : currentFolder + "/" + name;
+  const path = joinPath(currentFolder, name.trim());
 
-  if (getFiles()[path]) {
-    alert("A file or folder with that name already exists.");
+  if (!validPath(path) || getFS()[path]) {
+    alert("Invalid path or name already exists.");
     return;
   }
 
-  data.fs[path] = {
-    t:"f",
-    c:""
-  };
+  getFS()[path] = {t:"f",c:""};
 
-  persist();
+  saveWorkspace();
 
   selectedFile = path;
   renderFiles();
 }
 
 function createFolder() {
-  const name = prompt("Enter folder name:");
+  const name = prompt("Folder name:");
 
   if (!name || !name.trim()) return;
 
-  const path =
-    currentFolder === "/"
-      ? "/" + name
-      : currentFolder + "/" + name;
+  const path = joinPath(currentFolder, name.trim());
 
-  if (getFiles()[path]) {
-    alert("A file or folder with that name already exists.");
+  if (!validPath(path) || getFS()[path]) {
+    alert("Invalid path or name already exists.");
     return;
   }
 
-  data.fs[path] = {t:"d"};
+  getFS()[path] = {t:"d"};
 
-  persist();
+  saveWorkspace();
   renderFiles();
 }
 
-function deleteCurrentFile() {
-  if (!selectedFile) return;
-
-  const confirmed = confirm(
-    "Delete " + selectedFile + "?"
-  );
-
-  if (!confirmed) return;
-
-  delete data.fs[selectedFile];
-
-  selectedFile = null;
-
-  persist();
-  renderFiles();
+function joinPath(folder, name) {
+  return folder === "/" ? "/" + name : folder + "/" + name;
 }
 
-function renameCurrentFile() {
+function renameCurrent() {
   if (!selectedFile) return;
 
   const oldPath = selectedFile;
-  const oldName = getName(oldPath);
-
-  const newName = prompt("New file name:", oldName);
+  const newName = prompt("New name:", nameOf(oldPath));
 
   if (!newName || !newName.trim()) return;
 
-  const parent = getParent(oldPath);
+  const newPath = joinPath(parentOf(oldPath), newName.trim());
 
-  const newPath =
-    parent === "/"
-      ? "/" + newName
-      : parent + "/" + newName;
-
-  if (getFiles()[newPath]) {
-    alert("That name already exists.");
+  if (!validPath(newPath) || getFS()[newPath]) {
+    alert("Invalid path or destination already exists.");
     return;
   }
 
-  data.fs[newPath] = data.fs[oldPath];
-
-  delete data.fs[oldPath];
+  getFS()[newPath] = getFS()[oldPath];
+  delete getFS()[oldPath];
 
   selectedFile = newPath;
 
-  persist();
+  saveWorkspace();
   renderFiles();
 }
 
-/* =====================================
+function deleteCurrent() {
+  if (!selectedFile) return;
+
+  const path = selectedFile;
+  const entry = getFS()[path];
+
+  if (!entry) return;
+
+  const descendants = Object.keys(getFS()).filter(candidate => {
+    return candidate.startsWith(path + "/");
+  });
+
+  if (descendants.length) {
+    alert("This folder contains entries. Delete or move them first.");
+    return;
+  }
+
+  if (!confirm("Delete " + path + "?")) return;
+
+  delete getFS()[path];
+
+  selectedFile = null;
+
+  saveWorkspace();
+  renderFiles();
+}
+
+/* ==================================
    NOTES
-===================================== */
+================================== */
 
 function renderNotes() {
   if (!Array.isArray(data.notes)) {
-    data.notes = [];
+    main.innerHTML = `
+      <h1>Notes</h1>
+      <p class="warning">
+        Notes data is not an array. It has not been modified.
+      </p>
+    `;
+    return;
   }
 
   let html = `
     <h1>Notes</h1>
-    <p>Workspace notes.</p>
 
     <div class="card">
-      <textarea id="newNote"
-        placeholder="Write a note..."
-        style="min-height:120px"></textarea>
-
+      <textarea id="newNote" placeholder="Write a note..."
+        style="min-height:110px"></textarea>
       <br><br>
-
-      <button class="primary" onclick="addNote()">
-        Save Note
-      </button>
+      <button class="primary" onclick="addNote()">Save Note</button>
     </div>
   `;
 
-  data.notes.forEach(function(note, index) {
-    const text =
-      typeof note === "string"
-        ? note
-        : (note.text || "");
+  data.notes.forEach((note,index) => {
+    const text = typeof note === "string"
+      ? note
+      : (note.text || "");
 
     html += `
       <div class="card">
-        <p>${escapeHTML(text)}</p>
-        <button onclick="deleteNote(${index})">
-          Delete
-        </button>
+        <pre>${esc(text)}</pre>
+        <button onclick="deleteNote(${index})">Delete</button>
       </div>
     `;
   });
@@ -865,22 +917,134 @@ function addNote() {
     createdAt:new Date().toISOString()
   });
 
-  persist();
+  saveWorkspace();
   renderNotes();
 }
 
 function deleteNote(index) {
   if (!confirm("Delete this note?")) return;
 
-  data.notes.splice(index, 1);
+  data.notes.splice(index,1);
 
-  persist();
+  saveWorkspace();
   renderNotes();
 }
 
-/* =====================================
+/* ==================================
+   INTEGRITY
+================================== */
+
+function renderIntegrity() {
+  const fsResult = filesystemAudit();
+  const storageResult = testPersistence();
+  const journalResult = inspectJournal();
+
+  const issueList = fsResult.issues.length
+    ? fsResult.issues.map(esc).join("<br>")
+    : "No filesystem structural issues detected.";
+
+  const journalList = journalResult.issues.length
+    ? journalResult.issues.map(esc).join("<br>")
+    : "No journal structural issues detected.";
+
+  main.innerHTML = `
+    <h1>Filesystem Integrity</h1>
+    <p>Structural checks and local persistence verification.</p>
+
+    <div class="card">
+      <h2>Filesystem</h2>
+      <p>Entries: ${fsResult.total}</p>
+      <p class="${fsResult.issues.length ? "bad" : "good"}">
+        ${fsResult.issues.length} issue(s) detected
+      </p>
+      <p>${issueList}</p>
+    </div>
+
+    <div class="card">
+      <h2>Persistence</h2>
+      <p class="${storageResult.passed ? "good" : "bad"}">
+        ${storageResult.message}
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Journal structure</h2>
+      <p>Records: ${journalResult.count}</p>
+      <p class="${journalResult.valid ? "good" : "warning"}">
+        ${journalResult.issues.length} structural issue(s)
+      </p>
+      <p>${journalList}</p>
+      <p class="muted">
+        This is a structural inspection, not cryptographic
+        hash-chain verification.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Settings preservation</h2>
+      <p>Legacy set object: ${data.set ? "Present" : "Not present"}</p>
+      <p>Current settings object:
+        ${data.settings ? "Present" : "Not present"}
+      </p>
+    </div>
+
+    <button class="primary" onclick="renderIntegrity()">
+      Run Checks Again
+    </button>
+  `;
+}
+
+/* ==================================
+   JOURNAL VIEWER
+================================== */
+
+function renderJournal() {
+  const journal = data.j;
+
+  if (!Array.isArray(journal)) {
+    main.innerHTML = `
+      <h1>Journal</h1>
+      <p class="bad">Journal data is not an array.</p>
+    `;
+    return;
+  }
+
+  let html = `
+    <h1>Journal</h1>
+    <p>${journal.length} existing records. Read-only inspection.</p>
+
+    <div class="card">
+      <p class="warning">
+        No journal records are changed or deleted here.
+      </p>
+    </div>
+  `;
+
+  journal.forEach((record,index) => {
+    html += `
+      <div class="card">
+        <div class="row">
+          <strong>Record ${index}</strong>
+          <span class="muted">
+            Sequence: ${esc(
+              record && record.n !== undefined
+                ? record.n
+                : "Unknown"
+            )}
+          </span>
+        </div>
+
+        <pre>${esc(JSON.stringify(record,null,2))}</pre>
+      </div>
+    `;
+  });
+
+  main.innerHTML = html;
+}
+
+/* ==================================
    TERMINAL
-===================================== */
+================================== */
 
 function renderTerminal() {
   main.innerHTML = `
@@ -889,8 +1053,8 @@ function renderTerminal() {
 
     <div class="card">
       <div id="terminalOutput">
-CX Web Terminal v0.6
-Type help to see available commands.
+CX Web Terminal v0.7
+Type help for commands.
       </div>
 
       <input id="terminalInput"
@@ -899,113 +1063,90 @@ Type help to see available commands.
 
       <br><br>
 
-      <button class="primary" onclick="runCommand()">
-        Run
-      </button>
+      <button class="primary" onclick="runCommand()">Run</button>
     </div>
   `;
 
-  const input = document.getElementById("terminalInput");
-
-  input.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-      runCommand();
-    }
-  });
+  document.getElementById("terminalInput")
+    .addEventListener("keydown",event => {
+      if (event.key === "Enter") runCommand();
+    });
 }
 
-function terminalPrint(text) {
+function terminalPrint(message) {
   const output = document.getElementById("terminalOutput");
 
-  output.textContent += "\n" + text;
-  output.scrollTop = output.scrollHeight;
+  output.textContent += "\n" + message;
 }
 
 function runCommand() {
   const input = document.getElementById("terminalInput");
-
-  if (!input) return;
-
   const command = input.value.trim();
+
   input.value = "";
 
   if (!command) return;
 
   terminalPrint("> " + command);
 
-  const parts = command.split(" ");
-  const action = parts[0].toLowerCase();
+  const action = command.split(" ")[0].toLowerCase();
 
   if (action === "help") {
     terminalPrint(
-      "Available commands:\n" +
-      "help - show commands\n" +
-      "ls - list files\n" +
-      "pwd - show current location\n" +
-      "clear - clear terminal\n" +
-      "version - show CX version\n" +
-      "files - count workspace files\n" +
-      "journal - count journal entries"
+      "help - commands\n" +
+      "ls - list current folder\n" +
+      "pwd - current location\n" +
+      "version - CX version\n" +
+      "files - file count\n" +
+      "journal - journal count\n" +
+      "integrity - filesystem issue count\n" +
+      "clear - clear terminal"
     );
-  }
-
-  else if (action === "ls") {
-    terminalPrint(getChildren(currentFolder).join("\n") || "Empty");
-  }
-
-  else if (action === "pwd") {
+  } else if (action === "ls") {
+    terminalPrint(childrenOf(currentFolder).join("\n") || "Empty");
+  } else if (action === "pwd") {
     terminalPrint(currentFolder);
-  }
-
-  else if (action === "clear") {
-    document.getElementById("terminalOutput").textContent = "";
-  }
-
-  else if (action === "version") {
-    terminalPrint("CX Web v0.6");
-  }
-
-  else if (action === "files") {
-    const count = Object.keys(getFiles()).filter(function(path) {
-      return path !== "/" && getFiles()[path].t !== "d";
-    }).length;
-
-    terminalPrint("Files: " + count);
-  }
-
-  else if (action === "journal") {
+  } else if (action === "version") {
+    terminalPrint("CX Web v0.7");
+  } else if (action === "files") {
     terminalPrint(
-      "Journal records: " +
-      (Array.isArray(data.j) ? data.j.length : 0)
+      Object.values(getFS()).filter(entry => entry.t === "f").length
+      + " files"
     );
-  }
-
-  else {
+  } else if (action === "journal") {
+    terminalPrint(
+      Array.isArray(data.j) ? data.j.length + " records" : "Invalid journal"
+    );
+  } else if (action === "integrity") {
+    terminalPrint(
+      filesystemAudit().issues.length + " filesystem issue(s)"
+    );
+  } else if (action === "clear") {
+    document.getElementById("terminalOutput").textContent = "";
+  } else {
     terminalPrint("Unknown command. Type help.");
   }
 }
 
-/* =====================================
+/* ==================================
    MONITOR
-===================================== */
+================================== */
 
 function renderMonitor() {
-  const files = Object.keys(getFiles()).filter(function(path) {
-    return path !== "/" && getFiles()[path].t !== "d";
+  const fs = getFS();
+
+  const files = Object.keys(fs).filter(path => fs[path].t === "f");
+
+  let characters = 0;
+
+  files.forEach(path => {
+    characters += readFile(fs[path]).length;
   });
 
-  let totalCharacters = 0;
-
-  files.forEach(function(path) {
-    totalCharacters += readContent(getFiles()[path]).length;
-  });
-
-  const storageSize =
-    new Blob([localStorage.getItem(STORAGE_KEY) || ""]).size;
+  const raw = localStorage.getItem(STORAGE_KEY) || "";
 
   main.innerHTML = `
     <h1>Monitor</h1>
-    <p>Local workspace information.</p>
 
     <div class="stat-grid">
       <div class="stat">
@@ -1015,127 +1156,47 @@ function renderMonitor() {
 
       <div class="stat">
         <span class="muted">Characters</span>
-        <strong>${totalCharacters}</strong>
+        <strong>${characters}</strong>
       </div>
 
       <div class="stat">
-        <span class="muted">Journal entries</span>
+        <span class="muted">Journal records</span>
         <strong>${Array.isArray(data.j) ? data.j.length : 0}</strong>
       </div>
 
       <div class="stat">
         <span class="muted">Storage size</span>
-        <strong>${formatBytes(storageSize)}</strong>
+        <strong>${formatBytes(new Blob([raw]).size)}</strong>
       </div>
     </div>
 
     <div class="card">
       <h2>Runtime</h2>
-      <p>Browser: ${escapeHTML(navigator.userAgent)}</p>
-      <p>Storage: localStorage</p>
-      <p>Execution: local browser</p>
-      <p>Network compute: not connected</p>
+      <p>Storage: Browser localStorage</p>
+      <p>Execution: Local browser</p>
+      <p>Version: CX Web v0.7</p>
+      <p>Remote compute: Not connected</p>
     </div>
   `;
 }
 
-/* =====================================
-   DIAGNOSTICS
-===================================== */
-
-function renderDiagnostics() {
-  const files = getFiles();
-
-  let rows = "";
-
-  Object.keys(files).forEach(function(path) {
-    const entry = files[path];
-
-    if (entry.t === "d") return;
-
-    const content = readContent(entry);
-
-    rows += `
-      <div class="card">
-        <strong>${escapeHTML(path)}</strong>
-
-        <p>
-          Type: ${escapeHTML(entry.t || "unknown")}<br>
-          Content length: ${content.length}<br>
-          Content field:
-          ${
-            Object.prototype.hasOwnProperty.call(entry, "c")
-              ? "c"
-              : Object.prototype.hasOwnProperty.call(entry, "content")
-                ? "content"
-                : "not found"
-          }
-        </p>
-
-        <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHTML(content)}</pre>
-
-        <button onclick="openPath('${escapeJS(path)}')">
-          Open File
-        </button>
-      </div>
-    `;
-  });
-
-  const raw = localStorage.getItem(STORAGE_KEY) || "";
-
-  main.innerHTML = `
-    <h1>Diagnostics</h1>
-    <p>Inspecting the actual stored workspace data.</p>
-
-    <div class="card">
-      <h2>Storage status</h2>
-      <p>Storage key: ${STORAGE_KEY}</p>
-      <p>Stored characters: ${raw.length}</p>
-      <p>Filesystem entries: ${Object.keys(files).length}</p>
-      <p>Journal records: ${
-        Array.isArray(data.j) ? data.j.length : "Invalid"
-      }</p>
-      <p>Legacy settings object: ${
-        data.set ? "Present" : "Missing"
-      }</p>
-      <p>Current settings object: ${
-        data.settings ? "Present" : "Missing"
-      }</p>
-    </div>
-
-    <h2>File inspection</h2>
-    ${rows || "<p>No files found.</p>"}
-
-    <div class="card">
-      <h2>Workspace export</h2>
-      <button class="primary" onclick="exportWorkspace()">
-        Export workspace JSON
-      </button>
-    </div>
-  `;
-}
-
-/* =====================================
+/* ==================================
    SETTINGS
-===================================== */
+================================== */
 
 function renderSettings() {
-  const settings = data.settings || {};
+  const theme =
+    data.settings && data.settings.theme
+      ? data.settings.theme
+      : "dark";
 
   main.innerHTML = `
     <h1>Settings</h1>
-    <p>Workspace preferences.</p>
 
     <div class="card">
       <h2>Appearance</h2>
 
-      <label class="muted">Theme</label>
-
-      <select id="themeSelect"
-        style="width:100%;padding:12px;background:var(--bg);
-        color:var(--text);border:1px solid var(--line);
-        border-radius:8px;margin-top:8px">
-
+      <select id="themeSelect">
         <option value="dark">Dark</option>
         <option value="light">Light</option>
         <option value="auto">Auto</option>
@@ -1149,9 +1210,9 @@ function renderSettings() {
     </div>
 
     <div class="card">
-      <h2>Workspace data</h2>
+      <h2>Workspace backup</h2>
 
-      <button onclick="exportWorkspace()">
+      <button class="primary" onclick="exportWorkspace()">
         Export Workspace
       </button>
 
@@ -1167,80 +1228,82 @@ function renderSettings() {
     </div>
   `;
 
-  document.getElementById("themeSelect").value =
-    settings.theme || "dark";
+  document.getElementById("themeSelect").value = theme;
 }
 
 function saveSettings() {
-  const theme = document.getElementById("themeSelect").value;
-
   if (!data.settings || typeof data.settings !== "object") {
     data.settings = {};
   }
 
-  data.settings.theme = theme;
+  data.settings.theme =
+    document.getElementById("themeSelect").value;
 
-  /*
-    Do not delete or replace legacy "set" settings.
-  */
-
-  persist();
+  saveWorkspace();
 
   alert("Settings saved.");
 }
 
-/* =====================================
-   EXPORT / IMPORT
-===================================== */
+/* ==================================
+   BACKUP
+================================== */
 
 function exportWorkspace() {
-  const json = JSON.stringify(data, null, 2);
-
-  const blob = new Blob([json], {
-    type:"application/json"
-  });
+  const blob = new Blob(
+    [JSON.stringify(data,null,2)],
+    {type:"application/json"}
+  );
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = "cx-workspace-backup.json";
+  link.download = "cx-workspace-v07-backup.json";
   link.click();
 
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url),1000);
 }
 
 function importWorkspace() {
   const input = document.getElementById("importFile");
 
-  if (!input || !input.files || !input.files[0]) {
-    alert("Select a JSON backup first.");
+  if (!input.files || !input.files[0]) {
+    alert("Choose a backup file.");
     return;
   }
 
   if (!confirm(
-    "Importing replaces the current workspace. Continue?"
-  )) {
-    return;
-  }
+    "This replaces the current workspace. Continue?"
+  )) return;
 
   const reader = new FileReader();
 
-  reader.onload = function() {
+  reader.onload = () => {
     try {
       const imported = JSON.parse(reader.result);
 
-      if (!imported || typeof imported !== "object" ||
-          !imported.fs) {
+      if (
+        !imported ||
+        typeof imported !== "object" ||
+        !imported.fs ||
+        typeof imported.fs !== "object"
+      ) {
         throw new Error("Invalid CX workspace backup.");
       }
 
-      data = imported;
+      const previous = data;
 
-      persist();
+      try {
+        data = imported;
+        saveWorkspace();
+      } catch (error) {
+        data = previous;
+        throw error;
+      }
 
       selectedFile = null;
       currentFolder = "/";
+      page = "home";
 
       alert("Workspace imported.");
       render();
@@ -1253,75 +1316,71 @@ function importWorkspace() {
   reader.readAsText(input.files[0]);
 }
 
-/* =====================================
-   HELPERS
-===================================== */
+/* ==================================
+   UTILITIES
+================================== */
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, function(char) {
-    return {
-      "&":"&amp;",
-      "<":"&lt;",
-      ">":"&gt;",
-      '"':"&quot;",
-      "'":"&#039;"
-    }[char];
-  });
+function esc(value) {
+  return String(value).replace(/[&<>"']/g,char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
 }
 
-function escapeJS(value) {
+function escJS(value) {
   return String(value)
-    .replace(/\\/g, "\\\\")
-    .replace(/'/g, "\\'")
-    .replace(/\n/g, "\\n");
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'")
+    .replace(/\n/g,"\\n");
 }
 
 function formatBytes(bytes) {
   if (bytes < 1024) return bytes + " B";
-
-  if (bytes < 1024 * 1024) {
-    return (bytes / 1024).toFixed(2) + " KB";
-  }
-
-  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  if (bytes < 1048576) return (bytes/1024).toFixed(2) + " KB";
+  return (bytes/1048576).toFixed(2) + " MB";
 }
 
-/* =====================================
-   PAGE RENDERER
-===================================== */
+/* ==================================
+   RENDERER
+================================== */
 
 function render() {
   try {
-    if (currentPage === "home") renderHome();
-    else if (currentPage === "files") renderFiles();
-    else if (currentPage === "notes") renderNotes();
-    else if (currentPage === "terminal") renderTerminal();
-    else if (currentPage === "monitor") renderMonitor();
-    else if (currentPage === "diagnostics") renderDiagnostics();
-    else if (currentPage === "settings") renderSettings();
+    if (page === "home") renderHome();
+    else if (page === "files") renderFiles();
+    else if (page === "notes") renderNotes();
+    else if (page === "terminal") renderTerminal();
+    else if (page === "monitor") renderMonitor();
+    else if (page === "integrity") renderIntegrity();
+    else if (page === "journal") renderJournal();
+    else if (page === "settings") renderSettings();
     else renderHome();
 
   } catch (error) {
-    showError(error);
+    reportError(error);
   }
 }
 
-/* =====================================
-   START
-===================================== */
+/* ==================================
+   STARTUP
+================================== */
 
 try {
-  loadData();
+  loadWorkspace();
   render();
 
-  statusElement.textContent = "Workspace ready";
+  statusBox.textContent = "CX v0.7 ready";
 
 } catch (error) {
-  showError(error);
+  reportError(error);
+
   main.innerHTML = `
-    <h1>CX Workspace Error</h1>
-    <p>The workspace could not be loaded.</p>
-    <p>Do not clear browser storage.</p>
+    <h1>CX could not start</h1>
+    <p class="bad">${esc(error.message)}</p>
+    <p>Existing browser storage has not been cleared.</p>
   `;
 }
 </script>
