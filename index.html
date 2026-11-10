@@ -1,10 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f4f5f7">
-<title>CX Web v0.2</title>
+<title>CX Web v0.3</title>
 
 <style>
 :root {
@@ -15,15 +15,6 @@
   --ac:#3b6ef5;
 }
 
-@media(prefers-color-scheme:dark) {
-  :root:not([data-t=light]) {
-    --bg:#0f1114;
-    --fg:#e8eaed;
-    --pn:#1a1d22;
-    --ln:#2d3239;
-  }
-}
-
 :root[data-t=dark] {
   --bg:#0f1114;
   --fg:#e8eaed;
@@ -31,9 +22,7 @@
   --ln:#2d3239;
 }
 
-* {
-  box-sizing:border-box;
-}
+* { box-sizing:border-box; }
 
 html,body {
   margin:0;
@@ -45,40 +34,27 @@ html,body {
   font:14px system-ui,sans-serif;
 }
 
-[hidden],.off {
-  display:none!important;
-}
-
 button,input,textarea,select {
   font:inherit;
   color:inherit;
   background:var(--pn);
   border:1px solid var(--ln);
-  border-radius:7px;
-  padding:8px 10px;
+  border-radius:8px;
+  padding:10px;
   max-width:100%;
 }
 
 button {
   cursor:pointer;
   touch-action:manipulation;
-  position:relative;
-  z-index:1;
+  min-height:38px;
 }
 
-button:active {
-  opacity:.75;
-}
+button:active { opacity:.7; }
 
 button.on {
   background:var(--ac);
   color:white;
-  border-color:var(--ac);
-}
-
-button:disabled {
-  opacity:.5;
-  cursor:not-allowed;
 }
 
 #bar {
@@ -86,23 +62,20 @@ button:disabled {
   top:0;
   left:0;
   right:0;
-  padding:calc(env(safe-area-inset-top) + 5px) 8px 5px;
+  z-index:1000;
   display:flex;
-  gap:6px;
   align-items:center;
+  gap:6px;
+  padding:calc(env(safe-area-inset-top) + 5px) 8px 5px;
   background:var(--pn);
   border-bottom:1px solid var(--ln);
-  z-index:9999;
 }
 
-#clock {
-  margin-left:auto;
-  white-space:nowrap;
-}
+#clock { margin-left:auto; }
 
 #desk {
   position:fixed;
-  inset:48px 0 60px;
+  inset:48px 0 65px;
   overflow:hidden;
 }
 
@@ -110,44 +83,45 @@ button:disabled {
   position:absolute;
   display:flex;
   flex-direction:column;
+  min-width:220px;
+  min-height:140px;
   background:var(--pn);
   border:1px solid var(--ln);
   border-radius:10px;
   box-shadow:0 6px 24px #0004;
   overflow:hidden;
-  min-width:220px;
-  min-height:140px;
 }
 
 .tb {
   display:flex;
   align-items:center;
   gap:6px;
-  padding:7px 8px;
+  min-height:42px;
+  padding:6px 8px;
   border-bottom:1px solid var(--ln);
   cursor:move;
   touch-action:none;
   user-select:none;
 }
 
-.tb b {
-  flex:1;
-}
+.tb b { flex:1; }
 
 .bd {
   flex:1;
   min-height:0;
   overflow:auto;
-  padding:9px;
+  padding:10px;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:9px;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
 }
 
 .rs {
   position:absolute;
-  right:0;
   bottom:0;
+  right:0;
   width:24px;
   height:24px;
   cursor:nwse-resize;
@@ -159,98 +133,117 @@ button:disabled {
   bottom:0;
   left:0;
   right:0;
-  padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);
+  z-index:999;
   display:flex;
-  gap:8px;
   justify-content:center;
+  gap:7px;
   flex-wrap:wrap;
+  padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);
   background:var(--pn);
   border-top:1px solid var(--ln);
-  z-index:999;
 }
 
 #lau {
+  display:none;
   position:fixed;
   inset:0;
+  z-index:3000;
   background:#000a;
-  z-index:10000;
-  display:none;
-  padding:56px 14px;
+  padding:55px 12px;
   overflow:auto;
 }
 
 #lau>div {
   max-width:420px;
   margin:auto;
+  padding:14px;
   background:var(--pn);
   border-radius:12px;
-  padding:12px;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:10px;
 }
 
-pre {
-  margin:0;
-  white-space:pre-wrap;
-  word-break:break-word;
+#cx-toast {
+  position:fixed;
+  top:calc(env(safe-area-inset-top) + 58px);
+  left:50%;
+  transform:translateX(-50%);
+  z-index:5000;
+  width:max-content;
+  max-width:90%;
+  padding:12px 18px;
+  border-radius:10px;
+  background:#168447;
+  color:white;
+  box-shadow:0 4px 18px #0004;
+  font-weight:600;
+  text-align:center;
+  display:none;
+  pointer-events:none;
 }
+
+#cx-toast.show { display:block; }
+
+input,textarea { width:100%; }
 
 textarea {
-  flex:1;
-  resize:none;
-  width:100%;
-  min-height:160px;
+  flex:1 1 auto;
+  min-height:180px;
+  resize:vertical;
   line-height:1.5;
 }
 
-input {
-  width:100%;
+pre {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  margin:0;
 }
 
 .row {
-  padding:9px;
-  border-radius:6px;
+  padding:10px;
+  border-radius:7px;
   cursor:pointer;
   overflow-wrap:anywhere;
 }
 
-.row:active {
-  background:var(--ln);
-}
+.row:active { background:var(--ln); }
 
 .row.s {
   background:var(--ac);
   color:white;
 }
 
-.dim {
-  opacity:.65;
-}
+.dim { opacity:.65; }
 
 .status {
   min-height:22px;
-  padding:5px 0;
   overflow-wrap:anywhere;
 }
 
 .actions {
   display:flex;
-  gap:6px;
   flex-wrap:wrap;
+  gap:6px;
 }
 
-.filepath {
-  overflow-wrap:anywhere;
+hr {
+  width:100%;
+  border:0;
+  border-top:1px solid var(--ln);
 }
 
 @media(max-width:700px) {
+  #desk {
+    inset:48px 0 65px;
+  }
+
   .win {
     border-radius:8px;
   }
 
   .tb {
-    min-height:42px;
+    min-height:44px;
   }
 
   .tb button {
@@ -259,8 +252,16 @@ input {
 
   #dock button {
     flex:1;
-    min-width:65px;
+    min-width:55px;
+    padding:8px 5px;
   }
+
+  .rs { display:none; }
+}
+
+@media(max-height:500px) {
+  #desk { inset:44px 0 48px; }
+  #dock { padding:4px; }
 }
 </style>
 </head>
@@ -271,50 +272,68 @@ input {
 <div id="desk"></div>
 <div id="dock"></div>
 <div id="lau"></div>
+<div id="cx-toast" role="status" aria-live="polite"></div>
 
 <script>
 'use strict';
 
-/* =========================================
+/* =================================
    CX WEB CORE
-========================================= */
+================================= */
 
-const $ = selector => document.querySelector(selector);
+const $ = s => document.querySelector(s);
+
+let toastTimer;
+
+function notify(message,success=true) {
+  const toast = $('#cx-toast');
+
+  toast.textContent = message;
+  toast.style.background = success ? '#168447' : '#b42318';
+  toast.classList.add('show');
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  },3500);
+}
 
 const GEN = '0'.repeat(64);
 
-const DEFAULT_DATA = () => ({
-  fs: {
-    '/': {t:'d'},
-    '/welcome.txt': {
-      t:'f',
-      c:'Welcome to CX Web v0.2.\nYour files persist in this browser.'
+function defaults() {
+  return {
+    fs:{
+      '/':{t:'d'},
+      '/welcome.txt':{
+        t:'f',
+        c:'Welcome to CX Web v0.3.\nYour files persist in this browser.'
+      }
+    },
+    j:[],
+    set:{
+      theme:'auto',
+      ac:'#3b6ef5'
     }
-  },
-  j: [],
-  set: {
-    theme:'auto',
-    ac:'#3b6ef5'
-  }
-});
+  };
+}
 
 let D;
 
 try {
   D = JSON.parse(localStorage.getItem('cx'));
-} catch(error) {
+} catch(e) {
   D = null;
 }
 
 if (
   !D ||
-  typeof D !== 'object' ||
   !D.fs ||
   !D.fs['/'] ||
   !Array.isArray(D.j) ||
   !D.set
 ) {
-  D = DEFAULT_DATA();
+  D = defaults();
 }
 
 D.fs = D.fs || {'/':{t:'d'}};
@@ -328,77 +347,64 @@ const F = () => D.fs;
 
 function persist() {
   try {
-    localStorage.setItem('cx', JSON.stringify(D));
+    localStorage.setItem('cx',JSON.stringify(D));
     return true;
-  } catch(error) {
-    console.error('CX storage error:', error);
-    throw new Error(
-      'Storage failed: ' + error.message
-    );
+  } catch(e) {
+    throw new Error('Browser storage error: '+e.message);
   }
 }
 
-const par = p =>
-  p.slice(0,p.lastIndexOf('/')) || '/';
+function par(path) {
+  return path.slice(0,path.lastIndexOf('/')) || '/';
+}
 
-function norm(p,c='/') {
-  const parts = [];
+function norm(path,base='/') {
+  const source = path.startsWith('/')
+    ? path
+    : base+'/'+path;
 
-  const source = p.startsWith('/')
-    ? p
-    : c + '/' + p;
+  const parts=[];
 
-  for(const s of source.split('/')) {
-    if(!s || s === '.') continue;
+  for(const part of source.split('/')) {
+    if(!part || part==='.') continue;
 
-    if(s === '..') {
-      parts.pop();
-    } else {
-      parts.push(s);
-    }
+    if(part==='..') parts.pop();
+    else parts.push(part);
   }
 
-  return '/' + parts.join('/');
+  return '/'+parts.join('/');
 }
 
 function kids(dir) {
   return Object.keys(F())
-    .filter(k => k !== '/' && par(k) === dir)
+    .filter(path => path!=='/' && par(path)===dir)
     .sort((a,b) =>
-      (F()[b].t === 'd') - (F()[a].t === 'd') ||
+      Number(F()[b].t==='d')-Number(F()[a].t==='d') ||
       a.localeCompare(b)
     );
 }
 
-/* =========================================
+/* =================================
    DOM HELPER
-========================================= */
+================================= */
 
 function h(tag,attrs={},...children) {
-  const el = document.createElement(tag);
+  const el=document.createElement(tag);
 
   for(const [key,value] of Object.entries(attrs)) {
-
-    if(key.startsWith('on') && typeof value === 'function') {
-      el.addEventListener(
-        key.slice(2).toLowerCase(),
-        value
-      );
-    } else if(key === 'className') {
-      el.className = value;
-    } else if(key === 'value') {
-      el.value = value;
-    } else if(key === 'checked') {
-      el.checked = value;
-    } else if(key === 'textContent') {
-      el.textContent = value;
+    if(key.startsWith('on') && typeof value==='function') {
+      el.addEventListener(key.slice(2).toLowerCase(),value);
+    } else if(key==='className') {
+      el.className=value;
+    } else if(key==='value') {
+      el.value=value;
     } else {
       el.setAttribute(key,value);
     }
   }
 
   for(const child of children) {
-    if(child === null || child === undefined) continue;
+    if(child===null || child===undefined) continue;
 
     el.append(
       child instanceof Node
@@ -410,301 +416,256 @@ function h(tag,attrs={},...children) {
   return el;
 }
 
-/* =========================================
-   HASH JOURNAL
-========================================= */
+/* =================================
+   JOURNAL
+================================= */
 
 async function sha(value) {
   if(!crypto?.subtle) {
-    throw new Error('Web Crypto is unavailable.');
+    throw new Error('Web Crypto unavailable.');
   }
 
-  const bytes = await crypto.subtle.digest(
+  const result=await crypto.subtle.digest(
     'SHA-256',
     new TextEncoder().encode(value)
   );
 
-  return [...new Uint8Array(bytes)]
-    .map(b => b.toString(16).padStart(2,'0'))
+  return [...new Uint8Array(result)]
+    .map(x=>x.toString(16).padStart(2,'0'))
     .join('');
 }
 
 async function log(op,path) {
-
-  const previous = D.j.length
+  const previous=D.j.length
     ? D.j[D.j.length-1].h
     : GEN;
 
-  const entry = {
+  const entry={
     n:D.j.length,
     op,
     p:path,
     prev:previous
   };
 
-  entry.h = await sha(
-    JSON.stringify([
-      entry.n,
-      entry.op,
-      entry.p,
-      entry.prev
-    ])
-  );
+  entry.h=await sha(JSON.stringify([
+    entry.n,
+    entry.op,
+    entry.p,
+    entry.prev
+  ]));
 
   D.j.push(entry);
 
   try {
     persist();
-  } catch(error) {
+  } catch(e) {
     D.j.pop();
-    throw error;
+    throw e;
   }
 }
 
 async function verify(journal) {
-  let previous = GEN;
+  let previous=GEN;
 
   for(const entry of journal) {
+    if(entry.prev!==previous) return entry.n;
 
-    if(entry.prev !== previous) {
-      return entry.n;
-    }
+    const expected=await sha(JSON.stringify([
+      entry.n,
+      entry.op,
+      entry.p,
+      entry.prev
+    ]));
 
-    const expected = await sha(
-      JSON.stringify([
-        entry.n,
-        entry.op,
-        entry.p,
-        entry.prev
-      ])
-    );
+    if(entry.h!==expected) return entry.n;
 
-    if(entry.h !== expected) {
-      return entry.n;
-    }
-
-    previous = entry.h;
+    previous=entry.h;
   }
 
   return -1;
 }
 
-/*
-  Important:
-  Persist the actual file operation first.
-  Journal hashing happens afterwards.
-*/
-
-async function recordOperation(op,path) {
+async function record(op,path) {
   try {
     await log(op,path);
     return true;
-  } catch(error) {
-    console.error('Journal warning:',error);
+  } catch(e) {
+    console.error('Journal error:',e);
     return false;
   }
 }
 
-/* =========================================
+/* =================================
    FILE OPERATIONS
-========================================= */
+================================= */
 
 async function wr(path,content) {
+  path=norm(path);
 
-  path = norm(path);
-
-  if(F()[par(path)]?.t !== 'd') {
-    throw new Error('The destination folder does not exist.');
+  if(F()[par(path)]?.t!=='d') {
+    throw new Error('Parent folder does not exist.');
   }
 
-  if(F()[path]?.t === 'd') {
+  if(F()[path]?.t==='d') {
     throw new Error('This path is a folder.');
   }
 
-  const operation = F()[path]
-    ? 'write'
-    : 'create';
+  const operation=F()[path] ? 'write' : 'create';
 
-  F()[path] = {
+  F()[path]={
     t:'f',
     c:String(content)
   };
 
-  // Save the actual content first.
+  // Persist file contents before journal hashing.
   persist();
 
-  // Then attempt the journal operation.
-  return await recordOperation(operation,path);
+  return await record(operation,path);
 }
 
 async function mk(path) {
-
-  path = norm(path);
+  path=norm(path);
 
   if(F()[path]) {
-    throw new Error('A file or folder already exists here.');
+    throw new Error('That path already exists.');
   }
 
-  if(F()[par(path)]?.t !== 'd') {
-    throw new Error('The parent folder does not exist.');
+  if(F()[par(path)]?.t!=='d') {
+    throw new Error('Parent folder does not exist.');
   }
 
-  F()[path] = {t:'d'};
+  F()[path]={t:'d'};
 
   persist();
 
-  return await recordOperation('mkdir',path);
+  return await record('mkdir',path);
 }
 
 async function rm(path) {
+  path=norm(path);
 
-  path = norm(path);
-
-  if(path === '/' || !F()[path]) {
-    throw new Error('Cannot remove this path.');
+  if(path==='/' || !F()[path]) {
+    throw new Error('Cannot delete this path.');
   }
 
   for(const key of Object.keys(F())) {
-    if(key === path || key.startsWith(path + '/')) {
+    if(key===path || key.startsWith(path+'/')) {
       delete F()[key];
     }
   }
 
   persist();
 
-  return await recordOperation('remove',path);
+  return await record('remove',path);
 }
 
-/* =========================================
+/* =================================
    THEME
-========================================= */
+================================= */
 
 function theme() {
-  const root = document.documentElement;
+  document.documentElement.dataset.t=D.set.theme;
 
-  root.dataset.t = D.set.theme;
-
-  root.style.setProperty(
+  document.documentElement.style.setProperty(
     '--ac',
     D.set.ac
   );
 }
 
-/* =========================================
-   DESKTOP AND WINDOWS
-========================================= */
+/* =================================
+   DESKTOP
+================================= */
 
-let Z = 10;
-let W = [];
-let ws = 1;
+let Z=10;
+let W=[];
+let ws=1;
 
-const T0 = Date.now();
+const T0=Date.now();
 
-const clock = () =>
-  new Date().toLocaleTimeString([],{
+function clock() {
+  return new Date().toLocaleTimeString([],{
     hour:'2-digit',
     minute:'2-digit'
-  });
-
-function show() {
-  W.forEach(o => {
-    o.w.classList.toggle(
-      'off',
-      o.ws !== ws
-    );
   });
 }
 
 function bar() {
-
   $('#bar').replaceChildren(
-    h('button',{
-      onclick:launch
-    },'CX'),
+    h('button',{onclick:launch},'CX'),
 
     ...[1,2,3,4].map(i =>
       h('button',{
-        class:ws === i ? 'on' : '',
-        onclick:() => {
-          ws = i;
+        class:ws===i?'on':'',
+        onclick:()=>{
+          ws=i;
           show();
           bar();
         }
       },i)
     ),
 
-    h('span',{
-      id:'clock'
-    },clock())
+    h('span',{id:'clock'},clock())
   );
 }
 
+function show() {
+  W.forEach(item => {
+    item.w.classList.toggle('off',item.ws!==ws);
+  });
+}
+
 function drag(element,callback) {
-
-  element.addEventListener('pointerdown',event => {
-
+  element.addEventListener('pointerdown',event=>{
     if(event.target.closest('button')) return;
 
-    event.stopPropagation();
+    const win=element.closest('.win');
+    win.style.zIndex=++Z;
 
-    const win = element.closest('.win');
+    let x=event.clientX;
+    let y=event.clientY;
 
-    win.style.zIndex = ++Z;
-
-    let x = event.clientX;
-    let y = event.clientY;
-
-    try {
-      element.setPointerCapture(event.pointerId);
-    } catch(error) {}
-
-    const move = e => {
-      callback(
-        e.clientX-x,
-        e.clientY-y
-      );
-
-      x = e.clientX;
-      y = e.clientY;
+    const move=e=>{
+      callback(e.clientX-x,e.clientY-y);
+      x=e.clientX;
+      y=e.clientY;
     };
 
-    const up = () => {
+    const end=()=>{
       element.removeEventListener('pointermove',move);
-      element.removeEventListener('pointerup',up);
-      element.removeEventListener('pointercancel',up);
+      element.removeEventListener('pointerup',end);
+      element.removeEventListener('pointercancel',end);
     };
 
     element.addEventListener('pointermove',move);
-    element.addEventListener('pointerup',up);
-    element.addEventListener('pointercancel',up);
+    element.addEventListener('pointerup',end);
+    element.addEventListener('pointercancel',end);
   });
 }
 
 function openApp(id,arg) {
-
-  const A = APPS[id];
-
+  const A=APPS[id];
   if(!A) return;
 
-  const mobile = innerWidth < 700;
+  const mobile=innerWidth<700;
 
-  const o = {
+  const o={
     id,
     ws,
-    m:false,
-    x:30+W.length*24,
-    y:20+W.length*24,
+    x:25+W.length*20,
+    y:20+W.length*20,
     wd:420,
-    ht:360
+    ht:360,
+    max:false
   };
 
-  const w = h('div',{class:'win'});
-  const b = h('div',{class:'bd'});
-  const rs = h('div',{class:'rs'});
+  const w=h('div',{class:'win'});
+  const b=h('div',{class:'bd'});
+  const rs=h('div',{class:'rs'});
 
-  const fit = () => {
+  o.w=w;
 
-    if(o.m || mobile) {
+  function fit() {
+    if(o.max || mobile) {
       Object.assign(w.style,{
         left:'4px',
         top:'4px',
@@ -719,107 +680,108 @@ function openApp(id,arg) {
         height:o.ht+'px'
       });
     }
-  };
+  }
 
-  const tb = h(
-    'div',
-    {class:'tb'},
+  const tb=h('div',{class:'tb'},
 
     h('b',{},A.n),
 
     h('button',{
-      title:'Minimize',
-      onclick:() => {
-        w.classList.add('off');
-      }
+      onclick:()=>w.classList.add('off'),
+      title:'Minimize'
     },'−'),
 
     h('button',{
-      title:'Maximize',
-      onclick:() => {
-        o.m = !o.m;
+      onclick:()=>{
+        o.max=!o.max;
         fit();
-      }
+      },
+      title:'Maximize'
     },'□'),
 
     h('button',{
-      title:'Close',
-      onclick:() => {
+      onclick:()=>{
         o.stop?.();
         w.remove();
-        W = W.filter(q => q !== o);
-      }
+        W=W.filter(item=>item!==o);
+      },
+      title:'Close'
     },'×')
   );
 
-  o.w = w;
-
   W.push(o);
+
+  w.append(tb,b,rs);
+  $('#desk').append(w);
 
   fit();
 
-  w.append(tb,b,rs);
-
-  $('#desk').append(w);
-
-  w.style.zIndex = ++Z;
-
-  w.addEventListener('pointerdown',() => {
-    w.style.zIndex = ++Z;
+  w.addEventListener('pointerdown',()=>{
+    w.style.zIndex=++Z;
   });
 
-  drag(tb,(dx,dy) => {
-    if(o.m || mobile) return;
-
-    o.x += dx;
-    o.y += dy;
-
+  drag(tb,(dx,dy)=>{
+    if(o.max || mobile) return;
+    o.x+=dx;
+    o.y+=dy;
     fit();
   });
 
-  drag(rs,(dx,dy) => {
-    if(o.m || mobile) return;
-
-    o.wd = Math.max(220,o.wd+dx);
-    o.ht = Math.max(140,o.ht+dy);
-
+  drag(rs,(dx,dy)=>{
+    if(o.max || mobile) return;
+    o.wd=Math.max(220,o.wd+dx);
+    o.ht=Math.max(140,o.ht+dy);
     fit();
   });
 
-  o.stop = A.f(b,arg);
+  o.stop=A.f(b,arg);
 
   show();
 }
 
-/* =========================================
+/* Adjust open windows when device orientation or size changes. */
+window.addEventListener('resize',()=>{
+  W.forEach(item=>{
+    const mobile=innerWidth<700;
+
+    if(mobile) {
+      Object.assign(item.w.style,{
+        left:'4px',
+        top:'4px',
+        width:'calc(100% - 8px)',
+        height:'calc(100% - 8px)'
+      });
+    } else if(!item.max) {
+      Object.assign(item.w.style,{
+        left:item.x+'px',
+        top:item.y+'px',
+        width:item.wd+'px',
+        height:item.ht+'px'
+      });
+    }
+  });
+});
+
+/* =================================
    APP LAUNCHER
-========================================= */
+================================= */
 
 function launch() {
-
-  const L = $('#lau');
-
-  const q = h('input',{
-    placeholder:'Search apps',
-    oninput:draw
-  });
-
-  const lst = h('div');
+  const L=$('#lau');
+  const q=h('input',{placeholder:'Search applications'});
+  const list=h('div');
 
   function draw() {
-
-    lst.replaceChildren(
+    list.replaceChildren(
       ...Object.entries(APPS)
-        .filter(([key,A]) =>
-          A.n.toLowerCase().includes(
-            q.value.toLowerCase()
-          )
+        .filter(([key,A])=>
+          A.n.toLowerCase().includes(q.value.toLowerCase())
         )
-        .map(([key,A]) =>
+        .map(([key,A])=>
           h('div',{
             class:'row',
-            onclick:() => {
-              L.style.display = 'none';
+            onclick:()=>{
+              L.style.display='none';
               openApp(key);
             }
           },A.n)
@@ -827,728 +789,554 @@ function launch() {
     );
   }
 
+  q.addEventListener('input',draw);
+
   L.replaceChildren(
     h('div',{},
-
       h('b',{},'CX Application Launcher'),
-
       q,
-
-      lst,
-
-      h('div',{
-        class:'dim'
-      },
-      'Future development: installable apps, cloud sessions, remote compute, AI assistant and cross-device synchronization.'),
-
+      list,
       h('button',{
-        onclick:() => {
-          L.style.display = 'none';
-        }
+        onclick:()=>L.style.display='none'
       },'Close')
     )
   );
 
-  L.style.display = 'block';
-
+  L.style.display='block';
   draw();
-
-  q.focus();
 }
 
-/* =========================================
+/* =================================
    APPLICATIONS
-========================================= */
+================================= */
 
-const APPS = {
+const APPS={
 
-  /* FILE MANAGER */
+files:{
+  n:'Files',
 
-  files:{
-    n:'Files',
+  f:b=>{
+    let dir='/';
+    let selected=null;
 
-    f:b => {
+    const L=h('div');
+    const P=h('div',{class:'dim'});
+    const status=h('div',{class:'status dim'});
 
-      let dir = '/';
-      let selected = null;
+    function draw() {
+      P.textContent='Location: '+dir;
 
-      const L = h('div');
-      const P = h('div',{class:'dim filepath'});
+      const rows=[];
 
-      const status = h('div',{
-        class:'status dim'
-      });
+      if(dir!=='/') {
+        rows.push(h('div',{
+          class:'row',
+          onclick:()=>{
+            dir=par(dir);
+            selected=null;
+            draw();
+          }
+        },'← Parent folder'));
+      }
 
-      const button = (label,action) =>
-        h('button',{
-          onclick:async() => {
-            try {
-              await action();
-              status.textContent = 'Operation completed.';
-            } catch(error) {
-              status.textContent = 'Error: '+error.message;
+      for(const path of kids(dir)) {
+        const item=F()[path];
+
+        rows.push(h('div',{
+          class:'row'+(selected===path?' s':''),
+
+          onclick:()=>{
+            if(item.t==='d') {
+              dir=path;
+              selected=null;
+            } else if(selected===path) {
+              openApp('notes',path);
+            } else {
+              selected=path;
             }
 
             draw();
           }
-        },label);
-
-      function draw() {
-
-        P.textContent = 'Location: '+dir;
-
-        const rows = [];
-
-        if(dir !== '/') {
-          rows.push(
-            h('div',{
-              class:'row',
-              onclick:() => {
-                dir = par(dir);
-                selected = null;
-                draw();
-              }
-            },'← Parent folder')
-          );
-        }
-
-        for(const path of kids(dir)) {
-
-          const item = F()[path];
-
-          rows.push(
-            h('div',{
-              class:'row'+(
-                selected === path ? ' s' : ''
-              ),
-
-              onclick:() => {
-
-                if(item.t === 'd') {
-                  dir = path;
-                  selected = null;
-                } else if(selected === path) {
-                  openApp('notes',path);
-                } else {
-                  selected = path;
-                }
-
-                draw();
-              }
-            },
-            (item.t === 'd' ? '📁 ' : '📄 ')+
-            path.split('/').pop())
-          );
-        }
-
-        L.replaceChildren(...rows);
-      }
-
-      const actions = h('div',{
-        class:'actions'
-      },
-
-        button('New file',async() => {
-          const name = prompt('File name');
-
-          if(!name) return;
-
-          const path = norm(name,dir);
-
-          if(F()[path]) {
-            throw new Error('That name already exists.');
-          }
-
-          await wr(path,'');
-
-          selected = path;
-        }),
-
-        button('New folder',async() => {
-          const name = prompt('Folder name');
-
-          if(!name) return;
-
-          await mk(norm(name,dir));
-        }),
-
-        button('Open',async() => {
-          if(!selected || F()[selected]?.t !== 'f') {
-            throw new Error('Select a file first.');
-          }
-
-          openApp('notes',selected);
-        }),
-
-        button('Delete',async() => {
-          if(!selected) {
-            throw new Error('Select a file or folder first.');
-          }
-
-          if(!confirm('Delete '+selected+'?')) return;
-
-          await rm(selected);
-
-          selected = null;
-        })
-      );
-
-      b.append(
-        actions,
-        P,
-        L,
-        status,
-        h('div',{
-          class:'dim'
         },
-        'Tap a file once to select it. Tap it again to open it.')
-      );
-
-      draw();
-    }
-  },
-
-  /* NOTES EDITOR */
-
-  notes:{
-    n:'Notes',
-
-    f:(b,arg) => {
-
-      const initialPath =
-        typeof arg === 'string'
-          ? arg
-          : '/untitled.txt';
-
-      const p = h('input',{
-        value:initialPath,
-        placeholder:'/filename.txt',
-        spellcheck:'false'
-      });
-
-      const t = h('textarea',{
-        placeholder:'Write something here...',
-        spellcheck:'true'
-      });
-
-      const status = h('div',{
-        class:'status dim',
-        role:'status',
-        'aria-live':'polite'
-      });
-
-      const saveButton = h('button',{
-        type:'button',
-        class:'on',
-        onclick:async() => {
-
-          saveButton.disabled = true;
-          status.textContent = 'Saving...';
-
-          try {
-
-            const path = norm(p.value);
-
-            if(path === '/') {
-              throw new Error('Enter a valid file name.');
-            }
-
-            const journalSaved = await wr(
-              path,
-              t.value
-            );
-
-            p.value = path;
-
-            if(journalSaved) {
-              status.textContent =
-                '✓ Saved successfully at '+clock();
-            } else {
-              status.textContent =
-                '✓ File saved. Warning: journal update failed.';
-            }
-
-          } catch(error) {
-
-            status.textContent =
-              '✕ Save failed: '+error.message;
-
-          } finally {
-
-            saveButton.disabled = false;
-          }
-        }
-      },'Save');
-
-      if(F()[initialPath]?.t === 'f') {
-        t.value = F()[initialPath].c || '';
+        (item.t==='d'?'📁 ':'📄 ')+path.split('/').pop()));
       }
 
-      b.append(
-        h('div',{
-          class:'dim'
-        },'File location'),
-
-        p,
-
-        t,
-
-        saveButton,
-
-        status
-      );
-
-      // Explicit mobile-friendly click handling.
-      saveButton.addEventListener('touchend',event => {
-        event.stopPropagation();
-      },{passive:true});
+      L.replaceChildren(...rows);
     }
-  },
 
-  /* TERMINAL */
+    async function action(fn) {
+      try {
+        await fn();
+        status.textContent='Operation completed.';
+        draw();
+      } catch(e) {
+        status.textContent='Error: '+e.message;
+        notify(e.message,false);
+      }
+    }
 
-  term:{
-    n:'Terminal',
+    b.append(
+      h('div',{class:'actions'},
 
-    f:b => {
+        h('button',{
+          onclick:()=>action(async()=>{
+            const name=prompt('File name');
+            if(!name) return;
 
-      let current = '/';
+            const path=norm(name,dir);
 
-      const output = h('pre');
+            if(F()[path]) throw new Error('Already exists.');
 
-      const input = h('input',{
-        placeholder:'Type help',
-        autocapitalize:'none',
-        autocomplete:'off',
-        spellcheck:'false'
-      });
+            await wr(path,'');
+            selected=path;
+          })
+        },'New file'),
 
-      const print = text => {
-        output.append(
-          document.createTextNode(String(text)+'\n')
+        h('button',{
+          onclick:()=>action(async()=>{
+            const name=prompt('Folder name');
+            if(!name) return;
+            await mk(norm(name,dir));
+          })
+        },'New folder'),
+
+        h('button',{
+          onclick:()=>{
+            if(!selected || F()[selected]?.t!=='f') {
+              notify('Select a file first.',false);
+              return;
+            }
+            openApp('notes',selected);
+          }
+        },'Open'),
+
+        h('button',{
+          onclick:()=>action(async()=>{
+            if(!selected) throw new Error('Select something first.');
+            if(!confirm('Delete '+selected+'?')) return;
+            await rm(selected);
+            selected=null;
+          })
+        },'Delete')
+      ),
+
+      P,
+      L,
+      status,
+      h('div',{class:'dim'},
+        'Tap once to select. Tap again to open.')
+    );
+
+    draw();
+  }
+},
+
+notes:{
+  n:'Notes',
+
+  f:(b,arg)=>{
+    const initial=typeof arg==='string'?arg:'/untitled.txt';
+
+    const p=h('input',{
+      value:initial,
+      placeholder:'/filename.txt',
+      spellcheck:'false'
+    });
+
+    const t=h('textarea',{
+      placeholder:'Write something here...'
+    });
+
+    const status=h('div',{
+      class:'status dim',
+      role:'status',
+      'aria-live':'polite'
+    });
+
+    const save=h('button',{
+      class:'on',
+      type:'button'
+    },'Save');
+
+    if(F()[initial]?.t==='f') {
+      t.value=F()[initial].c||'';
+    }
+
+    async function performSave() {
+      if(save.disabled) return;
+
+      save.disabled=true;
+      save.textContent='Saving...';
+      status.textContent='Saving your file...';
+
+      try {
+        const path=norm(p.value);
+
+        if(path==='/') {
+          throw new Error('Enter a valid file name.');
+        }
+
+        const journalOK=await wr(path,t.value);
+
+        p.value=path;
+
+        status.textContent=journalOK
+          ? 'Saved successfully'
+          : 'File saved; journal update needs attention.';
+
+        notify(
+          journalOK
+            ? '✓ Saved successfully'
+            : '✓ File saved; journal warning',
+          true
         );
 
-        output.scrollTop = output.scrollHeight;
+      } catch(e) {
+        status.textContent='Save failed: '+e.message;
+        notify('Save failed: '+e.message,false);
+
+      } finally {
+        save.disabled=false;
+        save.textContent='Save';
+      }
+    }
+
+    save.addEventListener('click',performSave);
+
+    b.append(
+      h('div',{class:'dim'},'File location'),
+      p,
+      t,
+      save,
+      status
+    );
+
+    // Keep editor usable when the Android keyboard opens.
+    if(window.visualViewport) {
+      const adjust=()=>{
+        const available=window.visualViewport.height;
+        b.style.maxHeight=available+'px';
       };
 
-      async function run(line) {
-
-        const [command,...rest] =
-          line.trim().split(/\s+/);
-
-        const argument = rest.join(' ');
-
-        print('$ '+line);
-
-        try {
-
-          switch(command) {
-
-            case '':
-              break;
-
-            case 'help':
-              print(
-                'help ls cd pwd cat echo mkdir touch rm journal verify date clear'
-              );
-              break;
-
-            case 'pwd':
-              print(current);
-              break;
-
-            case 'cd': {
-              const path = norm(argument || '/',current);
-
-              if(F()[path]?.t !== 'd') {
-                throw new Error('Not a folder.');
-              }
-
-              current = path;
-              break;
-            }
-
-            case 'ls': {
-              const path = norm(argument || '.',current);
-
-              if(F()[path]?.t !== 'd') {
-                throw new Error('Not a folder.');
-              }
-
-              print(
-                kids(path)
-                  .map(k =>
-                    k.split('/').pop()+
-                    (F()[k].t === 'd' ? '/' : '')
-                  )
-                  .join('  ') || '(empty)'
-              );
-
-              break;
-            }
-
-            case 'cat': {
-              const path = norm(argument,current);
-
-              if(F()[path]?.t !== 'f') {
-                throw new Error('File not found.');
-              }
-
-              print(F()[path].c);
-              break;
-            }
-
-            case 'mkdir':
-              await mk(norm(argument,current));
-              print('Folder created.');
-              break;
-
-            case 'touch': {
-              const path = norm(argument,current);
-
-              if(!F()[path]) {
-                await wr(path,'');
-              }
-
-              print('File ready.');
-              break;
-            }
-
-            case 'rm':
-              await rm(norm(argument,current));
-              print('Removed.');
-              break;
-
-            case 'echo': {
-              const parts = argument.split(' > ');
-
-              if(parts.length > 1) {
-                await wr(
-                  norm(parts.slice(1).join(' > ').trim(),current),
-                  parts[0]
-                );
-
-                print('Written.');
-              } else {
-                print(argument);
-              }
-
-              break;
-            }
-
-            case 'journal':
-              D.j.slice(-8).forEach(e => {
-                print(
-                  e.n+' '+e.op+' '+e.p+' '+e.h.slice(0,10)
-                );
-              });
-              break;
-
-            case 'verify': {
-              const result = await verify(D.j);
-
-              print(
-                result < 0
-                  ? 'Journal OK: '+D.j.length+' entries.'
-                  : 'Journal broken at entry '+result
-              );
-
-              break;
-            }
-
-            case 'date':
-              print(new Date().toString());
-              break;
-
-            case 'clear':
-              output.textContent = '';
-              break;
-
-            default:
-              print(command+': command not found');
-          }
-
-        } catch(error) {
-          print('Error: '+error.message);
-        }
-      }
-
-      input.addEventListener('keydown',event => {
-
-        if(event.key === 'Enter') {
-
-          const value = input.value;
-
-          input.value = '';
-
-          run(value);
-        }
-      });
-
-      b.append(output,input);
-
-      print('CX Terminal v0.2');
-      print('Type help to see available commands.');
-    }
-  },
-
-  /* MONITOR */
-
-  mon:{
-    n:'Monitor',
-
-    f:b => {
-
-      const output = h('pre');
-
-      const note = h('div',{
-        class:'dim'
-      },
-      'These are browser-reported values from the device running CX Web. This is not remote compute.');
-
-      b.append(output,note);
-
-      let frames = 0;
-      let last = performance.now();
-      let active = true;
-
-      function countFrames() {
-        if(!active) return;
-
-        frames++;
-
-        requestAnimationFrame(countFrames);
-      }
-
-      countFrames();
-
-      async function update() {
-
-        let storage = null;
-
-        try {
-          storage = await navigator.storage?.estimate?.();
-        } catch(error) {}
-
-        const now = performance.now();
-
-        const fps = Math.round(
-          frames*1000/(now-last)
-        );
-
-        frames = 0;
-        last = now;
-
-        output.textContent = [
-
-          'CPU cores (logical): '+
-            (navigator.hardwareConcurrency || 'not reported'),
-
-          'Device memory (approximate): '+
-            (navigator.deviceMemory
-              ? navigator.deviceMemory+' GB'
-              : 'not reported'),
-
-          'JS heap: '+
-            (performance.memory
-              ? Math.round(
-                  performance.memory.usedJSHeapSize/1048576
-                )+' MB'
-              : 'not reported'),
-
-          'Browser storage: '+
-            (storage
-              ? (storage.usage/1048576).toFixed(2)+
-                ' MB of '+
-                Math.round(storage.quota/1048576)+' MB'
-              : 'not reported'),
-
-          'Frames per second: '+fps,
-
-          'Open windows: '+W.length,
-
-          'Files and folders: '+(Object.keys(F()).length-1),
-
-          'Journal entries: '+D.j.length,
-
-          'Uptime: '+Math.round((Date.now()-T0)/1000)+' seconds'
-
-        ].join('\n');
-      }
-
-      update();
-
-      const timer = setInterval(update,1500);
-
-      return () => {
-        active = false;
-        clearInterval(timer);
+      window.visualViewport.addEventListener('resize',adjust);
+      adjust();
+
+      return ()=>{
+        window.visualViewport.removeEventListener('resize',adjust);
       };
-    }
-  },
-
-  /* SETTINGS */
-
-  set:{
-    n:'Settings',
-
-    f:b => {
-
-      const themeSelect = h('select',{
-        onchange:() => {
-          D.set.theme = themeSelect.value;
-          theme();
-          persist();
-        }
-      },
-
-        ...['auto','light','dark'].map(value =>
-          h('option',{
-            value
-          },value)
-        )
-      );
-
-      themeSelect.value = D.set.theme;
-
-      const accent = h('input',{
-        type:'color',
-        value:D.set.ac,
-
-        oninput:() => {
-          D.set.ac = accent.value;
-          theme();
-          persist();
-        }
-      });
-
-      const exportButton = h('button',{
-        onclick:async() => {
-
-          const data = JSON.stringify({
-            fs:D.fs,
-            j:D.j
-          });
-
-          try {
-
-            await navigator.clipboard.writeText(data);
-
-            alert('Workspace copied to clipboard.');
-
-          } catch(error) {
-
-            prompt('Copy your workspace data:',data);
-          }
-        }
-      },'Export workspace');
-
-      const importButton = h('button',{
-        onclick:async() => {
-
-          const raw = prompt(
-            'Paste an exported CX workspace'
-          );
-
-          if(!raw) return;
-
-          try {
-
-            const imported = JSON.parse(raw);
-
-            if(
-              !imported.fs ||
-              !imported.fs['/'] ||
-              !Array.isArray(imported.j)
-            ) {
-              throw new Error('Invalid workspace format.');
-            }
-
-            const result = await verify(imported.j);
-
-            if(result >= 0) {
-              throw new Error(
-                'Journal verification failed at entry '+result
-              );
-            }
-
-            D.fs = imported.fs;
-            D.j = imported.j;
-
-            persist();
-
-            alert('Workspace imported successfully.');
-
-            location.reload();
-
-          } catch(error) {
-
-            alert('Import failed: '+error.message);
-          }
-        }
-      },'Import workspace');
-
-      const eraseButton = h('button',{
-        onclick:() => {
-
-          if(confirm('Erase all CX data in this browser?')) {
-            localStorage.removeItem('cx');
-            location.reload();
-          }
-        }
-      },'Erase everything');
-
-      b.append(
-
-        h('b',{},'Appearance'),
-
-        h('div',{},'Theme',themeSelect),
-
-        h('div',{},'Accent colour',accent),
-
-        h('hr'),
-
-        h('b',{},'Workspace'),
-
-        exportButton,
-
-        importButton,
-
-        eraseButton,
-
-        h('hr'),
-
-        h('div',{
-          class:'dim'
-        },
-        'The journal is a tamper-evident record of operations. It does not independently prove that the files match every journal entry.')
-
-      );
     }
   }
-};
+},
 
-/* =========================================
+term:{
+  n:'Terminal',
+
+  f:b=>{
+    let current='/';
+
+    const output=h('pre');
+    const input=h('input',{
+      placeholder:'Type help',
+      autocapitalize:'none',
+      autocomplete:'off',
+      spellcheck:'false'
+    });
+
+    function print(value) {
+      output.append(document.createTextNode(String(value)+'\n'));
+      output.scrollTop=output.scrollHeight;
+    }
+
+    async function run(line) {
+      const [cmd,...rest]=line.trim().split(/\s+/);
+      const arg=rest.join(' ');
+
+      print('$ '+line);
+
+      try {
+        switch(cmd) {
+          case '':
+            break;
+
+          case 'help':
+            print('help ls cd pwd cat echo mkdir touch rm journal verify date clear');
+            break;
+
+          case 'pwd':
+            print(current);
+            break;
+
+          case 'cd': {
+            const path=norm(arg||'/',current);
+            if(F()[path]?.t!=='d') throw new Error('Not a folder.');
+            current=path;
+            break;
+          }
+
+          case 'ls': {
+            const path=norm(arg||'.',current);
+            if(F()[path]?.t!=='d') throw new Error('Not a folder.');
+            print(kids(path).map(k=>
+              k.split('/').pop()+(F()[k].t==='d'?'/':'')
+            ).join('  ')||'(empty)');
+            break;
+          }
+
+          case 'cat': {
+            const path=norm(arg,current);
+            if(F()[path]?.t!=='f') throw new Error('File not found.');
+            print(F()[path].c);
+            break;
+          }
+
+          case 'mkdir':
+            await mk(norm(arg,current));
+            print('Folder created.');
+            break;
+
+          case 'touch':
+            if(!F()[norm(arg,current)]) await wr(norm(arg,current),'');
+            print('File ready.');
+            break;
+
+          case 'rm':
+            await rm(norm(arg,current));
+            print('Removed.');
+            break;
+
+          case 'echo': {
+            const parts=arg.split(' > ');
+            if(parts.length>1) {
+              await wr(norm(parts.slice(1).join(' > ').trim(),current),parts[0]);
+              print('Written.');
+            } else {
+              print(arg);
+            }
+            break;
+          }
+
+          case 'journal':
+            D.j.slice(-8).forEach(e=>
+              print(e.n+' '+e.op+' '+e.p+' '+e.h.slice(0,10))
+            );
+            break;
+
+          case 'verify': {
+            const result=await verify(D.j);
+            print(result<0
+              ? 'Journal OK: '+D.j.length+' entries.'
+              : 'Journal broken at entry '+result);
+            break;
+          }
+
+          case 'date':
+            print(new Date().toString());
+            break;
+
+          case 'clear':
+            output.textContent='';
+            break;
+
+          default:
+            print(cmd+': command not found');
+        }
+      } catch(e) {
+        print('Error: '+e.message);
+      }
+    }
+
+    input.addEventListener('keydown',e=>{
+      if(e.key==='Enter') {
+        const value=input.value;
+        input.value='';
+        run(value);
+      }
+    });
+
+    b.append(output,input);
+
+    print('CX Terminal v0.3');
+    print('Type help to see available commands.');
+  }
+},
+
+mon:{
+  n:'Monitor',
+
+  f:b=>{
+    const output=h('pre');
+    const note=h('div',{class:'dim'},
+      'Browser-reported device information. This is not remote compute.');
+
+    b.append(output,note);
+
+    let frames=0;
+    let last=performance.now();
+    let active=true;
+
+    function frame() {
+      if(!active) return;
+      frames++;
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+
+    async function update() {
+      let storage=null;
+
+      try {
+        storage=await navigator.storage?.estimate?.();
+      } catch(e) {}
+
+      const now=performance.now();
+      const fps=Math.round(frames*1000/(now-last));
+
+      frames=0;
+      last=now;
+
+      output.textContent=[
+        'Logical CPU cores: '+(navigator.hardwareConcurrency||'Unknown'),
+        'Approximate device memory: '+(navigator.deviceMemory||'Unknown'),
+        'JS heap: '+(performance.memory
+          ? Math.round(performance.memory.usedJSHeapSize/1048576)+' MB'
+          : 'Not reported'),
+        'Browser storage: '+(storage
+          ? (storage.usage/1048576).toFixed(2)+' MB used'
+          : 'Not reported'),
+        'Frames per second: '+fps,
+        'Open windows: '+W.length,
+        'Files and folders: '+(Object.keys(F()).length-1),
+        'Journal entries: '+D.j.length,
+        'Uptime: '+Math.round((Date.now()-T0)/1000)+' seconds'
+      ].join('\n');
+    }
+
+    update();
+
+    const timer=setInterval(update,1500);
+
+    return ()=>{
+      active=false;
+      clearInterval(timer);
+    };
+  }
+},
+
+set:{
+  n:'Settings',
+
+  f:b=>{
+    const select=h('select',{
+      onchange:()=>{
+        D.set.theme=select.value;
+        theme();
+        persist();
+      }
+    },
+      ...['auto','light','dark'].map(value=>
+        h('option',{value},value)
+      )
+    );
+
+    select.value=D.set.theme;
+
+    const color=h('input',{
+      type:'color',
+      value:D.set.ac,
+      oninput:()=>{
+        D.set.ac=color.value;
+        theme();
+        persist();
+      }
+    });
+
+    const exportButton=h('button',{
+      onclick:async()=>{
+        const data=JSON.stringify({fs:D.fs,j:D.j});
+
+        try {
+          await navigator.clipboard.writeText(data);
+          notify('Workspace copied to clipboard.');
+        } catch(e) {
+          prompt('Copy workspace data:',data);
+        }
+      }
+    },'Export workspace');
+
+    const importButton=h('button',{
+      onclick:async()=>{
+        const raw=prompt('Paste exported CX workspace');
+        if(!raw) return;
+
+        try {
+          const imported=JSON.parse(raw);
+
+          if(!imported.fs?.['/'] || !Array.isArray(imported.j)) {
+            throw new Error('Invalid workspace format.');
+          }
+
+          const result=await verify(imported.j);
+
+          if(result>=0) {
+            throw new Error('Journal verification failed at '+result);
+          }
+
+          if(!confirm('Replace the current workspace with this import?')) return;
+
+          D.fs=imported.fs;
+          D.j=imported.j;
+
+          persist();
+          location.reload();
+
+        } catch(e) {
+          notify('Import failed: '+e.message,false);
+        }
+      }
+    },'Import workspace');
+
+    const eraseButton=h('button',{
+      onclick:()=>{
+        if(confirm('Erase all CX data in this browser?')) {
+          localStorage.removeItem('cx');
+          location.reload();
+        }
+      }
+    },'Erase everything');
+
+    b.append(
+      h('b',{},'Appearance'),
+      h('div',{},'Theme',select),
+      h('div',{},'Accent colour',color),
+      h('hr'),
+      h('b',{},'Workspace'),
+      exportButton,
+      importButton,
+      eraseButton,
+      h('hr'),
+      h('div',{class:'dim'},
+        'The journal is tamper-evident, but does not independently prove file contents or operation truth.')
+    );
+  }
+}
+
+/* =================================
    DOCK
-========================================= */
+================================= */
 
 $('#dock').append(
-  ...Object.entries(APPS).map(([key,app]) =>
-
+  ...Object.entries(APPS).map(([key,app])=>
     h('button',{
-      onclick:() => {
-
-        const existing = W.find(
-          item => item.id === key && item.ws === ws
+      onclick:()=>{
+        const existing=W.find(item=>
+          item.id===key && item.ws===ws
         );
 
         if(existing) {
-
           existing.w.classList.remove('off');
-          existing.w.style.zIndex = ++Z;
-
+          existing.w.style.zIndex=++Z;
         } else {
-
           openApp(key);
         }
       }
@@ -1556,25 +1344,21 @@ $('#dock').append(
   )
 );
 
-/* =========================================
+/* =================================
    STARTUP
-========================================= */
+================================= */
 
 theme();
-
 bar();
 
-setInterval(() => {
-  const element = $('#clock');
-
-  if(element) {
-    element.textContent = clock();
-  }
+setInterval(()=>{
+  const element=$('#clock');
+  if(element) element.textContent=clock();
 },20000);
 
 openApp('files');
 
-console.log('CX Web v0.2 initialized.');
+console.log('CX Web v0.3 initialized.');
 console.log('Workspace files:',Object.keys(F()).length);
 console.log('Journal entries:',D.j.length);
 
