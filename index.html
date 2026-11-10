@@ -2,1366 +2,1220 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f4f5f7">
-<title>CX Web v0.3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10131b">
+<title>CX — Universal Operating Environment</title>
 
 <style>
 :root {
-  --bg:#f4f5f7;
-  --fg:#15171a;
-  --pn:#fff;
-  --ln:#d9dce1;
-  --ac:#3b6ef5;
-}
-
-:root[data-t=dark] {
-  --bg:#0f1114;
-  --fg:#e8eaed;
-  --pn:#1a1d22;
-  --ln:#2d3239;
+  --bg:#10131b;
+  --panel:#191e29;
+  --panel2:#202737;
+  --text:#edf1fa;
+  --muted:#929caf;
+  --line:#30394b;
+  --accent:#6d8cff;
+  --danger:#ff626f;
+  --success:#4bd6a0;
 }
 
 * { box-sizing:border-box; }
 
-html,body {
+body {
   margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
   background:var(--bg);
-  color:var(--fg);
-  font:14px system-ui,sans-serif;
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
 }
 
 button,input,textarea,select {
   font:inherit;
-  color:inherit;
-  background:var(--pn);
-  border:1px solid var(--ln);
-  border-radius:8px;
-  padding:10px;
-  max-width:100%;
 }
 
 button {
   cursor:pointer;
-  touch-action:manipulation;
-  min-height:38px;
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:9px;
 }
 
-button:active { opacity:.7; }
+button:hover {
+  border-color:var(--accent);
+}
 
-button.on {
-  background:var(--ac);
+button.active {
+  background:var(--accent);
   color:white;
+  border-color:var(--accent);
 }
 
-#bar {
-  position:fixed;
+input,textarea {
+  width:100%;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:12px;
+  outline:none;
+}
+
+input:focus,textarea:focus {
+  border-color:var(--accent);
+}
+
+#topbar {
+  height:60px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  position:sticky;
   top:0;
-  left:0;
-  right:0;
-  z-index:1000;
+  z-index:10;
+}
+
+.logo {
+  font-size:21px;
+  font-weight:bold;
+  letter-spacing:2px;
+}
+
+.logo span {
+  color:var(--accent);
+}
+
+.status {
+  color:var(--success);
+  font-size:12px;
+}
+
+#layout {
   display:flex;
-  align-items:center;
-  gap:6px;
-  padding:calc(env(safe-area-inset-top) + 5px) 8px 5px;
-  background:var(--pn);
-  border-bottom:1px solid var(--ln);
+  min-height:calc(100vh - 60px);
 }
 
-#clock { margin-left:auto; }
-
-#desk {
-  position:fixed;
-  inset:48px 0 65px;
-  overflow:hidden;
+#sidebar {
+  width:210px;
+  flex-shrink:0;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  padding:18px 12px;
 }
 
-.win {
-  position:absolute;
-  display:flex;
-  flex-direction:column;
-  min-width:220px;
-  min-height:140px;
-  background:var(--pn);
-  border:1px solid var(--ln);
-  border-radius:10px;
-  box-shadow:0 6px 24px #0004;
-  overflow:hidden;
+.nav-title {
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  padding:12px 10px;
 }
 
-.tb {
-  display:flex;
-  align-items:center;
-  gap:6px;
-  min-height:42px;
-  padding:6px 8px;
-  border-bottom:1px solid var(--ln);
-  cursor:move;
-  touch-action:none;
-  user-select:none;
+.nav {
+  width:100%;
+  text-align:left;
+  margin-bottom:6px;
+  background:transparent;
+  border-color:transparent;
 }
 
-.tb b { flex:1; }
+.nav.active {
+  background:var(--panel2);
+  border-color:var(--line);
+}
 
-.bd {
+#main {
   flex:1;
-  min-height:0;
-  overflow:auto;
-  padding:10px;
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-  overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
+  min-width:0;
+  padding:25px;
+  max-width:1200px;
+  margin:0 auto;
+  width:100%;
 }
 
-.rs {
-  position:absolute;
-  bottom:0;
-  right:0;
-  width:24px;
-  height:24px;
-  cursor:nwse-resize;
-  touch-action:none;
-}
-
-#dock {
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  z-index:999;
-  display:flex;
-  justify-content:center;
-  gap:7px;
-  flex-wrap:wrap;
-  padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);
-  background:var(--pn);
-  border-top:1px solid var(--ln);
-}
-
-#lau {
+.page {
   display:none;
-  position:fixed;
-  inset:0;
-  z-index:3000;
-  background:#000a;
-  padding:55px 12px;
-  overflow:auto;
 }
 
-#lau>div {
-  max-width:420px;
-  margin:auto;
-  padding:14px;
-  background:var(--pn);
-  border-radius:12px;
+.page.active {
+  display:block;
+}
+
+h1 {
+  font-size:26px;
+  margin:0 0 8px;
+}
+
+.subtitle {
+  color:var(--muted);
+  margin-bottom:25px;
+  line-height:1.5;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:14px;
+}
+
+.card {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:18px;
+  margin-bottom:15px;
+}
+
+.card h3 {
+  margin:0 0 10px;
+}
+
+.big {
+  font-size:27px;
+  font-weight:bold;
+}
+
+.muted {
+  color:var(--muted);
+  font-size:13px;
+}
+
+.row {
   display:flex;
-  flex-direction:column;
   gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
 }
 
-#cx-toast {
-  position:fixed;
-  top:calc(env(safe-area-inset-top) + 58px);
-  left:50%;
-  transform:translateX(-50%);
-  z-index:5000;
-  width:max-content;
-  max-width:90%;
-  padding:12px 18px;
-  border-radius:10px;
-  background:#168447;
-  color:white;
-  box-shadow:0 4px 18px #0004;
-  font-weight:600;
-  text-align:center;
-  display:none;
-  pointer-events:none;
+.row input {
+  flex:1;
+  min-width:130px;
 }
 
-#cx-toast.show { display:block; }
+.file-item {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:13px;
+  border-bottom:1px solid var(--line);
+}
 
-input,textarea { width:100%; }
+.file-name {
+  overflow-wrap:anywhere;
+}
+
+.file-actions {
+  display:flex;
+  gap:5px;
+}
+
+.small {
+  padding:7px 10px;
+  font-size:12px;
+}
 
 textarea {
-  flex:1 1 auto;
-  min-height:180px;
+  min-height:230px;
   resize:vertical;
   line-height:1.5;
 }
 
-pre {
+#terminalOutput {
+  background:#090c12;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+  min-height:220px;
+  max-height:400px;
+  overflow:auto;
   white-space:pre-wrap;
   overflow-wrap:anywhere;
-  margin:0;
+  font-family:monospace;
+  font-size:13px;
+  color:#a9e8c8;
+  margin-bottom:12px;
 }
 
-.row {
-  padding:10px;
-  border-radius:7px;
-  cursor:pointer;
-  overflow-wrap:anywhere;
+.terminal-input {
+  font-family:monospace;
 }
 
-.row:active { background:var(--ln); }
-
-.row.s {
-  background:var(--ac);
-  color:white;
+.setting {
+  margin:16px 0;
 }
 
-.dim { opacity:.65; }
-
-.status {
-  min-height:22px;
-  overflow-wrap:anywhere;
+.setting label {
+  display:block;
+  margin-bottom:8px;
+  font-size:14px;
 }
 
-.actions {
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
+#toast {
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px 18px;
+  display:none;
+  z-index:50;
+  max-width:90%;
+  text-align:center;
 }
 
-hr {
-  width:100%;
-  border:0;
-  border-top:1px solid var(--ln);
+#mobileNav {
+  display:none;
 }
 
 @media(max-width:700px) {
-  #desk {
-    inset:48px 0 65px;
+  #layout {
+    display:block;
+    padding-bottom:70px;
   }
 
-  .win {
-    border-radius:8px;
+  #sidebar {
+    display:none;
   }
 
-  .tb {
-    min-height:44px;
+  #main {
+    padding:19px 14px;
   }
 
-  .tb button {
-    padding:7px 10px;
+  #mobileNav {
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    display:flex;
+    justify-content:space-around;
+    gap:3px;
+    background:var(--panel);
+    border-top:1px solid var(--line);
+    padding:8px 4px;
+    z-index:20;
   }
 
-  #dock button {
+  #mobileNav button {
     flex:1;
-    min-width:55px;
-    padding:8px 5px;
+    padding:10px 3px;
+    font-size:11px;
+    border-color:transparent;
+    background:transparent;
   }
 
-  .rs { display:none; }
-}
+  #mobileNav button.active {
+    background:var(--panel2);
+    color:var(--accent);
+  }
 
-@media(max-height:500px) {
-  #desk { inset:44px 0 48px; }
-  #dock { padding:4px; }
+  h1 {
+    font-size:23px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div id="bar"></div>
-<div id="desk"></div>
-<div id="dock"></div>
-<div id="lau"></div>
-<div id="cx-toast" role="status" aria-live="polite"></div>
+<header id="topbar">
+  <div class="logo">CX<span>.</span></div>
+  <div class="status">● LOCAL ENVIRONMENT</div>
+</header>
+
+<div id="layout">
+
+  <aside id="sidebar">
+    <div class="nav-title">Workspace</div>
+    <button class="nav active" data-page="home">⌂ Overview</button>
+    <button class="nav" data-page="files">▤ Files</button>
+    <button class="nav" data-page="notes">▣ Notes</button>
+
+    <div class="nav-title">System</div>
+    <button class="nav" data-page="terminal">⌘ Terminal</button>
+    <button class="nav" data-page="monitor">◉ Monitor</button>
+    <button class="nav" data-page="settings">⚙ Settings</button>
+  </aside>
+
+  <main id="main">
+
+    <section class="page active" id="home">
+      <h1>Welcome to CX</h1>
+      <div class="subtitle">
+        A persistent, user-owned computing environment.
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="muted">Workspace files</div>
+          <div class="big" id="fileCount">0</div>
+        </div>
+
+        <div class="card">
+          <div class="muted">Stored notes</div>
+          <div class="big" id="noteCount">0</div>
+        </div>
+
+        <div class="card">
+          <div class="muted">Environment</div>
+          <div class="big" style="font-size:19px">Active</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Workspace</h3>
+        <p class="muted">
+          Your files and notes are stored locally in this browser.
+          They remain available when you reopen this environment
+          in the same browser, unless its site data is cleared.
+        </p>
+        <div class="row">
+          <button onclick="navigate('files')">Open Files</button>
+          <button onclick="navigate('terminal')">Open Terminal</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Architecture status</h3>
+        <p class="muted">
+          CX Web is currently a browser-based prototype.
+          Remote execution, distributed storage, cross-device
+          synchronization and operating-system-level hardware
+          management are not yet implemented.
+        </p>
+      </div>
+    </section>
+
+    <section class="page" id="files">
+      <h1>Files</h1>
+      <div class="subtitle">Manage your local workspace.</div>
+
+      <div class="card">
+        <h3>Create a file</h3>
+        <div class="row">
+          <input id="newFileName" placeholder="File name, e.g. project.txt">
+          <button onclick="createFile()">Create</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Your files</h3>
+        <div id="fileList"></div>
+      </div>
+
+      <div class="card" id="editorCard" style="display:none">
+        <h3 id="editorTitle">File editor</h3>
+        <textarea id="fileEditor" spellcheck="false"></textarea>
+        <div class="row" style="margin-top:12px">
+          <button onclick="saveFile()">Save changes</button>
+          <button onclick="closeEditor()">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="notes">
+      <h1>Notes</h1>
+      <div class="subtitle">Keep persistent workspace notes.</div>
+
+      <div class="card">
+        <input id="noteTitle" placeholder="Note title">
+        <textarea id="noteContent" placeholder="Write your note..." style="margin-top:12px"></textarea>
+        <button style="margin-top:12px" onclick="saveNote()">Save note</button>
+      </div>
+
+      <div class="card">
+        <h3>Saved notes</h3>
+        <div id="noteList"></div>
+      </div>
+    </section>
+
+    <section class="page" id="terminal">
+      <h1>Terminal</h1>
+      <div class="subtitle">CX local command interface.</div>
+
+      <div id="terminalOutput">CX Terminal v0.4
+Type "help" to see available commands.</div>
+
+      <div class="row">
+        <input
+          id="terminalInput"
+          class="terminal-input"
+          placeholder="Enter command..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button onclick="runCommand()">Run</button>
+      </div>
+
+      <p class="muted">
+        This is a simulated application terminal, not a
+        native operating-system shell.
+      </p>
+    </section>
+
+    <section class="page" id="monitor">
+      <h1>System Monitor</h1>
+      <div class="subtitle">Browser environment information.</div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="muted">Platform</div>
+          <div id="platform" class="big" style="font-size:18px">—</div>
+        </div>
+
+        <div class="card">
+          <div class="muted">Screen resolution</div>
+          <div id="resolution" class="big" style="font-size:18px">—</div>
+        </div>
+
+        <div class="card">
+          <div class="muted">Browser memory estimate</div>
+          <div id="memory" class="big" style="font-size:18px">Unavailable</div>
+        </div>
+
+        <div class="card">
+          <div class="muted">Online connection</div>
+          <div id="connection" class="big" style="font-size:18px">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Environment limitations</h3>
+        <p class="muted">
+          A browser cannot accurately report all physical hardware
+          resources. These values describe the browser environment,
+          not a complete hardware inventory.
+        </p>
+      </div>
+    </section>
+
+    <section class="page" id="settings">
+      <h1>Settings</h1>
+      <div class="subtitle">Manage your CX environment.</div>
+
+      <div class="card">
+        <h3>Appearance</h3>
+
+        <div class="setting">
+          <label for="accent">Accent colour</label>
+          <input type="color" id="accent" value="#6d8cff">
+        </div>
+
+        <div class="setting">
+          <label for="theme">Theme</label>
+          <select id="theme">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+
+        <button onclick="saveSettings()">Save appearance</button>
+      </div>
+
+      <div class="card">
+        <h3>Data management</h3>
+        <div class="row">
+          <button onclick="exportData()">Export workspace</button>
+          <button onclick="document.getElementById('importInput').click()">Import workspace</button>
+        </div>
+
+        <input
+          type="file"
+          id="importInput"
+          accept=".json,application/json"
+          style="display:none"
+          onchange="importData(event)"
+        >
+
+        <p class="muted">
+          Export a backup before clearing browser data.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Reset environment</h3>
+        <p class="muted">
+          This permanently clears the CX data stored in this browser.
+        </p>
+        <button style="background:#49232b;border-color:#77333e"
+          onclick="resetWorkspace()">
+          Erase local workspace
+        </button>
+      </div>
+
+      <div class="card">
+        <h3>Version</h3>
+        <div class="muted">CX Web v0.4</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<nav id="mobileNav">
+  <button class="active" data-page="home">Home</button>
+  <button data-page="files">Files</button>
+  <button data-page="notes">Notes</button>
+  <button data-page="terminal">Terminal</button>
+  <button data-page="settings">Settings</button>
+</nav>
+
+<div id="toast"></div>
 
 <script>
-'use strict';
+"use strict";
 
-/* =================================
-   CX WEB CORE
-================================= */
+/* CX STORAGE */
 
-const $ = s => document.querySelector(s);
+const STORAGE_KEY = "cx";
 
-let toastTimer;
-
-function notify(message,success=true) {
-  const toast = $('#cx-toast');
-
-  toast.textContent = message;
-  toast.style.background = success ? '#168447' : '#b42318';
-  toast.classList.add('show');
-
-  clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(() => {
-    toast.classList.remove('show');
-  },3500);
-}
-
-const GEN = '0'.repeat(64);
-
-function defaults() {
-  return {
-    fs:{
-      '/':{t:'d'},
-      '/welcome.txt':{
-        t:'f',
-        c:'Welcome to CX Web v0.3.\nYour files persist in this browser.'
-      }
-    },
-    j:[],
-    set:{
-      theme:'auto',
-      ac:'#3b6ef5'
-    }
-  };
-}
-
-let D;
-
-try {
-  D = JSON.parse(localStorage.getItem('cx'));
-} catch(e) {
-  D = null;
-}
-
-if (
-  !D ||
-  !D.fs ||
-  !D.fs['/'] ||
-  !Array.isArray(D.j) ||
-  !D.set
-) {
-  D = defaults();
-}
-
-D.fs = D.fs || {'/':{t:'d'}};
-D.j = Array.isArray(D.j) ? D.j : [];
-D.set = {
-  theme:D.set.theme || 'auto',
-  ac:D.set.ac || '#3b6ef5'
+const defaultData = {
+  fs: {},
+  notes: [],
+  settings: {
+    theme: "dark",
+    accent: "#6d8cff"
+  }
 };
 
-const F = () => D.fs;
+let data = loadData();
+let currentFile = null;
 
-function persist() {
+function loadData() {
   try {
-    localStorage.setItem('cx',JSON.stringify(D));
-    return true;
-  } catch(e) {
-    throw new Error('Browser storage error: '+e.message);
-  }
-}
+    const saved = localStorage.getItem(STORAGE_KEY);
 
-function par(path) {
-  return path.slice(0,path.lastIndexOf('/')) || '/';
-}
+    if (!saved) return structuredClone(defaultData);
 
-function norm(path,base='/') {
-  const source = path.startsWith('/')
-    ? path
-    : base+'/'+path;
+    const parsed = JSON.parse(saved);
 
-  const parts=[];
-
-  for(const part of source.split('/')) {
-    if(!part || part==='.') continue;
-
-    if(part==='..') parts.pop();
-    else parts.push(part);
-  }
-
-  return '/'+parts.join('/');
-}
-
-function kids(dir) {
-  return Object.keys(F())
-    .filter(path => path!=='/' && par(path)===dir)
-    .sort((a,b) =>
-      Number(F()[b].t==='d')-Number(F()[a].t==='d') ||
-      a.localeCompare(b)
-    );
-}
-
-/* =================================
-   DOM HELPER
-================================= */
-
-function h(tag,attrs={},...children) {
-  const el=document.createElement(tag);
-
-  for(const [key,value] of Object.entries(attrs)) {
-    if(key.startsWith('on') && typeof value==='function') {
-      el.addEventListener(key.slice(2).toLowerCase(),value);
-    } else if(key==='className') {
-      el.className=value;
-    } else if(key==='value') {
-      el.value=value;
-    } else {
-      el.setAttribute(key,value);
+    if (!parsed || typeof parsed !== "object") {
+      return structuredClone(defaultData);
     }
+
+    return {
+      fs: parsed.fs && typeof parsed.fs === "object"
+        ? parsed.fs : {},
+      notes: Array.isArray(parsed.notes)
+        ? parsed.notes : [],
+      settings: {
+        ...defaultData.settings,
+        ...(parsed.settings || {})
+      },
+      j: Array.isArray(parsed.j) ? parsed.j : []
+    };
+
+  } catch (error) {
+    return structuredClone(defaultData);
   }
-
-  for(const child of children) {
-    if(child===null || child===undefined) continue;
-
-    el.append(
-      child instanceof Node
-        ? child
-        : document.createTextNode(String(child))
-    );
-  }
-
-  return el;
 }
 
-/* =================================
-   JOURNAL
-================================= */
-
-async function sha(value) {
-  if(!crypto?.subtle) {
-    throw new Error('Web Crypto unavailable.');
-  }
-
-  const result=await crypto.subtle.digest(
-    'SHA-256',
-    new TextEncoder().encode(value)
-  );
-
-  return [...new Uint8Array(result)]
-    .map(x=>x.toString(16).padStart(2,'0'))
-    .join('');
-}
-
-async function log(op,path) {
-  const previous=D.j.length
-    ? D.j[D.j.length-1].h
-    : GEN;
-
-  const entry={
-    n:D.j.length,
-    op,
-    p:path,
-    prev:previous
-  };
-
-  entry.h=await sha(JSON.stringify([
-    entry.n,
-    entry.op,
-    entry.p,
-    entry.prev
-  ]));
-
-  D.j.push(entry);
-
+function save() {
   try {
-    persist();
-  } catch(e) {
-    D.j.pop();
-    throw e;
-  }
-}
-
-async function verify(journal) {
-  let previous=GEN;
-
-  for(const entry of journal) {
-    if(entry.prev!==previous) return entry.n;
-
-    const expected=await sha(JSON.stringify([
-      entry.n,
-      entry.op,
-      entry.p,
-      entry.prev
-    ]));
-
-    if(entry.h!==expected) return entry.n;
-
-    previous=entry.h;
-  }
-
-  return -1;
-}
-
-async function record(op,path) {
-  try {
-    await log(op,path);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    updateDashboard();
     return true;
-  } catch(e) {
-    console.error('Journal error:',e);
+  } catch (error) {
+    toast("Could not save. Browser storage may be full.");
     return false;
   }
 }
 
-/* =================================
-   FILE OPERATIONS
-================================= */
+/* NAVIGATION */
 
-async function wr(path,content) {
-  path=norm(path);
-
-  if(F()[par(path)]?.t!=='d') {
-    throw new Error('Parent folder does not exist.');
-  }
-
-  if(F()[path]?.t==='d') {
-    throw new Error('This path is a folder.');
-  }
-
-  const operation=F()[path] ? 'write' : 'create';
-
-  F()[path]={
-    t:'f',
-    c:String(content)
-  };
-
-  // Persist file contents before journal hashing.
-  persist();
-
-  return await record(operation,path);
-}
-
-async function mk(path) {
-  path=norm(path);
-
-  if(F()[path]) {
-    throw new Error('That path already exists.');
-  }
-
-  if(F()[par(path)]?.t!=='d') {
-    throw new Error('Parent folder does not exist.');
-  }
-
-  F()[path]={t:'d'};
-
-  persist();
-
-  return await record('mkdir',path);
-}
-
-async function rm(path) {
-  path=norm(path);
-
-  if(path==='/' || !F()[path]) {
-    throw new Error('Cannot delete this path.');
-  }
-
-  for(const key of Object.keys(F())) {
-    if(key===path || key.startsWith(path+'/')) {
-      delete F()[key];
-    }
-  }
-
-  persist();
-
-  return await record('remove',path);
-}
-
-/* =================================
-   THEME
-================================= */
-
-function theme() {
-  document.documentElement.dataset.t=D.set.theme;
-
-  document.documentElement.style.setProperty(
-    '--ac',
-    D.set.ac
-  );
-}
-
-/* =================================
-   DESKTOP
-================================= */
-
-let Z=10;
-let W=[];
-let ws=1;
-
-const T0=Date.now();
-
-function clock() {
-  return new Date().toLocaleTimeString([],{
-    hour:'2-digit',
-    minute:'2-digit'
-  });
-}
-
-function bar() {
-  $('#bar').replaceChildren(
-    h('button',{onclick:launch},'CX'),
-
-    ...[1,2,3,4].map(i =>
-      h('button',{
-        class:ws===i?'on':'',
-        onclick:()=>{
-          ws=i;
-          show();
-          bar();
-        }
-      },i)
-    ),
-
-    h('span',{id:'clock'},clock())
-  );
-}
-
-function show() {
-  W.forEach(item => {
-    item.w.classList.toggle('off',item.ws!==ws);
-  });
-}
-
-function drag(element,callback) {
-  element.addEventListener('pointerdown',event=>{
-    if(event.target.closest('button')) return;
-
-    const win=element.closest('.win');
-    win.style.zIndex=++Z;
-
-    let x=event.clientX;
-    let y=event.clientY;
-
-    const move=e=>{
-      callback(e.clientX-x,e.clientY-y);
-      x=e.clientX;
-      y=e.clientY;
-    };
-
-    const end=()=>{
-      element.removeEventListener('pointermove',move);
-      element.removeEventListener('pointerup',end);
-      element.removeEventListener('pointercancel',end);
-    };
-
-    element.addEventListener('pointermove',move);
-    element.addEventListener('pointerup',end);
-    element.addEventListener('pointercancel',end);
-  });
-}
-
-function openApp(id,arg) {
-  const A=APPS[id];
-  if(!A) return;
-
-  const mobile=innerWidth<700;
-
-  const o={
-    id,
-    ws,
-    x:25+W.length*20,
-    y:20+W.length*20,
-    wd:420,
-    ht:360,
-    max:false
-  };
-
-  const w=h('div',{class:'win'});
-  const b=h('div',{class:'bd'});
-  const rs=h('div',{class:'rs'});
-
-  o.w=w;
-
-  function fit() {
-    if(o.max || mobile) {
-      Object.assign(w.style,{
-        left:'4px',
-        top:'4px',
-        width:'calc(100% - 8px)',
-        height:'calc(100% - 8px)'
-      });
-    } else {
-      Object.assign(w.style,{
-        left:o.x+'px',
-        top:o.y+'px',
-        width:o.wd+'px',
-        height:o.ht+'px'
-      });
-    }
-  }
-
-  const tb=h('div',{class:'tb'},
-
-    h('b',{},A.n),
-
-    h('button',{
-      onclick:()=>w.classList.add('off'),
-      title:'Minimize'
-    },'−'),
-
-    h('button',{
-      onclick:()=>{
-        o.max=!o.max;
-        fit();
-      },
-      title:'Maximize'
-    },'□'),
-
-    h('button',{
-      onclick:()=>{
-        o.stop?.();
-        w.remove();
-        W=W.filter(item=>item!==o);
-      },
-      title:'Close'
-    },'×')
-  );
-
-  W.push(o);
-
-  w.append(tb,b,rs);
-  $('#desk').append(w);
-
-  fit();
-
-  w.addEventListener('pointerdown',()=>{
-    w.style.zIndex=++Z;
+function navigate(page) {
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.remove("active");
   });
 
-  drag(tb,(dx,dy)=>{
-    if(o.max || mobile) return;
-    o.x+=dx;
-    o.y+=dy;
-    fit();
+  const target = document.getElementById(page);
+
+  if (!target) return;
+
+  target.classList.add("active");
+
+  document.querySelectorAll("[data-page]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === page
+    );
   });
 
-  drag(rs,(dx,dy)=>{
-    if(o.max || mobile) return;
-    o.wd=Math.max(220,o.wd+dx);
-    o.ht=Math.max(140,o.ht+dy);
-    fit();
-  });
-
-  o.stop=A.f(b,arg);
-
-  show();
+  if (page === "files") renderFiles();
+  if (page === "notes") renderNotes();
+  if (page === "monitor") updateMonitor();
+  if (page === "home") updateDashboard();
 }
 
-/* Adjust open windows when device orientation or size changes. */
-window.addEventListener('resize',()=>{
-  W.forEach(item=>{
-    const mobile=innerWidth<700;
-
-    if(mobile) {
-      Object.assign(item.w.style,{
-        left:'4px',
-        top:'4px',
-        width:'calc(100% - 8px)',
-        height:'calc(100% - 8px)'
-      });
-    } else if(!item.max) {
-      Object.assign(item.w.style,{
-        left:item.x+'px',
-        top:item.y+'px',
-        width:item.wd+'px',
-        height:item.ht+'px'
-      });
-    }
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => {
+    navigate(button.dataset.page);
   });
 });
 
-/* =================================
-   APP LAUNCHER
-================================= */
+/* NOTIFICATIONS */
 
-function launch() {
-  const L=$('#lau');
-  const q=h('input',{placeholder:'Search applications'});
-  const list=h('div');
+function toast(message) {
+  const element = document.getElementById("toast");
 
-  function draw() {
-    list.replaceChildren(
-      ...Object.entries(APPS)
-        .filter(([key,A])=>
-          A.n.toLowerCase().includes(q.value.toLowerCase())
-        )
-        .map(([key,A])=>
-          h('div',{
-            class:'row',
-            onclick:()=>{
-              L.style.display='none';
-              openApp(key);
-            }
-          },A.n)
-        )
-    );
-  }
+  element.textContent = message;
+  element.style.display = "block";
 
-  q.addEventListener('input',draw);
+  clearTimeout(window.cxToastTimer);
 
-  L.replaceChildren(
-    h('div',{},
-      h('b',{},'CX Application Launcher'),
-      q,
-      list,
-      h('button',{
-        onclick:()=>L.style.display='none'
-      },'Close')
-    )
-  );
-
-  L.style.display='block';
-  draw();
+  window.cxToastTimer = setTimeout(() => {
+    element.style.display = "none";
+  }, 2500);
 }
 
-/* =================================
-   APPLICATIONS
-================================= */
+/* DASHBOARD */
 
-const APPS={
+function updateDashboard() {
+  document.getElementById("fileCount").textContent =
+    Object.keys(data.fs).length;
 
-files:{
-  n:'Files',
+  document.getElementById("noteCount").textContent =
+    data.notes.length;
+}
 
-  f:b=>{
-    let dir='/';
-    let selected=null;
+/* FILE SYSTEM */
 
-    const L=h('div');
-    const P=h('div',{class:'dim'});
-    const status=h('div',{class:'status dim'});
+function createFile() {
+  const input = document.getElementById("newFileName");
+  const name = input.value.trim();
 
-    function draw() {
-      P.textContent='Location: '+dir;
-
-      const rows=[];
-
-      if(dir!=='/') {
-        rows.push(h('div',{
-          class:'row',
-          onclick:()=>{
-            dir=par(dir);
-            selected=null;
-            draw();
-          }
-        },'← Parent folder'));
-      }
-
-      for(const path of kids(dir)) {
-        const item=F()[path];
-
-        rows.push(h('div',{
-          class:'row'+(selected===path?' s':''),
-
-          onclick:()=>{
-            if(item.t==='d') {
-              dir=path;
-              selected=null;
-            } else if(selected===path) {
-              openApp('notes',path);
-            } else {
-              selected=path;
-            }
-
-            draw();
-          }
-        },
-        (item.t==='d'?'📁 ':'📄 ')+path.split('/').pop()));
-      }
-
-      L.replaceChildren(...rows);
-    }
-
-    async function action(fn) {
-      try {
-        await fn();
-        status.textContent='Operation completed.';
-        draw();
-      } catch(e) {
-        status.textContent='Error: '+e.message;
-        notify(e.message,false);
-      }
-    }
-
-    b.append(
-      h('div',{class:'actions'},
-
-        h('button',{
-          onclick:()=>action(async()=>{
-            const name=prompt('File name');
-            if(!name) return;
-
-            const path=norm(name,dir);
-
-            if(F()[path]) throw new Error('Already exists.');
-
-            await wr(path,'');
-            selected=path;
-          })
-        },'New file'),
-
-        h('button',{
-          onclick:()=>action(async()=>{
-            const name=prompt('Folder name');
-            if(!name) return;
-            await mk(norm(name,dir));
-          })
-        },'New folder'),
-
-        h('button',{
-          onclick:()=>{
-            if(!selected || F()[selected]?.t!=='f') {
-              notify('Select a file first.',false);
-              return;
-            }
-            openApp('notes',selected);
-          }
-        },'Open'),
-
-        h('button',{
-          onclick:()=>action(async()=>{
-            if(!selected) throw new Error('Select something first.');
-            if(!confirm('Delete '+selected+'?')) return;
-            await rm(selected);
-            selected=null;
-          })
-        },'Delete')
-      ),
-
-      P,
-      L,
-      status,
-      h('div',{class:'dim'},
-        'Tap once to select. Tap again to open.')
-    );
-
-    draw();
+  if (!name) {
+    toast("Enter a file name.");
+    return;
   }
-},
 
-notes:{
-  n:'Notes',
-
-  f:(b,arg)=>{
-    const initial=typeof arg==='string'?arg:'/untitled.txt';
-
-    const p=h('input',{
-      value:initial,
-      placeholder:'/filename.txt',
-      spellcheck:'false'
-    });
-
-    const t=h('textarea',{
-      placeholder:'Write something here...'
-    });
-
-    const status=h('div',{
-      class:'status dim',
-      role:'status',
-      'aria-live':'polite'
-    });
-
-    const save=h('button',{
-      class:'on',
-      type:'button'
-    },'Save');
-
-    if(F()[initial]?.t==='f') {
-      t.value=F()[initial].c||'';
-    }
-
-    async function performSave() {
-      if(save.disabled) return;
-
-      save.disabled=true;
-      save.textContent='Saving...';
-      status.textContent='Saving your file...';
-
-      try {
-        const path=norm(p.value);
-
-        if(path==='/') {
-          throw new Error('Enter a valid file name.');
-        }
-
-        const journalOK=await wr(path,t.value);
-
-        p.value=path;
-
-        status.textContent=journalOK
-          ? 'Saved successfully'
-          : 'File saved; journal update needs attention.';
-
-        notify(
-          journalOK
-            ? '✓ Saved successfully'
-            : '✓ File saved; journal warning',
-          true
-        );
-
-      } catch(e) {
-        status.textContent='Save failed: '+e.message;
-        notify('Save failed: '+e.message,false);
-
-      } finally {
-        save.disabled=false;
-        save.textContent='Save';
-      }
-    }
-
-    save.addEventListener('click',performSave);
-
-    b.append(
-      h('div',{class:'dim'},'File location'),
-      p,
-      t,
-      save,
-      status
-    );
-
-    // Keep editor usable when the Android keyboard opens.
-    if(window.visualViewport) {
-      const adjust=()=>{
-        const available=window.visualViewport.height;
-        b.style.maxHeight=available+'px';
-      };
-
-      window.visualViewport.addEventListener('resize',adjust);
-      adjust();
-
-      return ()=>{
-        window.visualViewport.removeEventListener('resize',adjust);
-      };
-    }
+  if (name.includes("/") || name.includes("\\")) {
+    toast("File names cannot contain directory paths.");
+    return;
   }
-},
 
-term:{
-  n:'Terminal',
-
-  f:b=>{
-    let current='/';
-
-    const output=h('pre');
-    const input=h('input',{
-      placeholder:'Type help',
-      autocapitalize:'none',
-      autocomplete:'off',
-      spellcheck:'false'
-    });
-
-    function print(value) {
-      output.append(document.createTextNode(String(value)+'\n'));
-      output.scrollTop=output.scrollHeight;
-    }
-
-    async function run(line) {
-      const [cmd,...rest]=line.trim().split(/\s+/);
-      const arg=rest.join(' ');
-
-      print('$ '+line);
-
-      try {
-        switch(cmd) {
-          case '':
-            break;
-
-          case 'help':
-            print('help ls cd pwd cat echo mkdir touch rm journal verify date clear');
-            break;
-
-          case 'pwd':
-            print(current);
-            break;
-
-          case 'cd': {
-            const path=norm(arg||'/',current);
-            if(F()[path]?.t!=='d') throw new Error('Not a folder.');
-            current=path;
-            break;
-          }
-
-          case 'ls': {
-            const path=norm(arg||'.',current);
-            if(F()[path]?.t!=='d') throw new Error('Not a folder.');
-            print(kids(path).map(k=>
-              k.split('/').pop()+(F()[k].t==='d'?'/':'')
-            ).join('  ')||'(empty)');
-            break;
-          }
-
-          case 'cat': {
-            const path=norm(arg,current);
-            if(F()[path]?.t!=='f') throw new Error('File not found.');
-            print(F()[path].c);
-            break;
-          }
-
-          case 'mkdir':
-            await mk(norm(arg,current));
-            print('Folder created.');
-            break;
-
-          case 'touch':
-            if(!F()[norm(arg,current)]) await wr(norm(arg,current),'');
-            print('File ready.');
-            break;
-
-          case 'rm':
-            await rm(norm(arg,current));
-            print('Removed.');
-            break;
-
-          case 'echo': {
-            const parts=arg.split(' > ');
-            if(parts.length>1) {
-              await wr(norm(parts.slice(1).join(' > ').trim(),current),parts[0]);
-              print('Written.');
-            } else {
-              print(arg);
-            }
-            break;
-          }
-
-          case 'journal':
-            D.j.slice(-8).forEach(e=>
-              print(e.n+' '+e.op+' '+e.p+' '+e.h.slice(0,10))
-            );
-            break;
-
-          case 'verify': {
-            const result=await verify(D.j);
-            print(result<0
-              ? 'Journal OK: '+D.j.length+' entries.'
-              : 'Journal broken at entry '+result);
-            break;
-          }
-
-          case 'date':
-            print(new Date().toString());
-            break;
-
-          case 'clear':
-            output.textContent='';
-            break;
-
-          default:
-            print(cmd+': command not found');
-        }
-      } catch(e) {
-        print('Error: '+e.message);
-      }
-    }
-
-    input.addEventListener('keydown',e=>{
-      if(e.key==='Enter') {
-        const value=input.value;
-        input.value='';
-        run(value);
-      }
-    });
-
-    b.append(output,input);
-
-    print('CX Terminal v0.3');
-    print('Type help to see available commands.');
+  if (Object.prototype.hasOwnProperty.call(data.fs, name)) {
+    toast("A file with that name already exists.");
+    return;
   }
-},
 
-mon:{
-  n:'Monitor',
+  data.fs[name] = {
+    content: "",
+    created: new Date().toISOString(),
+    modified: new Date().toISOString()
+  };
 
-  f:b=>{
-    const output=h('pre');
-    const note=h('div',{class:'dim'},
-      'Browser-reported device information. This is not remote compute.');
+  if (!save()) return;
 
-    b.append(output,note);
+  input.value = "";
+  renderFiles();
+  toast("File created.");
+}
 
-    let frames=0;
-    let last=performance.now();
-    let active=true;
+function renderFiles() {
+  const container = document.getElementById("fileList");
+  container.innerHTML = "";
 
-    function frame() {
-      if(!active) return;
-      frames++;
-      requestAnimationFrame(frame);
-    }
+  const names = Object.keys(data.fs);
 
-    requestAnimationFrame(frame);
+  if (!names.length) {
+    container.textContent = "No files yet.";
+    return;
+  }
 
-    async function update() {
-      let storage=null;
+  names.sort().forEach(name => {
+    const item = document.createElement("div");
+    item.className = "file-item";
 
-      try {
-        storage=await navigator.storage?.estimate?.();
-      } catch(e) {}
+    const label = document.createElement("span");
+    label.className = "file-name";
+    label.textContent = "📄 " + name;
 
-      const now=performance.now();
-      const fps=Math.round(frames*1000/(now-last));
+    const actions = document.createElement("div");
+    actions.className = "file-actions";
 
-      frames=0;
-      last=now;
+    const open = document.createElement("button");
+    open.className = "small";
+    open.textContent = "Open";
+    open.onclick = () => openFile(name);
 
-      output.textContent=[
-        'Logical CPU cores: '+(navigator.hardwareConcurrency||'Unknown'),
-        'Approximate device memory: '+(navigator.deviceMemory||'Unknown'),
-        'JS heap: '+(performance.memory
-          ? Math.round(performance.memory.usedJSHeapSize/1048576)+' MB'
-          : 'Not reported'),
-        'Browser storage: '+(storage
-          ? (storage.usage/1048576).toFixed(2)+' MB used'
-          : 'Not reported'),
-        'Frames per second: '+fps,
-        'Open windows: '+W.length,
-        'Files and folders: '+(Object.keys(F()).length-1),
-        'Journal entries: '+D.j.length,
-        'Uptime: '+Math.round((Date.now()-T0)/1000)+' seconds'
-      ].join('\n');
-    }
+    const remove = document.createElement("button");
+    remove.className = "small";
+    remove.textContent = "Delete";
+    remove.onclick = () => deleteFile(name);
 
-    update();
+    actions.append(open, remove);
+    item.append(label, actions);
+    container.appendChild(item);
+  });
+}
 
-    const timer=setInterval(update,1500);
+function openFile(name) {
+  if (!Object.prototype.hasOwnProperty.call(data.fs, name)) {
+    toast("File not found.");
+    return;
+  }
 
-    return ()=>{
-      active=false;
-      clearInterval(timer);
+  currentFile = name;
+
+  document.getElementById("editorTitle").textContent =
+    "Editing: " + name;
+
+  document.getElementById("fileEditor").value =
+    typeof data.fs[name] === "string"
+      ? data.fs[name]
+      : data.fs[name].content || "";
+
+  document.getElementById("editorCard").style.display = "block";
+
+  document.getElementById("editorCard").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function saveFile() {
+  if (!currentFile) return;
+
+  if (!Object.prototype.hasOwnProperty.call(data.fs, currentFile)) {
+    toast("File no longer exists.");
+    closeEditor();
+    return;
+  }
+
+  const existing = data.fs[currentFile];
+
+  data.fs[currentFile] = {
+    content: document.getElementById("fileEditor").value,
+    created: typeof existing === "object"
+      ? existing.created : new Date().toISOString(),
+    modified: new Date().toISOString()
+  };
+
+  if (save()) {
+    renderFiles();
+    toast("File saved.");
+  }
+}
+
+function closeEditor() {
+  currentFile = null;
+
+  document.getElementById("editorCard").style.display = "none";
+  document.getElementById("fileEditor").value = "";
+}
+
+function deleteFile(name) {
+  if (!confirm("Delete " + name + "?")) return;
+
+  delete data.fs[name];
+
+  if (currentFile === name) closeEditor();
+
+  if (save()) {
+    renderFiles();
+    toast("File deleted.");
+  }
+}
+
+/* NOTES */
+
+function saveNote() {
+  const title = document.getElementById("noteTitle").value.trim();
+  const content = document.getElementById("noteContent").value.trim();
+
+  if (!title || !content) {
+    toast("Enter a title and note.");
+    return;
+  }
+
+  data.notes.unshift({
+    id: Date.now().toString(),
+    title,
+    content,
+    created: new Date().toISOString()
+  });
+
+  if (save()) {
+    document.getElementById("noteTitle").value = "";
+    document.getElementById("noteContent").value = "";
+
+    renderNotes();
+    toast("Note saved.");
+  }
+}
+
+function renderNotes() {
+  const container = document.getElementById("noteList");
+  container.innerHTML = "";
+
+  if (!data.notes.length) {
+    container.textContent = "No notes saved.";
+    return;
+  }
+
+  data.notes.forEach(note => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const title = document.createElement("h3");
+    title.textContent = note.title;
+
+    const content = document.createElement("p");
+    content.textContent = note.content;
+    content.style.whiteSpace = "pre-wrap";
+
+    const remove = document.createElement("button");
+    remove.className = "small";
+    remove.textContent = "Delete";
+
+    remove.onclick = () => {
+      if (!confirm("Delete this note?")) return;
+
+      data.notes = data.notes.filter(n => n.id !== note.id);
+
+      if (save()) {
+        renderNotes();
+        toast("Note deleted.");
+      }
     };
-  }
-},
 
-set:{
-  n:'Settings',
+    card.append(title, content, remove);
+    container.appendChild(card);
+  });
+}
 
-  f:b=>{
-    const select=h('select',{
-      onchange:()=>{
-        D.set.theme=select.value;
-        theme();
-        persist();
+/* TERMINAL */
+
+function printTerminal(message) {
+  const output = document.getElementById("terminalOutput");
+
+  output.textContent += "\n" + message;
+  output.scrollTop = output.scrollHeight;
+}
+
+function runCommand() {
+  const input = document.getElementById("terminalInput");
+  const command = input.value.trim();
+
+  if (!command) return;
+
+  input.value = "";
+
+  printTerminal("\n> " + command);
+
+  const parts = command.split(" ");
+  const action = parts[0].toLowerCase();
+  const argument = parts.slice(1).join(" ");
+
+  switch (action) {
+
+    case "help":
+      printTerminal(
+        "Available commands:\n" +
+        "help       Show commands\n" +
+        "clear      Clear terminal\n" +
+        "ls         List files\n" +
+        "pwd        Show workspace location\n" +
+        "cat NAME   Read a file\n" +
+        "touch NAME Create a file\n" +
+        "rm NAME    Delete a file\n" +
+        "date       Show current date\n" +
+        "status     Show environment status"
+      );
+      break;
+
+    case "clear":
+      document.getElementById("terminalOutput").textContent =
+        "CX Terminal v0.4";
+      break;
+
+    case "ls":
+      printTerminal(
+        Object.keys(data.fs).join("\n") || "Workspace is empty."
+      );
+      break;
+
+    case "pwd":
+      printTerminal("/cx/workspace");
+      break;
+
+    case "cat":
+      if (!argument) {
+        printTerminal("Usage: cat FILENAME");
+        break;
       }
-    },
-      ...['auto','light','dark'].map(value=>
-        h('option',{value},value)
-      )
-    );
 
-    select.value=D.set.theme;
-
-    const color=h('input',{
-      type:'color',
-      value:D.set.ac,
-      oninput:()=>{
-        D.set.ac=color.value;
-        theme();
-        persist();
+      if (!Object.prototype.hasOwnProperty.call(data.fs, argument)) {
+        printTerminal("File not found.");
+        break;
       }
-    });
 
-    const exportButton=h('button',{
-      onclick:async()=>{
-        const data=JSON.stringify({fs:D.fs,j:D.j});
+      const file = data.fs[argument];
 
-        try {
-          await navigator.clipboard.writeText(data);
-          notify('Workspace copied to clipboard.');
-        } catch(e) {
-          prompt('Copy workspace data:',data);
-        }
+      printTerminal(
+        typeof file === "string" ? file : file.content || ""
+      );
+      break;
+
+    case "touch":
+      if (!argument) {
+        printTerminal("Usage: touch FILENAME");
+        break;
       }
-    },'Export workspace');
 
-    const importButton=h('button',{
-      onclick:async()=>{
-        const raw=prompt('Paste exported CX workspace');
-        if(!raw) return;
-
-        try {
-          const imported=JSON.parse(raw);
-
-          if(!imported.fs?.['/'] || !Array.isArray(imported.j)) {
-            throw new Error('Invalid workspace format.');
-          }
-
-          const result=await verify(imported.j);
-
-          if(result>=0) {
-            throw new Error('Journal verification failed at '+result);
-          }
-
-          if(!confirm('Replace the current workspace with this import?')) return;
-
-          D.fs=imported.fs;
-          D.j=imported.j;
-
-          persist();
-          location.reload();
-
-        } catch(e) {
-          notify('Import failed: '+e.message,false);
-        }
+      if (argument.includes("/") || argument.includes("\\")) {
+        printTerminal("Invalid file name.");
+        break;
       }
-    },'Import workspace');
 
-    const eraseButton=h('button',{
-      onclick:()=>{
-        if(confirm('Erase all CX data in this browser?')) {
-          localStorage.removeItem('cx');
-          location.reload();
-        }
+      if (Object.prototype.hasOwnProperty.call(data.fs, argument)) {
+        printTerminal("File already exists.");
+        break;
       }
-    },'Erase everything');
 
-    b.append(
-      h('b',{},'Appearance'),
-      h('div',{},'Theme',select),
-      h('div',{},'Accent colour',color),
-      h('hr'),
-      h('b',{},'Workspace'),
-      exportButton,
-      importButton,
-      eraseButton,
-      h('hr'),
-      h('div',{class:'dim'},
-        'The journal is tamper-evident, but does not independently prove file contents or operation truth.')
-    );
+      data.fs[argument] = {
+        content: "",
+        created: new Date().toISOString(),
+        modified: new Date().toISOString()
+      };
+
+      if (save()) printTerminal("Created " + argument);
+      break;
+
+    case "rm":
+      if (!argument) {
+        printTerminal("Usage: rm FILENAME");
+        break;
+      }
+
+      if (!Object.prototype.hasOwnProperty.call(data.fs, argument)) {
+        printTerminal("File not found.");
+        break;
+      }
+
+      delete data.fs[argument];
+
+      if (save()) printTerminal("Deleted " + argument);
+      break;
+
+    case "date":
+      printTerminal(new Date().toString());
+      break;
+
+    case "status":
+      printTerminal(
+        "CX Web v0.4\n" +
+        "Environment: Browser\n" +
+        "Storage: Local browser storage\n" +
+        "Files: " + Object.keys(data.fs).length + "\n" +
+        "Notes: " + data.notes.length
+      );
+      break;
+
+    default:
+      printTerminal("Unknown command. Type help.");
   }
 }
 
-/* =================================
-   DOCK
-================================= */
-
-$('#dock').append(
-  ...Object.entries(APPS).map(([key,app])=>
-    h('button',{
-      onclick:()=>{
-        const existing=W.find(item=>
-          item.id===key && item.ws===ws
-        );
-
-        if(existing) {
-          existing.w.classList.remove('off');
-          existing.w.style.zIndex=++Z;
-        } else {
-          openApp(key);
-        }
-      }
-    },app.n)
-  )
+document.getElementById("terminalInput").addEventListener(
+  "keydown",
+  event => {
+    if (event.key === "Enter") runCommand();
+  }
 );
 
-/* =================================
-   STARTUP
-================================= */
+/* MONITOR */
 
-theme();
-bar();
+function updateMonitor() {
+  document.getElementById("platform").textContent =
+    navigator.platform || "Unknown";
 
-setInterval(()=>{
-  const element=$('#clock');
-  if(element) element.textContent=clock();
-},20000);
+  document.getElementById("resolution").textContent =
+    screen.width + " × " + screen.height;
 
-openApp('files');
+  document.getElementById("connection").textContent =
+    navigator.onLine ? "Online" : "Offline";
 
-console.log('CX Web v0.3 initialized.');
-console.log('Workspace files:',Object.keys(F()).length);
-console.log('Journal entries:',D.j.length);
+  const memory = navigator.deviceMemory;
 
+  document.getElementById("memory").textContent =
+    memory ? memory + " GB estimate" : "Unavailable";
+}
+
+window.addEventListener("online", updateMonitor);
+window.addEventListener("offline", updateMonitor);
+
+/* SETTINGS */
+
+function applySettings() {
+  const theme = data.settings.theme;
+  const accent = data.settings.accent;
+
+  document.documentElement.style.setProperty("--accent", accent);
+
+  if (theme === "light") {
+    document.documentElement.style.setProperty("--bg", "#f2f4f8");
+    document.documentElement.style.setProperty("--panel", "#ffffff");
+    document.documentElement.style.setProperty("--panel2", "#e8ecf4");
+    document.documentElement.style.setProperty("--text", "#171b25");
+    document.documentElement.style.setProperty("--muted", "#626d80");
+    document.documentElement.style.setProperty("--line", "#d5dae4");
+  } else {
+    document.documentElement.style.setProperty("--bg", "#10131b");
+    document.documentElement.style.setProperty("--panel", "#191e29");
+    document.documentElement.style.setProperty("--panel2", "#202737");
+    document.documentElement.style.setProperty("--text", "#edf1fa");
+    document.documentElement.style.setProperty("--muted", "#929caf");
+    document.documentElement.style.setProperty("--line", "#30394b");
+  }
+
+  document.getElementById("theme").value = theme;
+  document.getElementById("accent").value = accent;
+}
+
+function saveSettings() {
+  data.settings.theme =
+    document.getElementById("theme").value;
+
+  data.settings.accent =
+    document.getElementById("accent").value;
+
+  if (save()) {
+    applySettings();
+    toast("Settings saved.");
+  }
+}
+
+/* EXPORT */
+
+function exportData() {
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    {type:"application/json"}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "cx-workspace-backup.json";
+  link.click();
+
+  URL.revokeObjectURL(url);
+
+  toast("Workspace backup exported.");
+}
+
+/* IMPORT */
+
+function importData(event) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const imported = JSON.parse(reader.result);
+
+      if (
+        !imported ||
+        typeof imported !== "object" ||
+        !imported.fs ||
+        typeof imported.fs !== "object" ||
+        Array.isArray(imported.fs) ||
+        !Array.isArray(imported.notes)
+      ) {
+        throw new Error("Invalid workspace structure.");
+      }
+
+      if (!confirm("Replace the current workspace with this backup?")) {
+        event.target.value = "";
+        return;
+      }
+
+      data = {
+        fs: imported.fs,
+        notes: imported.notes,
+        settings: {
+          ...defaultData.settings,
+          ...(imported.settings || {})
+        },
+        j: Array.isArray(imported.j) ? imported.j : []
+      };
+
+      if (save()) {
+        applySettings();
+        renderFiles();
+        renderNotes();
+        toast("Workspace imported.");
+      }
+
+    } catch (error) {
+      toast("Import failed: invalid backup.");
+    }
+
+    event.target.value = "";
+  };
+
+  reader.readAsText(file);
+}
+
+/* RESET */
+
+function resetWorkspace() {
+  const confirmed = confirm(
+    "This will permanently erase all local CX files and notes. Continue?"
+  );
+
+  if (!confirmed) return;
+
+  localStorage.removeItem(STORAGE_KEY);
+
+  data = structuredClone(defaultData);
+  currentFile = null;
+
+  applySettings();
+  closeEditor();
+  renderFiles();
+  renderNotes();
+  updateDashboard();
+
+  toast("Local workspace erased.");
+}
+
+/* STARTUP */
+
+function startCX() {
+  applySettings();
+  updateDashboard();
+  renderFiles();
+  renderNotes();
+  updateMonitor();
+
+  printTerminal("");
+}
+
+try {
+  startCX();
+} catch (error) {
+  document.body.innerHTML =
+    "<div style='padding:25px;font-family:Arial'>" +
+    "<h2>CX startup error</h2>" +
+    "<pre style='white-space:pre-wrap'>" +
+    String(error.message) +
+    "</pre></div>";
+  console.error(error);
+}
 </script>
+
 </body>
 </html>
