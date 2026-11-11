@@ -1,48 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111318">
-<title>CX Web v0.8</title>
-
+<title>CX Web v0.9</title>
 <style>
-:root{
-  --bg:#111318;--panel:#191d25;--panel2:#222936;
-  --text:#f1f3f8;--muted:#929baa;--line:#303744;
-  --accent:#6d8cff;--green:#45d49a;--red:#ff6868;
-  --yellow:#e8bd58;
-}
+:root{--bg:#111318;--panel:#191d25;--panel2:#222936;--text:#f1f3f8;--muted:#929baa;--line:#303744;--accent:#6d8cff;--green:#45d49a;--red:#ff6868;--yellow:#e8bd58}
+:root[data-theme=light]{--bg:#f4f5f7;--panel:#fff;--panel2:#e9edf3;--text:#15171a;--muted:#606875;--line:#d9dce1}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
 button,input,textarea,select{font:inherit}
-button{
-  background:var(--panel2);border:1px solid var(--line);
-  color:var(--text);border-radius:8px;padding:10px 13px;cursor:pointer
-}
+button{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px 13px;cursor:pointer}
 button:hover{border-color:var(--accent)}
-button.primary{background:var(--accent);border-color:var(--accent);color:white}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 button.danger{color:var(--red)}
-input,textarea,select{
-  width:100%;padding:11px;border-radius:8px;border:1px solid var(--line);
-  background:var(--bg);color:var(--text);outline:none
-}
+input,textarea,select{width:100%;padding:11px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);outline:none}
 textarea{min-height:260px;resize:vertical;font-family:monospace;line-height:1.6}
-#topbar{
-  height:58px;position:sticky;top:0;z-index:10;background:var(--panel);
-  border-bottom:1px solid var(--line);display:flex;justify-content:space-between;
-  align-items:center;padding:0 16px
-}
-.logo{font-size:20px;font-weight:bold;letter-spacing:1px}
-.logo span{color:var(--accent)}
+#topbar{height:58px;position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 16px}
+.logo{font-size:20px;font-weight:bold;letter-spacing:1px}.logo span{color:var(--accent)}
 #status{font-size:12px;color:var(--green)}
 #app{display:flex;min-height:calc(100vh - 58px)}
 #sidebar{width:190px;flex-shrink:0;padding:14px 9px;background:var(--panel);border-right:1px solid var(--line)}
 .nav{display:block;width:100%;text-align:left;margin-bottom:5px;color:var(--muted);background:transparent;border-color:transparent}
-.nav.active{color:white;background:var(--panel2);border-color:var(--line)}
+.nav.active{color:var(--text);background:var(--panel2);border-color:var(--line)}
 #main{flex:1;min-width:0;max-width:1100px;padding:22px}
-h1{font-size:25px;margin:0 0 8px}
-h2{font-size:17px;margin:0 0 12px}
+h1{font-size:25px;margin:0 0 8px}h2{font-size:17px;margin:0 0 12px}
 p{color:var(--muted);line-height:1.5}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:16px;margin:14px 0}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -50,814 +32,527 @@ p{color:var(--muted);line-height:1.5}
 .muted{font-size:12px;color:var(--muted)}
 .file-row{display:flex;align-items:center;gap:10px;padding:13px;border-bottom:1px solid var(--line);cursor:pointer;overflow-wrap:anywhere}
 .file-row:hover{background:var(--panel2)}
-.file-name{flex:1;min-width:0;overflow-wrap:anywhere}
+.file-name{flex:1;min-width:0}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
 .stat{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:15px}
 .stat strong{display:block;font-size:24px;margin-top:8px}
-.good{color:var(--green)}
-.bad{color:var(--red)}
-.warning{color:var(--yellow)}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted);line-height:1.5}
+.good{color:var(--green)}.bad{color:var(--red)}.warning{color:var(--yellow)}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted);line-height:1.5;margin:0}
 #errors{display:none;background:#421e25;color:#ffc2c2;padding:12px;margin:12px;border-radius:8px;white-space:pre-wrap}
-#terminalOutput{min-height:160px;white-space:pre-wrap;font-family:monospace;color:var(--green);line-height:1.6}
+#terminalOutput{min-height:160px;max-height:50vh;overflow:auto;font-family:monospace;color:var(--green);margin-top:12px}
 .hidden{display:none!important}
 .hash{font-family:monospace;font-size:11px;overflow-wrap:anywhere;color:var(--muted)}
-@media(max-width:650px){
-  #app{display:block}
-  #sidebar{width:100%;display:flex;overflow-x:auto;position:sticky;top:58px;z-index:5;padding:7px;border-right:0;border-bottom:1px solid var(--line)}
-  .nav{width:auto;flex-shrink:0;margin:0 4px 0 0;text-align:center;padding:10px}
-  #main{padding:17px 12px}
-}
-</style>
-</head>
-
+@media(max-width:650px){#app{display:block}#sidebar{width:100%;display:flex;overflow-x:auto;position:sticky;top:58px;z-index:5;padding:7px;border-right:0;border-bottom:1px solid var(--line)}.nav{width:auto;flex-shrink:0;margin:0 4px 0 0;text-align:center;padding:10px}#main{padding:17px 12px}}
+</style></head>
 <body>
-
-<header id="topbar">
-  <div class="logo">CX<span>.</span> WEB</div>
-  <div id="status">Starting...</div>
-</header>
-
+<header id="topbar"><div class="logo">CX<span>.</span> WEB</div><div id="status">Starting...</div></header>
 <div id="errors"></div>
-
 <div id="app">
 <aside id="sidebar">
-  <button class="nav active" data-page="home">⌂ Home</button>
-  <button class="nav" data-page="files">▤ Files</button>
-  <button class="nav" data-page="notes">▧ Notes</button>
-  <button class="nav" data-page="terminal">⌘ Terminal</button>
-  <button class="nav" data-page="monitor">◉ Monitor</button>
-  <button class="nav" data-page="integrity">◆ Integrity</button>
-  <button class="nav" data-page="journal">▤ Journal</button>
-  <button class="nav" data-page="settings">☷ Settings</button>
+<button class="nav active" data-page="home">⌂ Home</button>
+<button class="nav" data-page="files">▤ Files</button>
+<button class="nav" data-page="notes">▧ Notes</button>
+<button class="nav" data-page="terminal">⌘ Terminal</button>
+<button class="nav" data-page="monitor">◉ Monitor</button>
+<button class="nav" data-page="integrity">◆ Integrity</button>
+<button class="nav" data-page="journal">▤ Journal</button>
+<button class="nav" data-page="settings">☷ Settings</button>
 </aside>
-<main id="main"></main>
+<main id="main"><h1>Starting CX...</h1><p>Loading workspace.</p></main>
 </div>
-
 <script>
 "use strict";
+const KEY="cx",JKEY="cx_journal_v1",GEN="0".repeat(64),VERSION="0.9",T0=Date.now();
+let data={},page="home",selectedFile=null,currentFolder="/",busy=false,cwd="/";
+let termLines=["CX Web v0.9 terminal ready. Type help."];
+const $=id=>document.getElementById(id);
+const main=$("main"),statusBox=$("status"),errorsBox=$("errors");
+const reportError=e=>{errorsBox.style.display="block";errorsBox.textContent="CX ERROR: "+(e&&e.message?e.message:String(e))};
+addEventListener("error",e=>reportError(e.error||e.message));
+addEventListener("unhandledrejection",e=>reportError(e.reason));
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=v=>{try{return new Date(v).toLocaleString()}catch(e){return String(v)}};
+const getFS=()=>data.fs;
+const journalOf=(d=data)=>Array.isArray(d[JKEY])?d[JKEY]:(d[JKEY]=[]);
+async function guard(fn){try{await fn()}catch(e){alert(e.message||e)}}
 
-/* ==========================================
-   CX WEB v0.8
-   SHA-256 APPEND-ONLY JOURNAL
-========================================== */
-
-const STORAGE_KEY = "cx";
-const JOURNAL_KEY = "cx_journal_v1";
-const GENESIS_HASH = "0".repeat(64);
-
-let data = {};
-let page = "home";
-let selectedFile = null;
-let currentFolder = "/";
-let transactionRunning = false;
-
-const main = document.getElementById("main");
-const statusBox = document.getElementById("status");
-const errorsBox = document.getElementById("errors");
-
-function reportError(error){
-  errorsBox.style.display = "block";
-  errorsBox.textContent = "CX ERROR: " +
-    (error && error.message ? error.message : String(error));
-}
-
-window.addEventListener("error",e=>reportError(e.error||e.message));
-window.addEventListener("unhandledrejection",e=>reportError(e.reason));
-
-/* ==========================================
-   STORAGE
-========================================== */
-
+/* STORAGE */
 function loadWorkspace(){
-  const raw=localStorage.getItem(STORAGE_KEY);
-
-  if(!raw)throw new Error("No existing CX workspace found.");
-
-  const parsed=JSON.parse(raw);
-
-  if(!parsed||typeof parsed!=="object"||Array.isArray(parsed))
-    throw new Error("Invalid workspace structure.");
-
-  if(!parsed.fs||typeof parsed.fs!=="object")
-    throw new Error("Filesystem object is missing.");
-
-  data=parsed;
+  const raw=localStorage.getItem(KEY);
+  if(!raw){data={fs:{"/":{t:"d"}},j:[],notes:[]};return}
+  const p=JSON.parse(raw);
+  if(!p||typeof p!=="object"||Array.isArray(p)||!p.fs||typeof p.fs!=="object")
+    throw new Error("Stored workspace is invalid.");
+  data=p;
+  if(!Array.isArray(data.notes))data.notes=[];
 }
-
 function saveWorkspace(){
   const raw=JSON.stringify(data);
-  localStorage.setItem(STORAGE_KEY,raw);
-
-  if(localStorage.getItem(STORAGE_KEY)!==raw)
-    throw new Error("Storage read-back verification failed.");
-
+  localStorage.setItem(KEY,raw);
+  if(localStorage.getItem(KEY)!==raw)throw new Error("Storage read-back verification failed.");
   statusBox.textContent="Saved and verified";
 }
 
-function getFS(){
-  return data.fs;
-}
-
-/* ==========================================
-   SHA-256
-========================================== */
-
-function requireCrypto(){
-  if(!window.crypto||!crypto.subtle)
-    throw new Error(
-      "Secure SHA-256 is unavailable. Open CX through HTTPS."
-    );
-}
-
-async function sha256(text){
+/* CRYPTO AND JOURNAL */
+const requireCrypto=()=>{if(!window.crypto||!crypto.subtle)throw new Error("SHA-256 unavailable. Open CX through HTTPS.")};
+async function sha256(t){
   requireCrypto();
-
-  const bytes=new TextEncoder().encode(text);
-  const digest=await crypto.subtle.digest("SHA-256",bytes);
-
-  return Array.from(new Uint8Array(digest))
-    .map(byte=>byte.toString(16).padStart(2,"0"))
-    .join("");
+  const d=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));
+  return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
-
-/* The hash is calculated from these exact fields.
-   The hash field itself is excluded. */
-
-function canonicalRecord(record){
-  return JSON.stringify({
-    n:record.n,
-    timestamp:record.timestamp,
-    action:record.action,
-    details:record.details,
-    previousHash:record.previousHash
-  });
+const canon=r=>JSON.stringify({n:r.n,timestamp:r.timestamp,action:r.action,details:r.details,state:r.state,previousHash:r.previousHash});
+const readFile=e=>!e||typeof e!=="object"?"":typeof e.c==="string"?e.c:typeof e.content==="string"?e.content:"";
+function writeFile(e,v){if("content" in e&&!("c" in e))e.content=v;else e.c=v}
+async function stateHash(d=data){
+  const fs=d.fs||{};
+  return sha256(JSON.stringify({
+    files:Object.keys(fs).sort().map(k=>[k,fs[k]&&fs[k].t,readFile(fs[k])]),
+    notes:d.notes||[],
+    settings:d.settings||{}
+  }));
 }
-
-function getNewJournal(){
-  if(!Array.isArray(data[JOURNAL_KEY]))
-    data[JOURNAL_KEY]=[];
-
-  return data[JOURNAL_KEY];
+async function appendRecord(action,details){
+  const j=journalOf();
+  const r={n:j.length,timestamp:new Date().toISOString(),action:String(action),details:details||{},
+    state:await stateHash(),previousHash:j.length?j[j.length-1].hash:GEN,hash:""};
+  r.hash=await sha256(canon(r));
+  j.push(r);
 }
-
-/* ==========================================
-   JOURNAL INITIALIZATION
-========================================== */
-
 async function initializeJournal(){
-  if(!Array.isArray(data[JOURNAL_KEY])){
-    data[JOURNAL_KEY]=[];
-
-    await appendJournalRecord(
-      "journal.initialized",
-      {
-        legacyRecords:Array.isArray(data.j)?data.j.length:0,
-        filesystemEntries:Object.keys(data.fs).length,
-        version:"0.8"
-      }
-    );
-  }
-}
-
-/* ==========================================
-   APPEND-ONLY JOURNAL
-========================================== */
-
-async function appendJournalRecord(action,details){
-  const journal=getNewJournal();
-
-  const previousHash=journal.length
-    ?journal[journal.length-1].hash
-    :GENESIS_HASH;
-
-  const record={
-    n:journal.length,
-    timestamp:new Date().toISOString(),
-    action:String(action),
-    details:details||{},
-    previousHash,
-    hash:""
-  };
-
-  record.hash=await sha256(canonicalRecord(record));
-
-  journal.push(record);
-}
-
-/* ==========================================
-   TRANSACTION ENGINE
-========================================== */
-
-/*
-  Every supported workspace operation:
-  1. Takes a snapshot.
-  2. Applies the operation.
-  3. Creates a hash-chained journal record.
-  4. Saves the workspace.
-  5. Rolls back in-memory data if anything fails.
-*/
-
-async function transact(action,details,operation){
-  if(transactionRunning)
-    throw new Error("Another workspace operation is running.");
-
-  transactionRunning=true;
-
-  const snapshot=JSON.stringify(data);
-
-  try{
-    const result=operation();
-
-    await appendJournalRecord(action,details);
-
+  if(!Array.isArray(data[JKEY])||data[JKEY].length===0){
+    data[JKEY]=[];
+    await appendRecord("journal.initialized",{legacyRecords:Array.isArray(data.j)?data.j.length:0,filesystemEntries:Object.keys(data.fs).length,version:VERSION});
     saveWorkspace();
-
-    return result;
-
-  }catch(error){
-    data=JSON.parse(snapshot);
-    throw error;
-
-  }finally{
-    transactionRunning=false;
-  }
-}
-
-/* ==========================================
-   JOURNAL VERIFICATION
-========================================== */
-
-async function verifyJournal(){
-  const journal=data[JOURNAL_KEY];
-
-  if(!Array.isArray(journal)){
-    return{
-      initialized:false,
-      valid:false,
-      count:0,
-      issues:["New cryptographic journal is missing."]
-    };
-  }
-
-  const issues=[];
-  let expectedPrevious=GENESIS_HASH;
-
-  for(let i=0;i<journal.length;i++){
-    const record=journal[i];
-
-    if(!record||typeof record!=="object"){
-      issues.push("Invalid record at position "+i);
-      continue;
-    }
-
-    if(record.n!==i){
-      issues.push("Sequence mismatch at position "+i);
-    }
-
-    if(record.previousHash!==expectedPrevious){
-      issues.push("Previous-hash mismatch at position "+i);
-    }
-
-    if(typeof record.hash!=="string"||
-       !/^[a-f0-9]{64}$/.test(record.hash)){
-      issues.push("Invalid SHA-256 hash at position "+i);
-      expectedPrevious=record.hash||"";
-      continue;
-    }
-
-    try{
-      const calculated=await sha256(canonicalRecord(record));
-
-      if(calculated!==record.hash){
-        issues.push("Hash mismatch at position "+i);
-      }
-    }catch(error){
-      issues.push("Verification error at position "+i+": "+error.message);
-    }
-
-    expectedPrevious=record.hash;
-  }
-
-  return{
-    initialized:true,
-    valid:issues.length===0,
-    count:journal.length,
-    issues
-  };
-}
-
-/* ==========================================
-   FILESYSTEM
-========================================== */
-
-function parentOf(path){
-  if(path==="/")return null;
-
-  const parts=path.split("/");
-  parts.pop();
-
-  return parts.join("/")||"/";
-}
-
-function nameOf(path){
-  return path.split("/").filter(Boolean).pop()||"/";
-}
-
-function childrenOf(folder){
-  return Object.keys(getFS()).filter(path=>
-    path!=="/"&&parentOf(path)===folder
-  );
-}
-
-function readFile(entry){
-  if(!entry||typeof entry!=="object")return "";
-
-  if(typeof entry.c==="string")return entry.c;
-  if(typeof entry.content==="string")return entry.content;
-
-  return "";
-}
-
-function writeFile(entry,value){
-  if(Object.prototype.hasOwnProperty.call(entry,"c")){
-    entry.c=value;
-  }else if(Object.prototype.hasOwnProperty.call(entry,"content")){
-    entry.content=value;
-  }else{
-    entry.c=value;
-  }
-}
-
-function validPath(path){
-  if(typeof path!=="string")return false;
-  if(!path.startsWith("/"))return false;
-  if(path==="/")return true;
-  if(path.includes("//")||path.endsWith("/"))return false;
-
-  const parts=path.split("/");
-
-  return !parts.includes(".")&&!parts.includes("..");
-}
-
-function filesystemAudit(){
-  const fs=getFS();
-  const issues=[];
-  const paths=Object.keys(fs);
-
-  if(!fs["/"]){
-    issues.push("Root directory is missing.");
-  }else if(fs["/"].t!=="d"){
-    issues.push("Root entry is not a directory.");
-  }
-
-  for(const path of paths){
-    const entry=fs[path];
-
-    if(!validPath(path)){
-      issues.push("Invalid path: "+path);
-      continue;
-    }
-
-    if(!entry||typeof entry!=="object"){
-      issues.push("Invalid entry: "+path);
-      continue;
-    }
-
-    if(path==="/")continue;
-
-    const parent=parentOf(path);
-
-    if(!fs[parent]){
-      issues.push("Missing parent: "+parent);
-    }else if(fs[parent].t!=="d"){
-      issues.push("Parent is not a directory: "+parent);
-    }
-
-    if(entry.t!=="d"&&entry.t!=="f"){
-      issues.push("Unknown entry type: "+path);
-    }
-
-    if(entry.t==="f"&&
-       typeof entry.c!=="string"&&
-       typeof entry.content!=="string"){
-      issues.push("File has no recognized content: "+path);
-    }
-  }
-
-  return{total:paths.length,issues};
-}
-
-/* ==========================================
-   PERSISTENCE TEST
-========================================== */
-
-function testPersistence(){
-  const key="cx_v08_integrity_probe";
-  const value="CX-PERSISTENCE-"+Date.now();
-
-  try{
-    localStorage.setItem(key,value);
-    const result=localStorage.getItem(key);
-    localStorage.removeItem(key);
-
-    return{
-      passed:result===value,
-      message:result===value
-        ?"Browser storage write/read test passed."
-        :"Browser storage read-back failed."
-    };
-
-  }catch(error){
-    try{localStorage.removeItem(key)}catch(e){}
-
-    return{passed:false,message:error.message};
-  }
-}
-
-/* ==========================================
-   LEGACY JOURNAL INSPECTION
-========================================== */
-
-function inspectLegacyJournal(){
-  const journal=data.j;
-
-  if(!Array.isArray(journal)){
-    return{
-      count:0,
-      valid:false,
-      issues:["Legacy journal is missing or invalid."]
-    };
-  }
-
-  const issues=[];
-
-  journal.forEach((record,index)=>{
-    if(!record||typeof record!=="object"){
-      issues.push("Invalid legacy record at "+index);
-      return;
-    }
-
-    if(!Object.prototype.hasOwnProperty.call(record,"n"))
-      issues.push("Legacy record "+index+" has no sequence number.");
-
-    if(!Object.prototype.hasOwnProperty.call(record,"op"))
-      issues.push("Legacy record "+index+" has no operation.");
-
-    if(!Object.prototype.hasOwnProperty.call(record,"h"))
-      issues.push("Legacy record "+index+" has no hash.");
-  });
-
-  return{
-    count:journal.length,
-    valid:issues.length===0,
-    issues
-  };
-}
-
-/* ==========================================
-   NAVIGATION
-========================================== */
-
-document.querySelectorAll(".nav").forEach(button=>{
-  button.addEventListener("click",()=>{
-    page=button.dataset.page;
-
-    document.querySelectorAll(".nav").forEach(item=>{
-      item.classList.toggle("active",item.dataset.page===page);
-    });
-
-    render();
-  });
-});
-
-function navigate(destination){
-  page=destination;
-
-  document.querySelectorAll(".nav").forEach(item=>{
-    item.classList.toggle("active",item.dataset.page===destination);
-  });
-
-  render();
-}
-
-/* ==========================================
-   HOME
-========================================== */
-
-function renderHome(){
-  const fs=getFS();
-
-  const files=Object.keys(fs).filter(path=>
-    path!=="/"&&fs[path].t==="f"
-  );
-
-  const folders=Object.keys(fs).filter(path=>
-    path!=="/"&&fs[path].t==="d"
-  );
-
-  main.innerHTML=`
-    <h1>CX Workspace</h1>
-    <p>Persistent computing environment.</p>
-
-    <div class="stat-grid">
-      <div class="stat">
-        <span class="muted">Files</span>
-        <strong>${files.length}</strong>
-      </div>
-      <div class="stat">
-        <span class="muted">Folders</span>
-        <strong>${folders.length}</strong>
-      </div>
-      <div class="stat">
-        <span class="muted">Legacy records</span>
-        <strong>${Array.isArray(data.j)?data.j.length:0}</strong>
-      </div>
-      <div class="stat">
-        <span class="muted">New records</span>
-        <strong>${getNewJournal().length}</strong>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Workspace controls</h2>
-      <div class="actions">
-        <button class="primary" onclick="navigate('files')">Open Files</button>
-        <button onclick="navigate('integrity')">Check Integrity</button>
-        <button onclick="exportWorkspace()">Backup Workspace</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Version</h2>
-      <p>CX Web v0.8</p>
-      <p class="muted">
-        Local browser execution. Remote compute and cross-device
-        synchronization are not implemented.
-      </p>
-    </div>
-  `;
-}
-
-/* ==========================================
-   FILE MANAGER
-========================================== */
-
-function renderFiles(){
-  const children=childrenOf(currentFolder);
-
-  let html=`
-    <div class="row">
-      <div>
-        <h1>Files</h1>
-        <p>Location: ${esc(currentFolder)}</p>
-      </div>
-      <div class="actions">
-        <button onclick="createFile()">+ File</button>
-        <button onclick="createFolder()">+ Folder</button>
-      </div>
-    </div>
-    <div class="card">
-  `;
-
-  if(currentFolder!=="/"){
-    html+=`<div class="file-row" onclick="goParent()">↩ Back</div>`;
-  }
-
-  if(children.length===0)html+="<p>This folder is empty.</p>";
-
-  children.forEach(path=>{
-    const entry=getFS()[path];
-    const folder=entry.t==="d";
-
-    html+=`
-      <div class="file-row" data-path="${esc(path)}">
-        <span>${folder?"📁":"📄"}</span>
-        <span class="file-name">${esc(nameOf(path))}</span>
-        <span class="muted">${folder?"Folder":"File"}</span>
-      </div>
-    `;
-  });
-
-  html+="</div>";
-
-  if(selectedFile&&getFS()[selectedFile]){
-    const content=readFile(getFS()[selectedFile]);
-
-    html+=`
-      <div class="card">
-        <div class="row">
-          <div>
-            <h2>${esc(nameOf(selectedFile))}</h2>
-            <div class="muted">${esc(selectedFile)}</div>
-          </div>
-          <div class="actions">
-            <button class="primary" onclick="saveCurrentFile()">Save</button>
-            <button onclick="renameCurrent()">Rename</button>
-            <button class="danger" onclick="deleteCurrent()">Delete</button>
-          </div>
-        </div>
-        <textarea id="editor" spellcheck="false"></textarea>
-        <div id="editorStatus" class="muted">${content.length} characters loaded</div>
-      </div>
-    `;
-  }
-
-  main.innerHTML=html;
-
-  main.querySelectorAll("[data-path]").forEach(row=>{
-    row.addEventListener("click",()=>openPath(row.dataset.path));
-  });
-
-  if(selectedFile&&getFS()[selectedFile]){
-    document.getElementById("editor").value=readFile(getFS()[selectedFile]);
-  }
-}
-
-function openPath(path){
-  const entry=getFS()[path];
-
-  if(!entry)return alert("Entry not found.");
-
-  if(entry.t==="d"){
-    currentFolder=path;
-    selectedFile=null;
-  }else{
-    selectedFile=path;
-  }
-
-  renderFiles();
-}
-
-function goParent(){
-  currentFolder=parentOf(currentFolder)||"/";
-  selectedFile=null;
-  renderFiles();
-}
-
-async function saveCurrentFile(){
-  if(!selectedFile)return;
-
-  const path=selectedFile;
-  const editor=document.getElementById("editor");
-
-  if(!editor||!getFS()[path])return;
-
-  const value=editor.value;
-
-  try{
-    await transact("file.updated",{path,characters:value.length},()=>{
-      writeFile(getFS()[path],value);
-    });
-
-    document.getElementById("editorStatus").textContent=
-      "Saved and journaled: "+value.length+" characters.";
-
-  }catch(error){reportError(error)}
-}
-
-async function createFile(){
-  const name=prompt("File name:");
-  if(!name||!name.trim())return;
-
-  const path=joinPath(currentFolder,name.trim());
-
-  if(!validPath(path)||getFS()[path])
-    return alert("Invalid path or name already exists.");
-
-  try{
-    await transact("file.created",{path},()=>{
-      getFS()[path]={t:"f",c:""};
-    });
-
-    selectedFile=path;
-    renderFiles();
-
-  }catch(error){reportError(error)}
-}
-
-async function createFolder(){
-  const name=prompt("Folder name:");
-  if(!name||!name.trim())return;
-
-  const path=joinPath(currentFolder,name.trim());
-
-  if(!validPath(path)||getFS()[path])
-    return alert("Invalid path or name already exists.");
-
-  try{
-    await transact("folder.created",{path},()=>{
-      getFS()[path]={t:"d"};
-    });
-
-    renderFiles();
-
-  }catch(error){reportError(error)}
-}
-
-function joinPath(folder,name){
-  return folder==="/"?"/"+name:folder+"/"+name;
-}
-
-async function renameCurrent(){
-  if(!selectedFile)return;
-
-  const oldPath=selectedFile;
-  const newName=prompt("New name:",nameOf(oldPath));
-
-  if(!newName||!newName.trim())return;
-
-  const newPath=joinPath(parentOf(oldPath),newName.trim());
-
-  if(!validPath(newPath)||getFS()[newPath])
-    return alert("Invalid path or destination already exists.");
-
-  try{
-    await transact("file.renamed",{from:oldPath,to:newPath},()=>{
-      getFS()[newPath]=getFS()[oldPath];
-      delete getFS()[oldPath];
-    });
-
-    selectedFile=newPath;
-    renderFiles();
-
-  }catch(error){reportError(error)}
-}
-
-async function deleteCurrent(){
-  if(!selectedFile)return;
-
-  const path=selectedFile;
-  if(!getFS()[path])return;
-
-  const descendants=Object.keys(getFS()).filter(candidate=>
-    candidate.startsWith(path+"/")
-  );
-
-  if(descendants.length)
-    return alert("This folder contains entries. Delete or move them first.");
-
-  if(!confirm("Delete "+path+"?"))return;
-
-  try{
-    await transact("file.deleted",{path},()=>{
-      delete getFS()[path];
-    });
-
-    selectedFile=null;
-    renderFiles();
-
-  }catch(error){reportError(error)}
-}
-
-/* ==========================================
-   NOTES
-========================================== */
-
-function renderNotes(){
-  if(!Array.isArray(data.notes)){
-    main.innerHTML=`
-      <h1>Notes</h1>
-      <p class="warning">Notes data is not an array. It has not been modified.</p>
-    `;
     return;
   }
-
-  let html=`
-    <h1>Notes</h1>
-    <div class="card">
-      <textarea id="newNote" placeholder="Write a note..." style="min-height:110px"></textarea>
-      <br><br>
-      <button class="primary" onclick="addNote()">Save Note</button>
-    </div>
-  `;
-
-  data.notes.forEach((note,index)=>{
-    const text=typeof note==="string"?note:(note.text||"");
-
-    html+=`
-      <div class="card">
-        <pre>${esc(text)}</pre>
-        <button onclick="deleteNote(${index})">Delete</button>
-      </div>
-    `;
-  });
-
-  main.innerHTML=html;
+  const j=data[JKEY],last=j[j.length-1];
+  if(last&&last.state===undefined){
+    await appendRecord("journal.state-bound",{note:"Workspace state hash binding added",version:VERSION});
+    saveWorkspace();
+  }
+}
+async function verifyJournal(d=data){
+  const j=d[JKEY];
+  if(!Array.isArray(j))return{initialized:false,valid:false,count:0,issues:["Journal is missing."],head:""};
+  const issues=[];let prev=GEN;
+  for(let i=0;i<j.length;i++){
+    const r=j[i];
+    if(!r||typeof r!=="object"){issues.push("Invalid record at "+i);prev="";continue}
+    if(r.n!==i)issues.push("Sequence mismatch at "+i);
+    if(r.previousHash!==prev)issues.push("Previous-hash mismatch at "+i);
+    if(typeof r.hash!=="string"||!/^[a-f0-9]{64}$/.test(r.hash)){issues.push("Invalid hash at "+i);prev=String(r.hash||"");continue}
+    if(await sha256(canon(r))!==r.hash)issues.push("Hash mismatch at "+i);
+    prev=r.hash;
+  }
+  const last=j[j.length-1];
+  if(last&&last.state!==undefined&&await stateHash(d)!==last.state)
+    issues.push("Workspace data does not match the last journal record. It was changed outside CX or is damaged.");
+  return{initialized:true,valid:!issues.length,count:j.length,issues,head:(last&&last.hash)||""};
+}
+async function transact(action,details,op){
+  if(busy)throw new Error("Another workspace operation is running.");
+  busy=true;
+  const snap=JSON.stringify(data);
+  try{
+    const r=op();
+    await appendRecord(action,details);
+    saveWorkspace();
+    return r;
+  }catch(e){
+    data=JSON.parse(snap);
+    try{localStorage.setItem(KEY,snap)}catch(x){}
+    throw e;
+  }finally{busy=false}
 }
 
-async function addNote(){
-  const input=document.getElementById("newNote");
-  if(!input||!input.value.trim())return;
-
-  const value=input.value;
-
+/* FILESYSTEM */
+const parentOf=p=>p==="/"?null:(p.split("/").slice(0,-1).join("/")||"/");
+const nameOf=p=>p.split("/").filter(Boolean).pop()||"/";
+const joinPath=(f,n)=>f==="/"?"/"+n:f+"/"+n;
+const childrenOf=f=>Object.keys(getFS()).filter(p=>p!=="/"&&parentOf(p)===f)
+  .sort((a,b)=>(getFS()[b].t==="d")-(getFS()[a].t==="d")||a.localeCompare(b));
+function validPath(p){
+  if(typeof p!=="string"||!p.startsWith("/"))return false;
+  if(p==="/")return true;
+  if(p.includes("//")||p.endsWith("/"))return false;
+  const s=p.split("/");
+  return !s.includes(".")&&!s.includes("..");
+}
+function resolvePath(p,base){
+  const out=[];
+  for(const s of(p.startsWith("/")?p:base+"/"+p).split("/")){
+    if(!s||s===".")continue;
+    s===".."?out.pop():out.push(s);
+  }
+  return "/"+out.join("/");
+}
+function newPath(folder,raw){
+  const n=(raw||"").trim();
+  if(!n)return null;
+  if(n.includes("/"))throw new Error("Names cannot contain /");
+  return joinPath(folder,n);
+}
+function checkNew(path){
+  if(!validPath(path)||path==="/")throw new Error("Invalid path.");
+  if(getFS()[path])throw new Error("Already exists: "+path);
+  const p=getFS()[parentOf(path)];
+  if(!p||p.t!=="d")throw new Error("Parent folder does not exist.");
+}
+async function fsCreate(path,type,content=""){
+  checkNew(path);
+  await transact(type==="d"?"folder.created":"file.created",{path},()=>{
+    getFS()[path]=type==="d"?{t:"d"}:{t:"f",c:content};
+  });
+}
+async function fsRemove(path){
+  if(path==="/"||!getFS()[path])throw new Error("Cannot remove "+path);
+  if(Object.keys(getFS()).some(k=>k.startsWith(path+"/")))throw new Error("Folder is not empty.");
+  await transact("entry.deleted",{path},()=>{delete getFS()[path]});
+}
+async function fsWrite(path,value){
+  const e=getFS()[path];
+  if(!e||e.t!=="f")throw new Error("Not a file: "+path);
+  await transact("file.updated",{path,characters:value.length},()=>writeFile(e,value));
+}
+function filesystemAudit(){
+  const fs=getFS(),is=[],ps=Object.keys(fs);
+  if(!fs["/"])is.push("Root directory is missing.");
+  else if(fs["/"].t!=="d")is.push("Root entry is not a directory.");
+  for(const p of ps){
+    const e=fs[p];
+    if(!validPath(p)){is.push("Invalid path: "+p);continue}
+    if(!e||typeof e!=="object"){is.push("Invalid entry: "+p);continue}
+    if(p==="/")continue;
+    const par=fs[parentOf(p)];
+    if(!par)is.push("Missing parent: "+parentOf(p));
+    else if(par.t!=="d")is.push("Parent is not a directory: "+parentOf(p));
+    if(e.t!=="d"&&e.t!=="f")is.push("Unknown entry type: "+p);
+    if(e.t==="f"&&typeof e.c!=="string"&&typeof e.content!=="string")is.push("File has no recognized content: "+p);
+  }
+  return{total:ps.length,issues:is};
+}
+function testPersistence(){
+  const k="cx_v09_probe",v="CX-"+Date.now();
   try{
-    await transact("note.created",{characters:value.length},()=>{
-      data.notes.push({
-        text:value,
-        createdAt:new Date().toISOString()
-      });
-    });
+    localStorage.setItem(k,v);
+    const r=localStorage.getItem(k);
+    localStorage.removeItem(k);
+    return{passed:r===v,message:r===v?"Browser storage write/read test passed.":"Browser storage read-back failed."};
+  }catch(e){
+    try{localStorage.removeItem(k)}catch(x){}
+    return{passed:false,message:e.message};
+  }
+}
+function inspectLegacyJournal(){
+  const j=data.j;
+  if(!Array.isArray(j))return{count:0,valid:false,issues:["Legacy journal is missing or invalid."]};
+  const is=[];
+  j.forEach((r,i)=>{
+    if(!r||typeof r!=="object"){is.push("Invalid legacy record at "+i);return}
+    ["n","op","h"].forEach(k=>{if(!(k in r))is.push("Legacy record "+i+" is missing "+k)});
+  });
+  return{count:j.length,valid:!is.length,issues:is};
+}
 
-   
+/* NAVIGATION */
+const PAGES={home:renderHome,files:renderFiles,notes:renderNotes,terminal:renderTerminal,monitor:renderMonitor,integrity:renderIntegrity,journal:renderJournal,settings:renderSettings};
+function render(){
+  try{
+    const r=(PAGES[page]||renderHome)();
+    if(r&&r.catch)r.catch(reportError);
+  }catch(e){
+    reportError(e);
+    main.innerHTML='<h1>Rendering error</h1><p class="bad">'+esc(e.message)+'</p>';
+  }
+}
+function navigate(d){
+  page=d;
+  document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===d));
+  render();
+}
+document.querySelectorAll(".nav").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
+
+/* HOME */
+function renderHome(){
+  const fs=getFS(),ps=Object.keys(fs).filter(p=>p!=="/");
+  const files=ps.filter(p=>fs[p].t==="f").length,j=journalOf();
+  main.innerHTML=`
+  <h1>CX Workspace</h1><p>Persistent computing environment.</p>
+  <div class="stat-grid">
+    <div class="stat"><span class="muted">Files</span><strong>${files}</strong></div>
+    <div class="stat"><span class="muted">Folders</span><strong>${ps.length-files}</strong></div>
+    <div class="stat"><span class="muted">Notes</span><strong>${data.notes.length}</strong></div>
+    <div class="stat"><span class="muted">Journal records</span><strong>${j.length}</strong></div>
+  </div>
+  <div class="card"><h2>Workspace controls</h2><div class="actions">
+    <button class="primary" onclick="navigate('files')">Open Files</button>
+    <button onclick="navigate('integrity')">Check Integrity</button>
+    <button onclick="exportWorkspace()">Backup Workspace</button></div></div>
+  <div class="card"><h2>Version</h2><p>CX Web v${VERSION}</p>
+  <p class="muted">Local browser execution. Remote compute and cross-device synchronization are not implemented.</p></div>`;
+}
+
+/* FILES */
+function renderFiles(){
+  const kids=childrenOf(currentFolder);
+  let h=`<div class="row"><div><h1>Files</h1><p>Location: ${esc(currentFolder)}</p></div>
+  <div class="actions"><button onclick="guard(createFile)">+ File</button><button onclick="guard(createFolder)">+ Folder</button></div></div><div class="card">`;
+  if(currentFolder!=="/")h+='<div class="file-row" onclick="goParent()">↩ Back</div>';
+  if(!kids.length)h+="<p>This folder is empty.</p>";
+  kids.forEach(p=>{
+    const d=getFS()[p].t==="d";
+    h+=`<div class="file-row" data-path="${esc(p)}"><span>${d?"📁":"📄"}</span><span class="file-name">${esc(nameOf(p))}</span><span class="muted">${d?"Folder":"File"}</span></div>`;
+  });
+  h+="</div>";
+  if(currentFolder!=="/"&&!kids.length)h+='<button class="danger" onclick="guard(deleteFolder)">Delete this empty folder</button>';
+  if(selectedFile&&getFS()[selectedFile])h+=`<div class="card"><div class="row"><div><h2>${esc(nameOf(selectedFile))}</h2><div class="muted">${esc(selectedFile)}</div></div>
+  <div class="actions"><button class="primary" onclick="guard(saveCurrentFile)">Save</button><button onclick="guard(renameCurrent)">Rename</button><button class="danger" onclick="guard(deleteCurrent)">Delete</button></div></div>
+  <textarea id="editor" spellcheck="false"></textarea><div id="editorStatus" class="muted">${readFile(getFS()[selectedFile]).length} characters loaded</div></div>`;
+  main.innerHTML=h;
+  main.querySelectorAll("[data-path]").forEach(r=>r.addEventListener("click",()=>openPath(r.dataset.path)));
+  if(selectedFile&&getFS()[selectedFile])$("editor").value=readFile(getFS()[selectedFile]);
+}
+function openPath(p){
+  const e=getFS()[p];
+  if(!e)return alert("Entry not found.");
+  if(e.t==="d"){currentFolder=p;selectedFile=null}else selectedFile=p;
+  renderFiles();
+}
+function goParent(){currentFolder=parentOf(currentFolder)||"/";selectedFile=null;renderFiles()}
+async function createFile(){const p=newPath(currentFolder,prompt("File name:"));if(!p)return;await fsCreate(p,"f");selectedFile=p;renderFiles()}
+async function createFolder(){const p=newPath(currentFolder,prompt("Folder name:"));if(!p)return;await fsCreate(p,"d");renderFiles()}
+async function saveCurrentFile(){
+  const p=selectedFile,ed=$("editor");
+  if(!p||!ed)return;
+  await fsWrite(p,ed.value);
+  const m=$("editorStatus");
+  if(m)m.textContent="Saved and journaled: "+ed.value.length+" characters.";
+}
+async function renameCurrent(){
+  if(!selectedFile)return;
+  const old=selectedFile,np=newPath(parentOf(old),prompt("New name:",nameOf(old)));
+  if(!np)return;
+  checkNew(np);
+  await transact("file.renamed",{from:old,to:np},()=>{getFS()[np]=getFS()[old];delete getFS()[old]});
+  selectedFile=np;renderFiles();
+}
+async function deleteCurrent(){
+  const p=selectedFile;
+  if(!p||!confirm("Delete "+p+"?"))return;
+  await fsRemove(p);selectedFile=null;renderFiles();
+}
+async function deleteFolder(){
+  const p=currentFolder;
+  if(p==="/"||!confirm("Delete folder "+p+"?"))return;
+  await fsRemove(p);currentFolder=parentOf(p);selectedFile=null;renderFiles();
+}
+
+/* NOTES */
+function renderNotes(){
+  let h=`<h1>Notes</h1><div class="card"><textarea id="newNote" placeholder="Write a note..." style="min-height:110px"></textarea><br><br>
+  <button class="primary" onclick="guard(addNote)">Save Note</button></div>`;
+  data.notes.forEach((n,i)=>{
+    h+=`<div class="card"><pre>${esc(typeof n==="string"?n:(n.text||""))}</pre><br><button onclick="guard(()=>deleteNote(${i}))">Delete</button></div>`;
+  });
+  main.innerHTML=h;
+}
+async function addNote(){
+  const i=$("newNote");
+  if(!i||!i.value.trim())return;
+  const v=i.value;
+  await transact("note.created",{characters:v.length},()=>{data.notes.push({text:v,createdAt:new Date().toISOString()})});
+  renderNotes();
+}
+async function deleteNote(i){
+  if(!confirm("Delete this note?"))return;
+  await transact("note.deleted",{index:i},()=>{data.notes.splice(i,1)});
+  renderNotes();
+}
+
+/* TERMINAL */
+function termPrint(...l){
+  termLines.push(...l);
+  const o=$("terminalOutput");
+  if(o){o.textContent=termLines.join("\n");o.scrollTop=o.scrollHeight}
+}
+function renderTerminal(){
+  main.innerHTML=`<h1>Terminal</h1><p>Commands change the real workspace and are journaled.</p>
+  <div class="card"><div class="row"><input id="terminalInput" placeholder="Enter command..." autocomplete="off" autocapitalize="none" style="flex:1">
+  <button class="primary" onclick="runTerminal()">Run</button></div><pre id="terminalOutput"></pre></div>`;
+  $("terminalInput").addEventListener("keydown",e=>{if(e.key==="Enter")runTerminal()});
+  termPrint();
+}
+async function runTerminal(){
+  const inp=$("terminalInput");
+  if(!inp)return;
+  const line=inp.value.trim();
+  inp.value="";
+  if(!line)return;
+  termPrint("$ "+line);
+  const parts=line.split(/\s+/),cmd=parts[0].toLowerCase(),arg=parts.slice(1).join(" ");
+  try{
+    switch(cmd){
+      case"help":termPrint("help  pwd  ls [path]  cd [path]  cat file  mkdir dir  touch file  rm path  echo text > file  journal  verify  version  clear");break;
+      case"pwd":termPrint(cwd);break;
+      case"ls":{const p=resolvePath(arg||".",cwd),e=getFS()[p];if(!e||e.t!=="d")throw new Error("Not a folder: "+p);termPrint(childrenOf(p).map(k=>nameOf(k)+(getFS()[k].t==="d"?"/":"")).join("  ")||"(empty)");break}
+      case"cd":{const p=resolvePath(arg||"/",cwd);if(!getFS()[p]||getFS()[p].t!=="d")throw new Error("Not a folder: "+p);cwd=p;break}
+      case"cat":{const p=resolvePath(arg,cwd);if(!getFS()[p]||getFS()[p].t!=="f")throw new Error("Not a file: "+p);termPrint(readFile(getFS()[p]));break}
+      case"mkdir":await fsCreate(resolvePath(arg,cwd),"d");break;
+      case"touch":{const p=resolvePath(arg,cwd);if(!getFS()[p])await fsCreate(p,"f");break}
+      case"rm":await fsRemove(resolvePath(arg,cwd));break;
+      case"echo":{const i=arg.indexOf(" > ");if(i<0){termPrint(arg);break}const p=resolvePath(arg.slice(i+3).trim(),cwd),t=arg.slice(0,i);if(!getFS()[p])await fsCreate(p,"f",t);else await fsWrite(p,t);break}
+      case"journal":journalOf().slice(-8).forEach(r=>termPrint(r.n+"  "+r.action+"  "+r.hash.slice(0,12)));break;
+      case"verify":{const v=await verifyJournal();termPrint(v.valid?"OK: "+v.count+" records, head "+v.head.slice(0,12):"FAILED: "+v.issues.join(" | "));break}
+      case"version":termPrint("CX Web v"+VERSION);break;
+      case"clear":termLines=[];break;
+      default:termPrint("Unknown command. Type help.");
+    }
+  }catch(e){termPrint("error: "+(e.message||e))}
+  termPrint();
+}
+
+/* MONITOR */
+async function renderMonitor(){
+  const fs=getFS(),ps=Object.keys(fs).filter(p=>p!=="/");
+  const files=ps.filter(p=>fs[p].t==="f").length;
+  let est=null;
+  try{est=await navigator.storage.estimate()}catch(e){}
+  if(page!=="monitor")return;
+  const kb=((localStorage.getItem(KEY)||"").length/1024).toFixed(1);
+  main.innerHTML=`<h1>System Monitor</h1><p>Values reported by the browser of the device running CX. This is not remote compute.</p>
+  <div class="stat-grid">
+    <div class="stat"><span class="muted">Files</span><strong>${files}</strong></div>
+    <div class="stat"><span class="muted">Folders</span><strong>${ps.length-files}</strong></div>
+    <div class="stat"><span class="muted">Journal records</span><strong>${journalOf().length}</strong></div>
+    <div class="stat"><span class="muted">Workspace size</span><strong>${kb} KB</strong></div>
+  </div>
+  <div class="card"><h2>Device and browser</h2>
+  <p>CPU cores (logical): ${navigator.hardwareConcurrency||"not reported"}</p>
+  <p>Device memory (approximate): ${navigator.deviceMemory?navigator.deviceMemory+" GB":"not reported"}</p>
+  <p>Browser storage: ${est&&est.quota?(est.usage/1048576).toFixed(2)+" MB used of "+Math.round(est.quota/1048576)+" MB":"not reported"}</p>
+  <p>Session uptime: ${Math.round((Date.now()-T0)/1000)} seconds</p>
+  <p>Remote compute: not connected. Cross-device sync: not implemented.</p></div>`;
+}
+
+/* INTEGRITY */
+async function renderIntegrity(){
+  main.innerHTML="<h1>Integrity</h1><p>Inspecting workspace and journal...</p>";
+  const fsr=filesystemAudit(),per=testPersistence(),leg=inspectLegacyJournal(),mod=await verifyJournal();
+  if(page!=="integrity")return;
+  const line=(ok,t)=>`<p class="${ok?"good":"bad"}">${t}</p>`;
+  const list=a=>a.map(i=>`<p class="bad">${esc(i)}</p>`).join("");
+  main.innerHTML=`<h1>Integrity</h1><p>Workspace inspection results.</p>
+  <div class="card"><h2>Filesystem</h2>${line(!fsr.issues.length,fsr.issues.length?"ISSUES FOUND":"PASS")}<p>Entries: ${fsr.total}</p>${list(fsr.issues)}</div>
+  <div class="card"><h2>Browser persistence</h2>${line(per.passed,per.passed?"PASS":"FAILED")}<p>${esc(per.message)}</p></div>
+  <div class="card"><h2>Legacy journal</h2>${line(leg.valid,leg.valid?"STRUCTURE PASSED":"ISSUES FOUND")}<p>Records: ${leg.count}</p>
+  <p class="muted">Inspected structurally only. Historical hashes are not verified.</p>${list(leg.issues)}</div>
+  <div class="card"><h2>SHA-256 Journal v1</h2>${line(mod.valid,mod.valid?"HASH CHAIN AND WORKSPACE STATE VERIFIED":"VERIFICATION FAILED")}
+  <p>Records: ${mod.count}</p><p class="hash">Journal head: ${esc(mod.head||"none")}</p>${list(mod.issues)}
+  <p class="muted">Write the head hash down somewhere else. It lets you detect deletion of recent records. Someone with full storage access can still replace the whole workspace and chain.</p></div>
+  <div class="card"><h2>Settings</h2><p class="${data.settings?"good":"warning"}">${data.settings?"Saved settings present":"Defaults in use"}</p></div>
+  <button onclick="guard(renderIntegrity)">Run Again</button>`;
+}
+
+/* JOURNAL VIEWER */
+function renderJournal(){
+  const m=journalOf(),l=Array.isArray(data.j)?data.j:[];
+  let h=`<h1>Journal</h1><p>Newest first. Showing up to 50 records.</p><div class="card"><h2>SHA-256 Journal v1</h2><p>Records: ${m.length}</p>`;
+  m.slice(-50).reverse().forEach(r=>{
+    h+=`<div class="card"><strong>${esc(r.action)}</strong><p>${esc(fmt(r.timestamp))} · record ${esc(r.n)}</p>
+    <p class="hash">Hash: ${esc(r.hash)}</p><p class="hash">Previous: ${esc(r.previousHash)}</p>${r.state?`<p class="hash">State: ${esc(r.state)}</p>`:""}</div>`;
+  });
+  h+=`</div><div class="card"><h2>Legacy Journal</h2><p>Records: ${l.length}. Preserved unchanged. Showing the last 10.</p>`;
+  l.slice(-10).reverse().forEach(r=>{h+=`<div class="card"><pre>${esc(JSON.stringify(r,null,2))}</pre></div>`});
+  main.innerHTML=h+"</div>";
+}
+
+/* SETTINGS */
+function renderSettings(){
+  const s=data.settings||{};
+  main.innerHTML=`<h1>Settings</h1>
+  <div class="card"><h2>Appearance</h2><label>Theme</label>
+  <select id="themeSetting"><option value="dark">Dark</option><option value="light">Light</option></select><br><br>
+  <label>Accent colour</label><input id="accentSetting" type="color" value="${esc(s.accent||"#6d8cff")}"><br><br>
+  <button class="primary" onclick="guard(saveSettings)">Save Settings</button></div>
+  <div class="card"><h2>Workspace backup</h2><p>Export or restore your workspace. Import checks the journal chain and that the data matches it.</p>
+  <div class="actions"><button onclick="exportWorkspace()">Export Backup</button><button onclick="$('importFile').click()">Import Backup</button></div>
+  <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importWorkspace(event)"></div>
+  <div class="card"><h2>Storage</h2><p>Key: cx, in browser localStorage.</p>
+  <p class="muted">Storage is shared by every page on this web address. Do not clear browser data without exporting a backup.</p></div>`;
+  $("themeSetting").value=s.theme==="light"?"light":"dark";
+}
+async function saveSettings(){
+  const theme=$("themeSetting").value,accent=$("accentSetting").value;
+  await transact("settings.updated",{theme,accent},()=>{
+    if(!data.settings||typeof data.settings!=="object")data.settings={};
+    data.settings.theme=theme;
+    data.settings.accent=accent;
+  });
+  applySettings();renderSettings();
+}
+function applySettings(){
+  const s=data.settings||{};
+  document.documentElement.dataset.theme=s.theme==="light"?"light":"dark";
+  document.documentElement.style.setProperty("--accent",s.accent||"#6d8cff");
+}
+
+/* EXPORT AND IMPORT */
+function exportWorkspace(){
+  try{
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download="cx-workspace-backup.json";
+    document.body.appendChild(a);a.click();a.remove();
+    URL.revokeObjectURL(url);
+    statusBox.textContent="Backup exported";
+  }catch(e){reportError(e)}
+}
+async function importWorkspace(ev){
+  const file=ev.target.files&&ev.target.files[0];
+  if(!file)return;
+  try{
+    if(!confirm("Importing replaces the current browser workspace. Continue?"))return;
+    const imp=JSON.parse(await file.text());
+    if(!imp||typeof imp!=="object"||Array.isArray(imp)||!imp.fs||typeof imp.fs!=="object"||!imp.fs["/"]||imp.fs["/"].t!=="d")
+      throw new Error("Backup does not contain a valid workspace.");
+    if(Array.isArray(imp[JKEY])&&imp[JKEY].length){
+      const v=await verifyJournal(imp);
+      if(!v.valid)throw new Error("Backup rejected. "+v.issues[0]);
+    }
+    const prev=localStorage.getItem(KEY),before=data;
+    try{
+      data=imp;
+      if(!Array.isArray(data.notes))data.notes=[];
+      await initializeJournal();
+      await appendRecord("workspace.imported",{filename:file.name,entries:Object.keys(data.fs).length});
+      saveWorkspace();
+    }catch(e){
+      data=before;
+      if(prev!==null)localStorage.setItem(KEY,prev);
+      throw e;
+    }
+    currentFolder="/";selectedFile=null;cwd="/";
+    applySettings();navigate("home");
+    alert("Workspace imported.");
+  }catch(e){reportError(e)}
+  finally{ev.target.value=""}
+}
+
+/* STARTUP */
+async function startCX(){
+  try{
+    loadWorkspace();
+    requireCrypto();
+    await initializeJournal();
+    applySettings();
+    render();
+    statusBox.textContent="Workspace loaded";
+  }catch(e){
+    reportError(e);
+    main.innerHTML='<h1>CX Startup Error</h1><div class="card"><p class="bad">'+esc(e.message)+'</p><p>Nothing was cleared. If this browser data is damaged, import a backup:</p><input type="file" accept=".json,application/json" onchange="importWorkspace(event)"></div>';
+    statusBox.textContent="Startup error";
+  }
+}
+startCX();
+</script>
+</body></html>
