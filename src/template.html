@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080A10">
+<title>CX Alpha 0.1</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080A10'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h14' stroke='%2300E5FF' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<script>try{var t=localStorage.getItem('cx.theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>
+/*CSS*/
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="topbar" role="banner">
+    <div class="brand" aria-label="CX Alpha 0.1"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">CX</span><span class="brand-ver">alpha 0.1</span></div>
+    <button id="ws-switch" class="btn ghost ws-switch" aria-haspopup="dialog" aria-label="Switch workspace"><span id="ws-name">Loading…</span><span class="caret" aria-hidden="true"></span></button>
+    <div class="spacer"></div>
+    <div id="chips" class="chips" role="status" aria-label="System status">
+      <span id="chip-store" class="chip" title="Storage state"><i class="dot idle"></i><span>Starting</span></span>
+      <span id="chip-journal" class="chip hide-sm" title="Journal state"><i class="dot idle"></i><span>Journal</span></span>
+      <span id="chip-mode" class="chip hide-sm" title="CX Alpha 0.1 runs entirely in this browser. Remote computing is not implemented."><i class="dot info"></i><span>Local only</span></span>
+    </div>
+    <button id="btn-palette" class="icon-btn" aria-label="Open command palette (Ctrl+K)" title="Command palette (Ctrl+K)"></button>
+    <button id="btn-theme" class="icon-btn" aria-label="Toggle colour theme" title="Toggle theme"></button>
+  </header>
+  <div id="main">
+    <nav id="dock" aria-label="Applications"></nav>
+    <main id="desktop" tabindex="-1" aria-label="Workspace desktop"></main>
+  </div>
+  <div id="toasts" aria-live="polite" aria-atomic="false"></div>
+</div>
+<noscript>CX needs JavaScript.</noscript>
+<script>
+/*JS*/
+</script>
+</body>
+</html>
