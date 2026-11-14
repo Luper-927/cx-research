@@ -1,0 +1,12 @@
+{
+  "name": "cx-research",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CX Alpha 0.1: a persistent, browser-based workspace. No runtime dependencies.",
+  "scripts": {
+    "build": "node build.js",
+    "site": "node build.js --site --require-legacy",
+    "test": "node tests/run.js"
+  },
+  "devDependencies": { "playwright": "1.63.0" }
+}
