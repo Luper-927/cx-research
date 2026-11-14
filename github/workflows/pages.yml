@@ -1,0 +1,111 @@
+name: Test, deploy and verify CX
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Build and test (Chromium, project-page hosting emulation)
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.build.outputs.id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Every source file must match SOURCES.sha256 (catches copy-and-paste mistakes)
+        run: node scripts/verify-sources.js
+      - name: Build the site
+        id: build
+        run: |
+          node build.js --site --require-legacy
+          echo "id=$(cat dist/build-id.txt)" >> "$GITHUB_OUTPUT"
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: End-to-end tests
+        run: PREFIX=/cx-research/ node tests/run.js
+
+  cross-browser:
+    name: Report only (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node build.js
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: End-to-end tests
+        run: BROWSER=${{ matrix.browser }} node tests/run.js
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node build.js --site --require-legacy
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  verify:
+    name: Verify the published site
+    needs: [test, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Wait until the live site serves this build
+        env:
+          URL: ${{ needs.deploy.outputs.page_url }}
+          BUILD: ${{ needs.test.outputs.build }}
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS "$URL" | grep -q "CX.BUILD = '$BUILD'"; then echo "live site serves build $BUILD"; exit 0; fi
+            echo "attempt $i: not serving build $BUILD yet"; sleep 10
+          done
+          echo "the live site never served build $BUILD"; exit 1
+      - name: End-to-end tests against the published URL
+        env:
+          CX_URL: ${{ needs.deploy.outputs.page_url }}
+          EXPECT_BUILD: ${{ needs.test.outputs.build }}
+          ALLOW_FONTS: "1"
+        run: node tests/run.js
