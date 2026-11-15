@@ -261,4 +261,220 @@ CX.store = (function () {
     async search(q, o) {
       o = { names: true, content: true, caseSensitive: false, limit: 200, ...(o || {}) };
       const needle = o.caseSensitive ? q : q.toLowerCase();
-      const norm = (s
+      const norm = (s) => (o.caseSensitive ? s : s.toLowerCase());
+      const out = [], files = this.all().filter((e) => e.type === 'file');
+      let searched = 0;
+      for (const e of this.all()) if (o.names && norm(e.path).includes(needle)) out.push({ path: e.path, type: e.type, kind: 'name' });
+      if (o.content) {
+        const targets = files.filter((e) => e.size <= 1024 * 1024);
+        for (let i = 0; i < targets.length && out.length < o.limit; i += 50) {
+          const batch = targets.slice(i, i + 50);
+          const blobs = await idb.tx('blobs', 'readonly', async (s) => Promise.all(batch.map((e) => idb.req(s.blobs.get(e.hash)))));
+          batch.forEach((e, k) => {
+            searched++;
+            const b = blobs[k]; if (!b) return;
+            const lines = b.content.split('\n');
+            for (let ln = 0; ln < lines.length && out.length < o.limit; ln++) {
+              if (norm(lines[ln]).includes(needle)) { out.push({ path: e.path, type: 'file', kind: 'content', line: ln + 1, text: lines[ln].trim().slice(0, 160) }); break; }
+            }
+          });
+        }
+      }
+      return { results: out.slice(0, o.limit), searched, truncated: out.length >= o.limit };
+    }
+
+    // ---- snapshots ----
+    _snapshotOf(w, note, auto) {
+      const ents = [...w.entries.values()].filter((e) => e.path !== '/').map((e) => ({ path: e.path, type: e.type, hash: e.hash, size: e.size, ctime: e.ctime, mtime: e.mtime, rev: e.rev }));
+      const files = ents.filter((e) => e.type === 'file');
+      return { id: randomId('snap_'), ws: this.id, created: Date.now(), note: note || '', auto: !!auto, root: w.rec.stateRoot, journalSeq: w.rec.headSeq,
+        files: files.length, dirs: ents.length - files.length, bytes: files.reduce((a, e) => a + e.size, 0), entries: ents };
+    }
+    createSnapshot(note, o) {
+      return commit(this.id, async (w) => {
+        const sn = this._snapshotOf(w, String(note || '').slice(0, 200), o && o.auto);
+        return { snapshotPuts: [sn], result: sn, events: [{ type: 'snapshot.created', subject: sn.id, data: { id: sn.id, note: sn.note, auto: sn.auto, files: sn.files, dirs: sn.dirs, bytes: sn.bytes, root: sn.root } }] };
+      }).then((r) => r.result);
+    }
+    async listSnapshots() {
+      const all = await idb.tx('snapshots', 'readonly', (s) => idb.req(s.snapshots.index('ws').getAll(this.id)));
+      return all.sort((a, b) => b.created - a.created);
+    }
+    restoreSnapshot(snapId) {
+      return commit(this.id, async (w) => {
+        const sn = await idb.get('snapshots', [this.id, snapId]);
+        if (!sn || sn.ws !== this.id) throw new CxError('E_NOT_FOUND', 'Snapshot not found.');
+        const hashes = [...new Set(sn.entries.filter((e) => e.type === 'file').map((e) => e.hash))];
+        const present = await idb.tx('blobs', 'readonly', (s) => Promise.all(hashes.map((x) => idb.req(s.blobs.getKey(x)))));
+        const missing = hashes.filter((x, i) => present[i] === undefined);
+        if (missing.length) throw new CxError('E_CORRUPT', 'This snapshot cannot be restored: ' + missing.length + ' stored file version(s) are missing. Nothing was changed.');
+        const pre = this._snapshotOf(w, 'Automatic snapshot before restoring ' + new Date(sn.created).toLocaleString(), true);
+        const keep = new Set(sn.entries.map((e) => e.path));
+        const dels = [...w.entries.keys()].filter((p) => p !== '/' && !keep.has(p));
+        const puts = sn.entries.map((e) => ({ ws: this.id, path: e.path, type: e.type, name: nameOf(e.path), parent: parentOf(e.path), hash: e.hash, size: e.size, ctime: e.ctime, mtime: e.mtime, rev: e.rev }));
+        return { puts, dels, snapshotPuts: [pre], expectRoot: sn.root, result: { restored: sn.id, safety: pre.id },
+          events: [{ type: 'snapshot.created', subject: pre.id, before: true, data: { id: pre.id, note: pre.note, auto: true, files: pre.files, dirs: pre.dirs, bytes: pre.bytes, root: pre.root } },
+            { type: 'snapshot.restored', subject: sn.id, data: { id: sn.id, safetySnapshot: pre.id, root: sn.root, entries: sn.entries.length } }] };
+      }).then((r) => r.result);
+    }
+    deleteSnapshot(snapId) {
+      return commit(this.id, async () => ({ snapshotDels: [snapId], events: [{ type: 'snapshot.deleted', subject: snapId, data: { id: snapId } }] }))
+        .then(() => { gcBlobs().catch(() => {}); });
+    }
+
+    // ---- journal ----
+    async readJournal(limit) {
+      const all = await idb.tx('journal', 'readonly', (s) => idb.req(s.journal.getAll(IDBKeyRange.bound([this.id, 0], [this.id, Number.MAX_SAFE_INTEGER]))));
+      return limit ? all.slice(-limit) : all;
+    }
+    async verify() {
+      const recs = await this.readJournal();
+      const w = await load(this.id);   // always re-read from storage: a verification must not trust the cache
+      const r = await verifyRecords(recs, await stateRootOf(w.entries));
+      // contents check: every referenced blob exists
+      const hashes = [...new Set([...w.entries.values()].filter((e) => e.type === 'file').map((e) => e.hash))];
+      const present = await idb.tx('blobs', 'readonly', (s) => Promise.all(hashes.map((x) => idb.req(s.blobs.getKey(x)))));
+      const missing = hashes.filter((x, i) => present[i] === undefined).length;
+      if (missing) { r.valid = false; r.issues.push(missing + ' file version(s) are missing from storage.'); }
+      return r;
+    }
+
+    // ---- workspace metadata ----
+    updateSettings(patch) {
+      return commit(this.id, async (w) => {
+        const next = normSettings({ ...w.rec.settings, ...patch });
+        const changed = Object.keys(next).filter((k) => JSON.stringify(next[k]) !== JSON.stringify(normSettings(w.rec.settings)[k]));
+        if (!changed.length) return { noop: true, result: normSettings(w.rec.settings) };
+        return { wsPatch: { settings: next }, result: next, events: [{ type: 'settings.updated', subject: 'settings', data: { changed, values: Object.fromEntries(changed.map((k) => [k, next[k]])) } }] };
+      }).then((r) => r.result);
+    }
+    rename_(name) {
+      const nn = checkWsName(name);
+      return commit(this.id, async (w) => ({ wsPatch: { name: nn }, result: nn, events: [{ type: 'workspace.renamed', subject: this.id, data: { from: w.rec.name, to: nn } }] })).then((r) => r.result);
+    }
+    saveUi(ui) {
+      return idb.tx('workspaces', 'readwrite', async (s) => {
+        const cur = await idb.req(s.workspaces.get(this.id));
+        if (cur) { cur.ui = ui; s.workspaces.put(cur); const c = caches.get(this.id); if (c && c.rec.headHash === cur.headHash) c.rec = cur; }   // only while the cache is still current
+      });
+    }
+    async exportData() {
+      const w = await ensureFresh(this.id);
+      const snaps = await this.listSnapshots();
+      const journal = (await this.readJournal()).map(({ ws: _w, ...r }) => r);
+      const hashes = new Set();
+      const entries = [...w.entries.values()].filter((e) => e.path !== '/').map((e) => { if (e.hash) hashes.add(e.hash); return { path: e.path, type: e.type, hash: e.hash, size: e.size, ctime: e.ctime, mtime: e.mtime, rev: e.rev }; });
+      const snapshots = snaps.map((s) => { s.entries.forEach((e) => { if (e.hash) hashes.add(e.hash); }); const { ws: _w, ...rest } = s; return rest; });
+      const list = [...hashes];
+      const got = await idb.tx('blobs', 'readonly', (s) => Promise.all(list.map((x) => idb.req(s.blobs.get(x)))));
+      const blobs = {};
+      list.forEach((x, i) => { if (!got[i]) throw new CxError('E_CORRUPT', 'Export stopped: stored content is missing for ' + x.slice(0, 19) + '…'); blobs[x] = got[i].content; });
+      return { name: w.rec.name, id: w.rec.id, createdAt: w.rec.createdAt, settings: normSettings(w.rec.settings), entries, blobs, snapshots, journal, head: { seq: w.rec.headSeq, hash: w.rec.headHash }, root: w.rec.stateRoot };
+    }
+  }
+
+  // ---- registry level ----
+  const STARTER = '# Welcome to CX Alpha 0.1\n\nThis workspace lives in your browser (IndexedDB). Nothing is sent anywhere.\n\n- Files, folders, snapshots and a hash-linked journal are real and persistent.\n- Remote computing, sync between devices and cryptographic signing are NOT implemented yet.\n- Export a workspace from the Workspaces app to keep a backup.\n';
+  async function createWorkspace(name, o) {
+    const nm = checkWsName(name), id = randomId('ws_'), now = Date.now();
+    await commit(id, async () => {
+      const root = { ws: id, path: '/', type: 'dir', name: '/', parent: null, hash: null, size: 0, ctime: now, mtime: now, rev: 1 };
+      const puts = [root], blobs = [], events = [{ type: 'workspace.created', subject: id, data: { name: nm } }];
+      if (!o || o.starter !== false) {
+        const m = await makeEntry(id, '/README.md', 'file', STARTER, now, now, 1);
+        puts.push(m.entry); blobs.push(m.blob);
+        events.push({ type: 'file.created', subject: '/README.md', data: { path: '/README.md', size: m.entry.size, hash: m.entry.hash } });
+      }
+      return { puts, blobs, events, ws: { id, name: nm, createdAt: now, updatedAt: now, settings: { ...SETTINGS_DEFAULT }, ui: null, schema: 1, headSeq: -1, headHash: CX.ZERO, stateRoot: null } };
+    }, { create: true });
+    return open(id);
+  }
+  // Creates a new workspace from prepared data (package import, v0.9 migration). Never overwrites anything.
+  async function importWorkspace(spec) {
+    const id = randomId('ws_'), now = Date.now();
+    await commit(id, async () => {
+      const blobs = [], puts = [{ ws: id, path: '/', type: 'dir', name: '/', parent: null, hash: null, size: 0, ctime: now, mtime: now, rev: 1 }];
+      const have = new Set();
+      for (const [hash, content] of Object.entries(spec.blobs || {})) { blobs.push({ hash, content, size: byteLength(content) }); have.add(hash); }
+      for (const e of spec.entries) {
+        let hash = e.hash, size = e.size;
+        if (e.type === 'file' && typeof e.content === 'string') {
+          hash = await sha256(e.content); size = byteLength(e.content);
+          if (!have.has(hash)) { have.add(hash); blobs.push({ hash, content: e.content, size }); }
+        }
+        puts.push({ ws: id, path: e.path, type: e.type, name: nameOf(e.path), parent: parentOf(e.path), hash: e.type === 'file' ? hash : null, size: e.type === 'file' ? size : 0,
+          ctime: e.ctime || now, mtime: e.mtime || now, rev: e.rev || 1 });
+      }
+      const snapshotPuts = (spec.snapshots || []).map((s) => ({ ...s, ws: id }));
+      return { puts, blobs, snapshotPuts, journalPrefix: spec.journalPrefix || [], events: spec.events,
+        ws: { id, name: checkWsName(spec.name), createdAt: spec.createdAt || now, updatedAt: now, settings: normSettings(spec.settings), ui: null, schema: 1, headSeq: -1, headHash: CX.ZERO, stateRoot: null } };
+    }, { create: true });
+    return open(id);
+  }
+  if (chan) chan.onmessage = async (e) => {
+    const m = e.data; if (!m || m.tab === tabId) return;
+    try {
+      if (m.type === 'changed') { await ensureFresh(m.id); bus.emit('ws:changed', { id: m.id, types: ['external'], paths: [], external: true }); }
+      else if (m.type === 'deleted') { caches.delete(m.id); bus.emit('ws:deleted', { id: m.id, external: true }); }
+    } catch (err) { if (err && err.code === 'E_NOT_FOUND') { caches.delete(m.id); bus.emit('ws:deleted', { id: m.id, external: true }); } else console.warn('cross-tab refresh failed', err); }
+  };
+  async function open(id) { await ensureFresh(id); return new WS(id); }
+  async function listWorkspaces() { return (await idb.getAll('workspaces')).sort((a, b) => a.createdAt - b.createdAt); }
+  async function getActive() { const m = await idb.get('meta', 'active'); return m ? m.value : null; }
+  const setActive = (id) => idb.put('meta', { key: 'active', value: id });
+  async function deleteWorkspace(id) {
+    await withLock(() => idb.tx(['workspaces', 'entries', 'snapshots', 'journal', 'intents'], 'readwrite', async (s) => {
+      s.workspaces.delete(id);
+      const ek = await idb.req(s.entries.index('ws').getAllKeys(id)); ek.forEach((k) => s.entries.delete(k));
+      const sk = await idb.req(s.snapshots.index('ws').getAllKeys(id)); sk.forEach((k) => s.snapshots.delete(k));
+      s.journal.delete(IDBKeyRange.bound([id, 0], [id, Number.MAX_SAFE_INTEGER]));
+      const ik = await idb.req(s.intents.getAll()); ik.filter((i) => i.ws === id).forEach((i) => s.intents.delete(i.id));
+    }));
+    caches.delete(id);
+    tell({ type: 'deleted', id });
+    await gcBlobs().catch(() => {});
+    bus.emit('ws:deleted', { id });
+  }
+  // Removes stored file versions that no entry or snapshot refers to.
+  function gcBlobs() {
+    return withLock(() => idb.tx(['entries', 'snapshots', 'blobs'], 'readwrite', async (s) => {
+      const used = new Set();
+      (await idb.req(s.entries.getAll())).forEach((e) => { if (e.hash) used.add(e.hash); });
+      (await idb.req(s.snapshots.getAll())).forEach((sn) => sn.entries.forEach((e) => { if (e.hash) used.add(e.hash); }));
+      const keys = await idb.req(s.blobs.getAllKeys());
+      let n = 0;
+      keys.forEach((k) => { if (!used.has(k)) { s.blobs.delete(k); n++; } });
+      return n;
+    }));
+  }
+  async function stats() {
+    const out = { workspaces: [], blobCount: 0, blobBytes: 0 };
+    await idb.tx(['workspaces', 'entries', 'snapshots', 'journal', 'blobs'], 'readonly', async (s) => {
+      for (const w of await idb.req(s.workspaces.getAll())) {
+        const ents = await idb.req(s.entries.index('ws').getAll(w.id));
+        const snaps = await idb.req(s.snapshots.index('ws').getAll(w.id));
+        const files = ents.filter((e) => e.type === 'file');
+        out.workspaces.push({ id: w.id, name: w.name, files: files.length, dirs: ents.length - 1 - files.length, bytes: files.reduce((a, e) => a + e.size, 0), snapshots: snaps.length, journal: w.headSeq + 1 });
+      }
+      await new Promise((res, rej) => { const c = s.blobs.openCursor(); c.onsuccess = () => { const cur = c.result; if (!cur) return res(); out.blobCount++; out.blobBytes += cur.value.size || 0; cur.continue(); }; c.onerror = () => rej(c.error); });
+    });
+    let est = null; try { est = await navigator.storage.estimate(); } catch (_) { /* unsupported */ }
+    let persisted = null; try { persisted = await navigator.storage.persisted(); } catch (_) { /* unsupported */ }
+    return { ...out, usage: est ? est.usage : null, quota: est ? est.quota : null, persisted };
+  }
+  // Interrupted writes: the apply step is one atomic transaction, so a leftover intent means the change did not happen.
+  async function init() {
+    await idb.open();
+    const left = await idb.getAll('intents');
+    recovery = { discarded: [], at: left.length ? new Date().toISOString() : null };
+    for (const it of left) {
+      await idb.del('intents', it.id);
+      recovery.discarded.push({ id: it.id, ws: it.ws, type: it.type, created: it.created });
+      const exists = await idb.get('workspaces', it.ws);
+      if (exists) await commit(it.ws, async () => ({ events: [{ type: 'recovery.intent-discarded', subject: it.id, data: { intent: it.id, interrupted: it.type, note: 'The interrupted change was not applied.' } }] })).catch(() => {});
+    }
+    return recovery;
+  }
+  return { init, createWorkspace, importWorkspace, open, listWorkspaces, getActive, setActive, deleteWorkspace, gcBlobs, stats, verifyRecords, stateRootOf, normSettings,
+    recovery: () => recovery, MAX_FILE, SETTINGS_DEFAULT, _commit: commit };
+})();
