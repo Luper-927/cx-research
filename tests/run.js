@@ -703,6 +703,6 @@ function v09Fixture(tamper) {
   await browser.close(); if (srv) srv.close();
   const pass = results.filter((r) => r.ok).length, skipped = results.filter((r) => r.skipped).length;
   console.log('\n' + pass + '/' + results.length + ' tests passed' + (skipped ? ' (' + skipped + ' skipped)' : ''));
-  fs.writeFileSync('/tmp/test-results.json', JSON.stringify(results, null, 2));
+  fs.writeFileSync('/tmp/test-results.json', JSON.stringify(results, null, 1));
   process.exit(pass === results.length ? 0 : 1);
 })();
