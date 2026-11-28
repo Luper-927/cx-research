@@ -4,39 +4,209 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080A10">
+<meta name="description" content="CX Alpha 0.1 — local interface shell">
 <title>CX Alpha 0.1</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080A10'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h14' stroke='%2300E5FF' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<script>try{var t=localStorage.getItem('cx.theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  try {
+    const savedTheme = localStorage.getItem('cx.theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') document.documentElement.dataset.theme = savedTheme;
+  } catch (_) { /* Storage may be disabled; the default theme still works. */ }
+</script>
 <style>
-/*CSS*/
+:root{color-scheme:dark;--bg:#080a10;--surface:#101521;--surface2:#151d2b;--surface3:#1b2637;--line:#263246;--text:#edf3fc;--muted:#8c9ab0;--accent:#00d9f5;--accent-soft:rgba(0,217,245,.11);--good:#48d6a0;--warn:#f4bd62;--bad:#ff7885;--shadow:0 18px 55px rgba(0,0,0,.32)}
+:root[data-theme="light"]{color-scheme:light;--bg:#f4f6fa;--surface:#fff;--surface2:#f0f3f8;--surface3:#e7edf5;--line:#dce3ed;--text:#172033;--muted:#68758a;--accent:#007f9b;--accent-soft:rgba(0,127,155,.09);--good:#16865e;--warn:#9a6500;--bad:#c33f50;--shadow:0 18px 55px rgba(28,43,68,.12)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}body{min-height:100vh}button{font:inherit}button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}#app{min-height:100vh;display:flex;flex-direction:column}#topbar{height:66px;display:flex;align-items:center;gap:18px;padding:0 24px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5}.brand{display:flex;align-items:center;gap:9px;white-space:nowrap}.brand-mark{width:25px;height:25px;border:2px solid var(--accent);border-radius:7px;position:relative}.brand-mark:before,.brand-mark:after{content:"";position:absolute;left:5px;right:5px;height:2px;background:var(--accent);border-radius:3px}.brand-mark:before{top:6px}.brand-mark:after{top:13px}.brand-name{font-weight:700;letter-spacing:.12em;font-size:15px}.brand-ver{font:11px "JetBrains Mono",monospace;color:var(--muted);padding-left:5px}.spacer{flex:1}.btn,.icon-btn,.dock-btn{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:9px;cursor:pointer;transition:.18s ease}.btn:hover,.icon-btn:hover,.dock-btn:hover{border-color:var(--accent);background:var(--accent-soft)}.ws-switch{padding:9px 12px;display:flex;align-items:center;gap:12px;font-size:12px}.caret{width:7px;height:7px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg) translateY(-2px)}.chips{display:flex;align-items:center;gap:8px}.chip{display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:10px;white-space:nowrap}.dot{width:6px;height:6px;border-radius:50%;background:var(--warn)}.dot.info{background:var(--accent)}.dot.off{background:var(--muted)}.icon-btn{width:35px;height:35px;display:grid;place-items:center;font-size:16px}.icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}#main{display:grid;grid-template-columns:76px minmax(0,1fr);flex:1;min-height:calc(100vh - 66px)}#dock{padding:20px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;border-right:1px solid var(--line);background:var(--surface)}.dock-btn{width:46px;height:46px;display:grid;place-items:center;color:var(--muted);position:relative}.dock-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.dock-btn.active{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}.dock-btn[aria-label]:hover:after{content:attr(aria-label);position:absolute;left:55px;top:50%;transform:translateY(-50%);background:var(--surface3);color:var(--text);padding:7px 9px;border:1px solid var(--line);border-radius:7px;font-size:11px;white-space:nowrap;z-index:4}#desktop{width:min(1120px,100%);margin:0 auto;padding:42px 42px 70px;outline:none}.eyebrow{font:10px "JetBrains Mono",monospace;letter-spacing:.13em;text-transform:uppercase;color:var(--accent)}h1{font-size:clamp(25px,4vw,37px);letter-spacing:-.045em;margin:10px 0 9px}h2{font-size:15px;margin:0 0 8px}p{color:var(--muted);line-height:1.65;font-size:13px}.intro{max-width:720px;margin-bottom:28px}.intro p{max-width:650px;margin:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.panel{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:19px;min-width:0}.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:13px}.panel-icon{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}.panel-icon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7}.panel p{margin:0;font-size:12px}.state{display:inline-flex;align-items:center;gap:7px;margin-top:15px;padding:5px 8px;border-radius:6px;background:var(--surface2);font:10px "JetBrains Mono",monospace;color:var(--muted)}.state:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--warn)}.notice{margin-top:17px;padding:14px 16px;border:1px solid rgba(244,189,98,.28);background:rgba(244,189,98,.06);border-radius:10px;display:flex;gap:11px;align-items:flex-start}.notice strong{display:block;font-size:12px;margin-bottom:4px}.notice p{font-size:11px;margin:0}.section-title{display:flex;justify-content:space-between;align-items:center;margin:28px 0 12px}.mono{font:11px "JetBrains Mono",monospace;color:var(--muted)}.integration-list{display:grid;gap:9px}.integration{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;border:1px solid var(--line);border-radius:9px;background:var(--surface)}.integration strong{font-size:12px}.integration small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.tag{font:9px "JetBrains Mono",monospace;color:var(--warn);border:1px solid rgba(244,189,98,.3);padding:5px 7px;border-radius:5px;white-space:nowrap}.page{display:none}.page.active{display:block}.empty{padding:34px 20px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}.empty svg{width:25px;height:25px;stroke:var(--muted);fill:none;margin-bottom:9px}.empty strong{display:block;color:var(--text);font-size:13px;margin-bottom:5px}.empty span{font-size:11px;line-height:1.6}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.56);display:none;align-items:flex-start;justify-content:center;padding:15vh 18px 20px;z-index:20}.overlay.open{display:flex}.dialog{width:min(520px,100%);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}.dialog input{width:100%;padding:17px 18px;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--text);font:13px Inter,sans-serif;outline:none}.command-list{padding:8px;max-height:300px;overflow:auto}.command{width:100%;text-align:left;border:0;background:transparent;color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:12px;display:flex;justify-content:space-between}.command:hover,.command:focus{background:var(--accent-soft)}.command kbd{font:10px "JetBrains Mono",monospace;color:var(--muted)}.dialog-foot{padding:10px 14px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}#toasts{position:fixed;right:18px;bottom:18px;z-index:30;display:grid;gap:8px}.toast{max-width:min(360px,calc(100vw - 36px));padding:12px 15px;border:1px solid var(--line);border-radius:9px;background:var(--surface3);box-shadow:var(--shadow);font-size:12px;animation:rise .2s ease}.toast strong{display:block;margin-bottom:3px}.toast span{color:var(--muted)}@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font:10px "JetBrains Mono",monospace;color:var(--muted)}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hide-sm{display:none}#desktop{padding:32px 25px 55px}}
+@media(max-width:560px){#topbar{height:58px;padding:0 12px;gap:9px}.brand-ver{display:none}.chips{display:none}.ws-switch{margin-left:auto;padding:8px;font-size:10px}#main{grid-template-columns:54px minmax(0,1fr);min-height:calc(100vh - 58px)}#dock{padding:14px 6px;gap:9px}.dock-btn{width:39px;height:39px}#desktop{padding:27px 16px 45px}.grid{grid-template-columns:1fr}.intro{margin-bottom:22px}.panel{padding:16px}.section-title{margin-top:23px}.notice{padding:12px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 <div id="app">
   <header id="topbar" role="banner">
     <div class="brand" aria-label="CX Alpha 0.1"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">CX</span><span class="brand-ver">alpha 0.1</span></div>
-    <button id="ws-switch" class="btn ghost ws-switch" aria-haspopup="dialog" aria-label="Switch workspace"><span id="ws-name">Loading…</span><span class="caret" aria-hidden="true"></span></button>
+    <button id="ws-switch" class="btn ws-switch" type="button" aria-label="Workspace status"><span id="ws-name">Engine not connected</span><span class="caret" aria-hidden="true"></span></button>
     <div class="spacer"></div>
     <div id="chips" class="chips" role="status" aria-label="System status">
-      <span id="chip-store" class="chip" title="Storage state"><i class="dot idle"></i><span>Starting</span></span>
-      <span id="chip-journal" class="chip hide-sm" title="Journal state"><i class="dot idle"></i><span>Journal</span></span>
-      <span id="chip-mode" class="chip hide-sm" title="CX Alpha 0.1 runs entirely in this browser. Remote computing is not implemented."><i class="dot info"></i><span>Local only</span></span>
+      <span id="chip-store" class="chip" title="No storage adapter has been connected"><i class="dot off"></i><span>Storage offline</span></span>
+      <span id="chip-journal" class="chip hide-sm" title="No journal adapter has been connected"><i class="dot off"></i><span>Journal offline</span></span>
+      <span id="chip-mode" class="chip hide-sm" title="This interface runs in your browser"><i class="dot info"></i><span>Local interface</span></span>
     </div>
-    <button id="btn-palette" class="icon-btn" aria-label="Open command palette (Ctrl+K)" title="Command palette (Ctrl+K)"></button>
-    <button id="btn-theme" class="icon-btn" aria-label="Toggle colour theme" title="Toggle theme"></button>
+    <button id="btn-palette" class="icon-btn" type="button" aria-label="Open command palette (Ctrl+K)" title="Command palette (Ctrl+K)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5M8 10.8h5.6M10.8 8v5.6"/></svg></button>
+    <button id="btn-theme" class="icon-btn" type="button" aria-label="Toggle colour theme" title="Toggle theme"><svg id="theme-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
   </header>
   <div id="main">
-    <nav id="dock" aria-label="Applications"></nav>
-    <main id="desktop" tabindex="-1" aria-label="Workspace desktop"></main>
+    <nav id="dock" aria-label="Interface sections">
+      <button class="dock-btn active" type="button" data-page="overview" aria-label="Overview" title="Overview"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+      <button class="dock-btn" type="button" data-page="integrations" aria-label="Integrations" title="Integrations"><svg viewBox="0 0 24 24"><path d="M8 7V4m8 3V4M7 8h10v5a5 5 0 0 1-10 0zM12 18v3m-4 0h8"/></svg></button>
+      <button class="dock-btn" type="button" data-page="about" aria-label="About CX" title="About CX"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg></button>
+    </nav>
+    <main id="desktop" tabindex="-1" aria-label="Workspace desktop">
+      <section class="page active" id="page-overview" aria-labelledby="page-title">
+        <div class="intro"><div class="eyebrow">System workspace / Alpha 0.1</div><h1 id="page-title">CX interface</h1><p>This is the browser interface shell. It provides navigation and a place to observe the system, but the underlying CX engine has not been connected in this build.</p></div>
+        <div class="grid">
+          <article class="panel"><div class="panel-head"><span class="panel-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/></svg></span><h2>Storage</h2></div><p>Persistent data storage is not connected to this interface. No storage health claim is being made.</p><span class="state">Adapter not connected</span></article>
+          <article class="panel"><div class="panel-head"><span class="panel-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg></span><h2>Journal</h2></div><p>There is no journal provider attached. Events and history cannot be inspected here yet.</p><span class="state">Adapter not connected</span></article>
+          <article class="panel"><div class="panel-head"><span class="panel-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span><h2>Execution mode</h2></div><p>This page executes in the current browser. Remote execution and cross-device coordination are not implemented.</p><span class="state">Browser interface only</span></article>
+        </div>
+        <div class="notice" role="note"><span aria-hidden="true">ⓘ</span><div><strong>Engine connection required</strong><p>Workspace state, storage, journal, verification and recovery must be supplied by the real CX engine. This interface deliberately does not simulate those capabilities.</p></div></div>
+        <div class="section-title"><h2>Connection checklist</h2><span class="mono">INTEGRATION STATUS</span></div>
+        <div class="integration-list">
+          <div class="integration"><div><strong>Storage adapter</strong><small>Initialize and expose verified storage state</small></div><span class="tag">NOT CONNECTED</span></div>
+          <div class="integration"><div><strong>Journal adapter</strong><small>Expose journal head, append and verification status</small></div><span class="tag">NOT CONNECTED</span></div>
+          <div class="integration"><div><strong>Workspace provider</strong><small>Load workspace identity and enforce isolation</small></div><span class="tag">NOT CONNECTED</span></div>
+          <div class="integration"><div><strong>Recovery and integrity</strong><small>Connect real verification and recovery results</small></div><span class="tag">NOT CONNECTED</span></div>
+        </div>
+        <footer>CX ALPHA 0.1 · LOCAL INTERFACE · ENGINE STATUS UNVERIFIED</footer>
+      </section>
+      <section class="page" id="page-integrations" aria-labelledby="integrations-title">
+        <div class="intro"><div class="eyebrow">System / Integration boundary</div><h1 id="integrations-title">Integrations</h1><p>The interface expects explicit adapters from the CX engine. No guessed APIs or simulated success states are used.</p></div>
+        <div class="integration-list">
+          <div class="integration"><div><strong>Storage</strong><small>Required before displaying real persisted state</small></div><span class="tag">PENDING</span></div>
+          <div class="integration"><div><strong>Journal</strong><small>Required before displaying event history or journal health</small></div><span class="tag">PENDING</span></div>
+          <div class="integration"><div><strong>Workspace</strong><small>Required before enabling workspace switching</small></div><span class="tag">PENDING</span></div>
+          <div class="integration"><div><strong>Verifier</strong><small>Required before presenting integrity as verified</small></div><span class="tag">PENDING</span></div>
+          <div class="integration"><div><strong>Recovery</strong><small>Required before offering recovery operations</small></div><span class="tag">PENDING</span></div>
+        </div>
+        <footer>ADAPTERS MUST FOLLOW THE ACTUAL ENGINE CONTRACTS</footer>
+      </section>
+      <section class="page" id="page-about" aria-labelledby="about-title">
+        <div class="intro"><div class="eyebrow">Project / Identity</div><h1 id="about-title">About CX</h1><p>Project CX is being developed as foundational infrastructure for interactions among independently operated autonomous systems.</p></div>
+        <div class="panel"><h2>Current interface boundary</h2><p>This deliverable implements the presentation layer only: page structure, responsive styling, navigation between interface sections, theme preference, keyboard-accessible command palette and notifications.</p><p>It does not implement identity, authority, resource control, inter-system interaction, cryptographic verification, persistence, journal semantics or recovery. Those must come from separately tested engine components.</p></div>
+        <footer>ALPHA 0.1 · PRESENTATION LAYER</footer>
+      </section>
+    </main>
   </div>
   <div id="toasts" aria-live="polite" aria-atomic="false"></div>
 </div>
-<noscript>CX needs JavaScript.</noscript>
+<div class="overlay" id="palette-overlay" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="dialog"><input id="palette-input" type="search" placeholder="Type a command or section…" autocomplete="off" aria-label="Search commands"><div class="command-list" id="command-list"></div><div class="dialog-foot">↑ ↓ to navigate · Enter to open · Esc to close · Ctrl K to toggle</div></div>
+</div>
+<noscript><p style="padding:20px">CX needs JavaScript enabled to operate this interface.</p></noscript>
 <script>
-/*JS*/
+(() => {
+  'use strict';
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const pages = ['overview', 'integrations', 'about'];
+  const commands = [
+    { label: 'Open overview', hint: 'Overview', action: () => showPage('overview') },
+    { label: 'Open integrations', hint: 'Integrations', action: () => showPage('integrations') },
+    { label: 'About CX', hint: 'About', action: () => showPage('about') },
+    { label: 'Toggle colour theme', hint: 'Appearance', action: toggleTheme }
+  ];
+  let activeCommand = 0;
+  let lastFocus = null;
+
+  function toast(title, message) {
+    const node = document.createElement('div');
+    node.className = 'toast';
+    const strong = document.createElement('strong');
+    const span = document.createElement('span');
+    strong.textContent = title;
+    span.textContent = message;
+    node.append(strong, span);
+    $('#toasts').append(node);
+    window.setTimeout(() => node.remove(), 3600);
+  }
+
+  function showPage(name) {
+    if (!pages.includes(name)) return;
+    $$('.page').forEach(page => page.classList.toggle('active', page.id === `page-${name}`));
+    $$('.dock-btn').forEach(button => {
+      const selected = button.dataset.page === name;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-current', selected ? 'page' : 'false');
+    });
+    $('#desktop').focus({ preventScroll: true });
+  }
+
+  function applyTheme(theme, persist = true) {
+    document.documentElement.dataset.theme = theme;
+    const button = $('#btn-theme');
+    const dark = theme === 'dark';
+    button.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    button.title = dark ? 'Switch to light theme' : 'Switch to dark theme';
+    $('#theme-icon').innerHTML = dark
+      ? '<path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.7 8.7 0 1 0 20.5 14.2Z"/>'
+      : '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>';
+    if (persist) {
+      try { localStorage.setItem('cx.theme', theme); }
+      catch (_) { toast('Theme changed', 'This browser could not save the preference.'); return; }
+    }
+  }
+  function toggleTheme() {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+    toast('Appearance updated', `Using ${next} theme.`);
+  }
+
+  function renderCommands(filter = '') {
+    const list = $('#command-list');
+    const matches = commands.filter(command => `${command.label} ${command.hint}`.toLowerCase().includes(filter.toLowerCase()));
+    list.replaceChildren();
+    activeCommand = Math.min(activeCommand, Math.max(0, matches.length - 1));
+    if (!matches.length) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'No matching commands';
+      list.append(empty);
+      return;
+    }
+    matches.forEach((command, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'command';
+      button.setAttribute('aria-selected', String(index === activeCommand));
+      const label = document.createElement('span');
+      const hint = document.createElement('kbd');
+      label.textContent = command.label;
+      hint.textContent = command.hint;
+      button.append(label, hint);
+      button.addEventListener('click', () => { closePalette(); command.action(); });
+      list.append(button);
+    });
+  }
+  function openPalette() {
+    lastFocus = document.activeElement;
+    $('#palette-overlay').classList.add('open');
+    $('#palette-input').value = '';
+    renderCommands();
+    $('#palette-input').focus();
+  }
+  function closePalette() {
+    $('#palette-overlay').classList.remove('open');
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+  }
+
+  $$('.dock-btn').forEach(button => button.addEventListener('click', () => showPage(button.dataset.page)));
+  $('#btn-theme').addEventListener('click', toggleTheme);
+  $('#btn-palette').addEventListener('click', openPalette);
+  $('#ws-switch').addEventListener('click', () => toast('Workspace unavailable', 'Connect the real CX workspace provider before switching workspaces.'));
+  $('#palette-input').addEventListener('input', event => { activeCommand = 0; renderCommands(event.target.value); });
+  $('#palette-input').addEventListener('keydown', event => {
+    const matches = commands.filter(command => `${command.label} ${command.hint}`.toLowerCase().includes(event.target.value.toLowerCase()));
+    if (event.key === 'ArrowDown') { event.preventDefault(); activeCommand = Math.min(activeCommand + 1, matches.length - 1); renderCommands(event.target.value); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); activeCommand = Math.max(activeCommand - 1, 0); renderCommands(event.target.value); }
+    if (event.key === 'Enter' && matches[activeCommand]) { const action = matches[activeCommand].action; closePalette(); action(); }
+    if (event.key === 'Escape') closePalette();
+  });
+  $('#palette-overlay').addEventListener('click', event => { if (event.target === $('#palette-overlay')) closePalette(); });
+  document.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); $('#palette-overlay').classList.contains('open') ? closePalette() : openPalette(); }
+    if (event.key === 'Escape' && $('#palette-overlay').classList.contains('open')) closePalette();
+  });
+
+  const initialTheme = document.documentElement.dataset.theme || 'dark';
+  applyTheme(initialTheme, false);
+  showPage('overview');
+  renderCommands();
+})();
 </script>
 </body>
-</html>
+  </html>
+                                                                                                                                           
